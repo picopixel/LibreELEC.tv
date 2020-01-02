@@ -41,4 +41,8 @@ makeinstall_target() {
 
   mkdir -p $INSTALL/$(get_full_firmware_dir)/rockchip
     cp -v $(get_build_dir rkbin)/firmware/rockchip/dptx.bin $INSTALL/$(get_full_firmware_dir)/rockchip
+
+  mkdir -p $INSTALL/$(get_full_firmware_dir)/ssv6051
+    cp -v $(get_build_dir rkbin)/firmware/wifi/ssv6051-sw.bin $INSTALL/$(get_full_firmware_dir)/ssv6051
+    cp -v $(get_build_dir rkbin)/firmware/wifi/ssv6051-wifi.cfg $INSTALL/$(get_full_firmware_dir)/ssv6051
 }
