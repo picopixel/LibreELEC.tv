@@ -56,6 +56,7 @@ devices = {
        'rk3229-v884k' : { 'dtb' : 'rk3229-box-v884k.dtb', 'config' : 'rk3229-linux-miniloader-nand_defconfig' },
        'rk3229-d88' : { 'dtb' : 'rk3229-box-d88.dtb', 'config' : 'rk3229-linux-miniloader-nand_defconfig' },
        'rk3229-v88mars' : { 'dtb' : 'rk3229-box-v88mars.dtb', 'config' : 'rk3229-linux-miniloader-nand_defconfig' },
+       'rk3229-ntn8' : {'dtb' : 'rk3229-box-ntn8.dtb', 'config': 'rk3229-linux-miniloader-emmc_defconfig' },
     },
 
   },

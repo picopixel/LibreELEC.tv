@@ -1304,3 +1304,177 @@ index 0000000..e40274d
 +&usb_otg {
 +        dr_mode = "host";
 +};
+diff --git a/arch/arm/boot/dts/rk3229-box-ntn8.dts b/arch/arm/boot/dts/rk3229-box-ntn8.dts
+new file mode 100644
+index 000000000..745bafa8b
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3229-box-ntn8.dts
+@@ -0,0 +1,168 @@
++/*
++ * Copyright (c) 2017 Fuzhou Rockchip Electronics Co., Ltd
++ *
++ * This file is dual-licensed: you can use it either under the terms
++ * of the GPL or the X11 license, at your option. Note that this dual
++ * licensing only applies to this file, and not this project as a
++ * whole.
++ *
++ *  a) This file is free software; you can redistribute it and/or
++ *     modify it under the terms of the GNU General Public License as
++ *     published by the Free Software Foundation; either version 2 of the
++ *     License, or (at your option) any later version.
++ *
++ *     This file is distributed in the hope that it will be useful,
++ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *     GNU General Public License for more details.
++ *
++ *  Or, alternatively,
++ *
++ *  b) Permission is hereby granted, free of charge, to any person
++ *     obtaining a copy of this software and associated documentation
++ *     files (the "Software"), to deal in the Software without
++ *     restriction, including without limitation the rights to use,
++ *     copy, modify, merge, publish, distribute, sublicense, and/or
++ *     sell copies of the Software, and to permit persons to whom the
++ *     Software is furnished to do so, subject to the following
++ *     conditions:
++ *
++ *     The above copyright notice and this permission notice shall be
++ *     included in all copies or substantial portions of the Software.
++ *
++ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
++ *     OTHER DEALINGS IN THE SOFTWARE.
++ */
++
++/dts-v1/;
++
++#include "rk322x-box-linux.dtsi"
++
++/ {
++	model = "RK3229 HPH NT-N8";
++	compatible = "rockchip,rk3229-box", "rockchip,rk3229";
++
++
++	leds {
++		compatible = "gpio-leds";
++
++		led_green {
++			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
++			default-state = "on";
++		};
++
++		led_red {
++			gpios = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++			linux,default-trigger = "rc-feedback";
++		};
++	};
++
++	wireless-wlan {
++		compatible = "wlan-platdata";
++		rockchip,grf = <&grf>;
++		wifi_chip_type = "ap6212";
++		sdio_vref = <3300>;
++		WIFI,host_wake_irq = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
++		status = "okay";
++	};
++
++	wireless-bluetooth {
++		compatible = "bluetooth-platdata";
++		uart_rts_gpios = <&gpio3 6 GPIO_ACTIVE_LOW>;
++		pinctrl-names = "default", "rts_gpio";
++		pinctrl-0 = <&uart11_rts>;
++		pinctrl-1 = <&uart11_rts_gpio>;
++		BT,power_gpio = <&gpio2 29 GPIO_ACTIVE_HIGH>;
++		BT,wake_host_irq = <&gpio3 26 GPIO_ACTIVE_HIGH>;
++		status = "okay";
++	};
++
++	gpio_keys {
++		compatible = "gpio-keys";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		autorepeat;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&pwr_key>;
++
++		power_key: power-key {
++			label = "GPIO Key Power";
++			gpios = <&gpio3 RK_PC7 GPIO_ACTIVE_LOW>;
++			linux,code = <KEY_POWER>;
++			debounce-interval = <100>;
++			wakeup-source;
++			status = "okay";
++		};
++	};
++
++	sdio_pwrseq: sdio-pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		pinctrl-names = "default";
++		pinctrl-0 = <&wifi_enable_h>;
++		reset-gpios = <&gpio2 26 GPIO_ACTIVE_LOW>; /* GPIO2_D2 */
++	};
++};
++
++&dram_timing {
++                sr_idle = <0xc>;
++                pd_idle = <0x20>;
++                ddr3_drv = <DDR3_DS_40ohm>;
++                ddr3_odt = <DDR3_ODT_120ohm>;
++                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
++                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_45ohm>;
++                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
++                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
++};
++
++&dmc {
++	system-status-freq = <
++		/*system status         freq(KHz)*/
++		SYS_STATUS_NORMAL       786000
++		SYS_STATUS_VIDEO_4K	786000
++		SYS_STATUS_VIDEO_4K_10B 800000
++	>;
++
++	dram_freq = <786000000>;
++	status = "okay";
++};
++
++&emmc {
++	clock-frequency = <125000000>;
++	max-frequency  = <125000000>;
++	status = "okay";
++};
++
++&sdmmc {
++	clock-frequency = <37500000>;
++	max-frequency = <37500000>;
++	status = "okay";
++};
++
++&sdio {
++	clock-frequency = <37500000>;
++	max-frequency = <37500000>;
++	mmc-pwrseq = <&sdio_pwrseq>;
++	status = "okay";
++};
++
++&gmac {
++	tx_delay = <0x26>;
++	rx_delay = <0x11>;
++};
++
++&usb_otg {
++        dr_mode = "host";
++};
++
++&ir_receiver {
++	linux,rc-map-name = "rc-trn9";
++	status = "okay";
++};
