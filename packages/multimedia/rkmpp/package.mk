@@ -2,8 +2,8 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="rkmpp"
-PKG_VERSION="451ae59386bbb8093a25defdca7a95f588c28706"
-PKG_SHA256="b2f6478783caa8ffb9698b4207bae3a684fe861ba09cd371414fe26d41a3433e"
+PKG_VERSION="459eace2054e1f3557e5fcaaff1bd2fc3a20271a"
+PKG_SHA256="0e29170870ea89cc957c09a0f556c76daf527ee5235587ab41f33eacf1b806f5"
 PKG_ARCH="arm aarch64"
 PKG_LICENSE="APL"
 PKG_SITE="https://github.com/rockchip-linux/mpp"
@@ -11,7 +11,7 @@ PKG_URL="https://github.com/rockchip-linux/mpp/archive/$PKG_VERSION.tar.gz"
 PKG_DEPENDS_TARGET="toolchain libdrm"
 PKG_LONGDESC="rkmpp: Rockchip Media Process Platform (MPP) module"
 
-if [ "$DEVICE" = "RK3328" -o "$DEVICE" = "RK3399" ]; then
+if [ "$DEVICE" = "RK3328" -o "$DEVICE" = "RK3399" -o "$DEVICE" = "RK322x" ]; then
   PKG_ENABLE_VP9D="ON"
 else
   PKG_ENABLE_VP9D="OFF"
