@@ -1304,6 +1304,7 @@ index 0000000..e40274d
 +&usb_otg {
 +        dr_mode = "host";
 +};
+
 diff --git a/arch/arm/boot/dts/rk3229-box-ntn8.dts b/arch/arm/boot/dts/rk3229-box-ntn8.dts
 new file mode 100644
 index 000000000..745bafa8b
@@ -1478,3 +1479,4 @@ index 000000000..745bafa8b
 +	linux,rc-map-name = "rc-trn9";
 +	status = "okay";
 +};
+

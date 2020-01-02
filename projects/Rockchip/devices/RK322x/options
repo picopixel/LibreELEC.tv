@@ -24,6 +24,7 @@
     KERNEL_MAKE_EXTRACMD+=" rk3229-box-d88.dtb"
     KERNEL_MAKE_EXTRACMD+=" rk3229-box-v884k.dtb"
     KERNEL_MAKE_EXTRACMD+=" rk3229-box-v88mars.dtb"
+    KERNEL_MAKE_EXTRACMD+=" rk3229-box-ntn8.dtb"
 
   # Mali GPU family
     MALI_FAMILY="400"
@@ -35,5 +36,5 @@
   # driver addons to install:
   # for a list of additinoal drivers see packages/linux-driver-addons
   # Space separated list is supported,
-    DRIVER_ADDONS=""
+  DRIVER_ADDONS=""
 
