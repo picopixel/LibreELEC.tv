@@ -1,0 +1,39 @@
+################################################################################
+# setup device defaults
+################################################################################
+
+  # The TARGET_CPU variable controls which processor should be targeted for
+  # generated code.
+    case $TARGET_ARCH in
+      arm)
+        TARGET_FLOAT="hard"
+        TARGET_CPU="cortex-a7"
+        TARGET_FPU="neon-vfpv4"
+        TARGET_FEATURES="32bit"
+        KERNEL_LINARO_TOOLCHAIN="arm-linux-gnueabihf"
+        ;;
+    esac
+
+  # Kernel target
+    KERNEL_TARGET="zImage"
+
+  # Additional kernel make parameters (for example to specify the u-boot loadaddress)
+    KERNEL_MAKE_EXTRACMD=""
+    KERNEL_MAKE_EXTRACMD+=" rk3229-box-a95xr1.dtb"
+    KERNEL_MAKE_EXTRACMD+=" rk3229-box-hk1mini.dtb"
+    KERNEL_MAKE_EXTRACMD+=" rk3229-box-d88.dtb"
+    KERNEL_MAKE_EXTRACMD+=" rk3229-box-v884k.dtb"
+    KERNEL_MAKE_EXTRACMD+=" rk3229-box-v88mars.dtb"
+
+  # Mali GPU family
+    MALI_FAMILY="400"
+
+  # kernel serial console
+    EXTRA_CMDLINE="console=uart8250,mmio32,0x11030000 console=ttyS2"
+ 
+
+  # driver addons to install:
+  # for a list of additinoal drivers see packages/linux-driver-addons
+  # Space separated list is supported,
+    DRIVER_ADDONS=""
+
