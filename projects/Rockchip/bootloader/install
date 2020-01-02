@@ -4,7 +4,7 @@
 PKG_RKBIN="$(get_build_dir rkbin)"
 PKG_SOC=$UBOOT_SYSTEM
 
-if [ "$DEVICE" = "RK3328" -o "$DEVICE" = "RK3399" ]; then
+if [ "$DEVICE" = "RK3328" -o "$DEVICE" = "RK3399" -o "$DEVICE" = "RK322x" ]; then
   PKG_SOC="${DEVICE/RK/rk}"
 fi
 
@@ -30,6 +30,14 @@ case "$PKG_SOC" in
     PKG_BL31="$PKG_RKBIN/rk33/rk3399_bl31_v1.24.elf"
     PKG_LOAD_ADDR="0x200000"
     ;;
+  rk322x)
+   PKG_DATAFILE="$PKG_RKBIN/rk32/rk322x_ddr_300MHz_v1.08.bin"
+   PKG_LOADER="$PKG_RKBIN/rk32/rk322x_miniloader_v2.56.bin"
+   PKG_TOS="$PKG_RKBIN/rk32/rk322x_tee_v2.00.bin"
+   PKG_TOSTA="$PKG_RKBIN/rk32/rk322x_tee_ta_v2.01.bin"
+   PKG_LOAD_ADDR="0x60200000"
+   PKG_TOSXX_LOAD_ADDR="0x68400000"
+   ;;
   *)
     PKG_DATAFILE="spl/u-boot-spl-dtb.bin"
     PKG_LOADER="u-boot-dtb.bin"
@@ -63,5 +71,11 @@ SEC=0
 PATH=trust.img
 EOF
   $PKG_RKBIN/tools/trust_merger --verbose trust.ini
+  cp -av trust.img $INSTALL/usr/share/bootloader
+elif [ -n "$PKG_TOSTA" -a -n "$PKG_TOSXX_LOAD_ADDR" ]; then
+  $PKG_RKBIN/tools/loaderimage --pack --trustos $PKG_TOSTA trust.img $PKG_TOSXX_LOAD_ADDR
+  cp -av trust.img $INSTALL/usr/share/bootloader
+elif [ -n "$PKG_TOS" -a -n "$PKG_TOSXX_LOAD_ADDR" ]; then
+  $PKG_RKBIN/tools/loaderimage --pack --trustos $PKG_TOS trust.img $PKG_TOSXX_LOAD_ADDR
   cp -av trust.img $INSTALL/usr/share/bootloader
 fi
