@@ -741,3 +741,91 @@ index 66e1c50b38fc..6b2db526fac0 100644
  #define RC_MAP_KWORLD_315U               "rc-kworld-315u"
  #define RC_MAP_KWORLD_PC150U             "rc-kworld-pc150u"
  #define RC_MAP_KWORLD_PLUS_TV_ANALOG     "rc-kworld-plus-tv-analog"
+--- a/drivers/media/rc/keymaps/rc-rktvbox.c
++++ b/drivers/media/rc/keymaps/rc-rktvbox.c
+@@ -0,0 +1,65 @@
++/* Keytable for Rockchip TV Box IR Remote Controller
++ *
++ * Copyright (c) 2018 knaerzche
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ */
++
++#include <media/rc-map.h>
++#include <linux/module.h>
++
++static struct rc_map_table rktvbox[] = {
++	{ 0xcc1d49, KEY_NUMERIC_0 },
++	{ 0xcc1d41, KEY_NUMERIC_1 },
++	{ 0xcc1d45, KEY_NUMERIC_2 },
++	{ 0xcc1d4d, KEY_NUMERIC_3 },
++	{ 0xcc1d42, KEY_NUMERIC_4 },
++	{ 0xcc1d46, KEY_NUMERIC_5 },
++	{ 0xcc1d4e, KEY_NUMERIC_6 },
++	{ 0xcc1d43, KEY_NUMERIC_7 },
++	{ 0xcc1d47, KEY_NUMERIC_8 },
++	{ 0xcc1d4f, KEY_NUMERIC_9 },
++	{ 0xcc1d0c, KEY_MUTE },
++	{ 0xcc1d07, KEY_UP },
++	{ 0xcc1d4a, KEY_BACKSPACE },
++	{ 0xcc1d11, KEY_OK },
++	{ 0xcc1d44, KEY_DOWN },
++	{ 0xcc1d10, KEY_LEFT },
++	{ 0xcc1d12, KEY_RIGHT },
++	{ 0xcc1d02, KEY_VOLUMEDOWN },
++	{ 0xcc1d0e, KEY_VOLUMEUP },
++	{ 0xcc1d03, KEY_HOME },
++	{ 0xcc1d40, KEY_MENU },
++	{ 0xcc1d09, KEY_WWW },
++	{ 0xcc1d0f, KEY_BACK },
++	{ 0xcc1d4c, KEY_INFO },
++	{ 0xcc1d00, KEY_POWER },
++};
++
++static struct rc_map_list rktvbox_map = {
++	.map = {
++		.scan     = rktvbox,
++		.size     = ARRAY_SIZE(rktvbox),
++               .rc_proto = RC_PROTO_NEC,
++		.name     = RC_MAP_RKTVBOX,
++	}
++};
++
++static int __init init_rc_map_rktvbox(void)
++{
++	return rc_map_register(&rktvbox_map);
++}
++
++static void __exit exit_rc_map_rktvbox(void)
++{
++	rc_map_unregister(&rktvbox_map);
++}
++
++module_init(init_rc_map_rktvbox)
++module_exit(exit_rc_map_rktvbox)
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("knaerzche");
+--- a/drivers/media/rc/keymaps/Makefile
++++ b/drivers/media/rc/keymaps/Makefile
+@@ -69,6 +69,7 @@
+ 			rc-odroid.o \
+ 			rc-pctv-sedna.o \
+ 			rc-pine64.o \
++			rc-rktvbox.o \
+ 			rc-pinnacle-color.o \
+ 			rc-pinnacle-grey.o \
+ 			rc-pinnacle-pctv-hd.o \
+--- a/include/media/rc-map.h
++++ b/include/media/rc-map.h
+@@ -178,6 +178,7 @@
+ #define RC_MAP_ODROID                    "rc-odroid"
+ #define RC_MAP_PCTV_SEDNA                "rc-pctv-sedna"
+ #define RC_MAP_PINE64                    "rc-pine64"
++#define RC_MAP_RKTVBOX                   "rc-rktvbox"
+ #define RC_MAP_PINNACLE_COLOR            "rc-pinnacle-color"
+ #define RC_MAP_PINNACLE_GREY             "rc-pinnacle-grey"
+ #define RC_MAP_PINNACLE_PCTV_HD          "rc-pinnacle-pctv-hd"

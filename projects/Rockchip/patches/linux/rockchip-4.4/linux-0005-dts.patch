@@ -83,13 +83,13 @@ index 1b7602f25f34..9cca69f9f5ba 100644
  		assigned-clocks = <&cru SCLK_TSADC>;
 @@ -646,7 +655,7 @@
  		reset-names = "tsadc-apb";
- 		pinctrl-names = "init", "default", "sleep";
+ 		pinctrl-names = "gpio", "otpout";
  		pinctrl-0 = <&otp_gpio>;
 -		pinctrl-1 = <&otp_gpio>;
 +		pinctrl-1 = <&otp_out>;
- 		pinctrl-2 = <&otp_gpio>;
  		#thermal-sensor-cells = <1>;
  		rockchip,hw-tshut-temp = <120000>;
+ 		rockchip,hw-tshut-mode = <0>; /* tshut mode 0:CRU 1:GPIO */
 @@ -1699,6 +1708,7 @@
  		operating-points-v2 = <&gpu_opp_table>;
  		#cooling-cells = <2>; /* min followed by max */
@@ -418,9 +418,9 @@ index a2862c6a17f1..9655365db416 100644
 +	status = "okay";
 +};
 +
- /*
-  * Debug Serial Port
-  */
+ &uart3 {
+ 	status = "okay";
+ };
 @@ -472,6 +494,10 @@ I2C
  
  &vopl {
@@ -571,55 +571,6 @@ index 0d2251c903b1..b7b6f9304706 100644
  		interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>;
  		clocks = <&cru ACLK_VOP>, <&cru DCLK_LCDC>, <&cru HCLK_VOP>;
  		clock-names = "aclk_vop", "dclk_vop", "hclk_vop";
-@@ -1226,36 +1261,42 @@
- 	sdmmc: dwmmc@ff500000 {
- 		compatible = "rockchip,rk3328-dw-mshc", "rockchip,rk3288-dw-mshc";
- 		reg = <0x0 0xff500000 0x0 0x4000>;
--		clock-freq-min-max = <400000 150000000>;
-+		max-frequency = <150000000>;
- 		clocks = <&cru HCLK_SDMMC>, <&cru SCLK_SDMMC>,
- 			 <&cru SCLK_SDMMC_DRV>, <&cru SCLK_SDMMC_SAMPLE>;
--		clock-names = "biu", "ciu", "ciu-drv", "ciu-sample";
-+		clock-names = "biu", "ciu", "ciu-drive", "ciu-sample";
- 		fifo-depth = <0x100>;
- 		interrupts = <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>;
-+		resets = <&cru SRST_MMC0>;
-+		reset-names = "reset";
- 		status = "disabled";
- 	};
- 
- 	sdio: dwmmc@ff510000 {
- 		compatible = "rockchip,rk3328-dw-mshc", "rockchip,rk3288-dw-mshc";
- 		reg = <0x0 0xff510000 0x0 0x4000>;
--		clock-freq-min-max = <400000 150000000>;
-+		max-frequency = <150000000>;
- 		clocks = <&cru HCLK_SDIO>, <&cru SCLK_SDIO>,
- 			 <&cru SCLK_SDIO_DRV>, <&cru SCLK_SDIO_SAMPLE>;
--		clock-names = "biu", "ciu", "ciu-drv", "ciu-sample";
-+		clock-names = "biu", "ciu", "ciu-drive", "ciu-sample";
- 		fifo-depth = <0x100>;
- 		interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
-+		resets = <&cru SRST_SDIO>;
-+		reset-names = "reset";
- 		status = "disabled";
- 	};
- 
- 	emmc: dwmmc@ff520000 {
- 		compatible = "rockchip,rk3328-dw-mshc", "rockchip,rk3288-dw-mshc";
- 		reg = <0x0 0xff520000 0x0 0x4000>;
--		clock-freq-min-max = <400000 150000000>;
-+		max-frequency = <150000000>;
- 		clocks = <&cru HCLK_EMMC>, <&cru SCLK_EMMC>,
- 			 <&cru SCLK_EMMC_DRV>, <&cru SCLK_EMMC_SAMPLE>;
--		clock-names = "biu", "ciu", "ciu-drv", "ciu-sample";
-+		clock-names = "biu", "ciu", "ciu-drive", "ciu-sample";
- 		fifo-depth = <0x100>;
- 		interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>;
-+		resets = <&cru SRST_EMMC>;
-+		reset-names = "reset";
- 		status = "disabled";
- 	};
- 
 @@ -1275,6 +1316,7 @@
  			      "pclk_mac";
  		resets = <&cru SRST_GMAC2IO_A>;
@@ -663,8 +614,8 @@ index 4b2eef609601..ff90c5379671 100644
  	compatible = "pine64,rock64", "rockchip,rk3328";
  
  	chosen {
--		bootargs = "rockchip_jtag earlyprintk=uart8250-32bit,0xff130000 swiotlb=1 kpti=0";
-+		bootargs = "earlyprintk=uart8250-32bit,0xff130000 swiotlb=1 kpti=0";
+-		bootargs = "rockchip_jtag earlycon=uart8250-32bit,0xff130000 swiotlb=1 kpti=0 coherent_pool=1m";
++		bootargs = "earlycon=uart8250-32bit,0xff130000 swiotlb=1 kpti=0 coherent_pool=1m";
  		stdout-path = "serial2:1500000n8";
  	};
  
@@ -4409,29 +4360,15 @@ diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
 index 9cca69f9f5ba..2141eb23faa7 100644
 --- a/arch/arm/boot/dts/rk3288.dtsi
 +++ b/arch/arm/boot/dts/rk3288.dtsi
-@@ -981,6 +981,8 @@
+@@ -981,7 +981,8 @@
  					 <&cru PCLK_MIPI_DSI1>,
  					 <&cru SCLK_EDP_24M>,
  					 <&cru SCLK_EDP>,
-+					 <&cru SCLK_HDMI_CEC>,
+					 <&cru SCLK_HDMI_CEC>,
 +					 <&cru SCLK_HDMI_HDCP>,
  					 <&cru SCLK_ISP_JPE>,
  					 <&cru SCLK_ISP>,
  					 <&cru SCLK_RGA>;
-@@ -1579,10 +1581,10 @@
- 		reg-io-width = <4>;
- 		rockchip,grf = <&grf>;
- 		interrupts = <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>;
--		clocks = <&cru  PCLK_HDMI_CTRL>, <&cru SCLK_HDMI_HDCP>;
--		clock-names = "iahb", "isfr";
-+		clocks = <&cru  PCLK_HDMI_CTRL>, <&cru SCLK_HDMI_HDCP>, <&cru SCLK_HDMI_CEC>;
-+		clock-names = "iahb", "isfr", "cec";
- 		pinctrl-names = "default", "sleep";
--		pinctrl-0 = <&hdmi_ddc>;
-+		pinctrl-0 = <&hdmi_ddc>, <&hdmi_cec_c0>;
- 		pinctrl-1 = <&hdmi_gpio>;
- 		power-domains = <&power RK3288_PD_VIO>;
- 		status = "disabled";
 @@ -1966,6 +1968,14 @@
  						 &pcfg_pull_none>;
  			};
@@ -4447,6 +4384,27 @@ index 9cca69f9f5ba..2141eb23faa7 100644
  			hdmi_ddc: hdmi-ddc {
  				rockchip,pins = <7 19 RK_FUNC_2 &pcfg_pull_none>,
  						<7 20 RK_FUNC_2 &pcfg_pull_none>;
+
+@@ -1660,7 +1660,7 @@
+                clocks = <&cru  PCLK_HDMI_CTRL>, <&cru SCLK_HDMI_HDCP>, <&cru SCLK_HDMI_CEC>;
+                clock-names = "iahb", "isfr", "cec";
+                pinctrl-names = "default", "sleep";
+-               pinctrl-0 = <&hdmi_ddc>;
++               pinctrl-0 = <&hdmi_ddc &hdmi_cec_c0>;
+                pinctrl-1 = <&hdmi_gpio>;
+                power-domains = <&power RK3288_PD_VIO>;
+                status = "disabled";
+@@ -2050,10 +2050,6 @@
+                                                 &pcfg_pull_none>;
+                        };
+ 
+-                       hdmi_cec: hdmi-cec {
+-                               rockchip,pins = <7 16 RK_FUNC_2 &pcfg_pull_none>;
+-                       };
+-
+                        hdmi_cec_c0: hdmi-cec-c0 {
+                                rockchip,pins = <7 16 RK_FUNC_2 &pcfg_pull_none>;
+                        };
 
 From d7b647f6bb133b0ee27d759900516c1750c268fe Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
@@ -6152,43 +6110,10 @@ Date: Sat, 18 Aug 2018 20:53:04 +0200
 Subject: [PATCH] arm64: dts: rockchip: rk3399: update dtsi
 
 ---
- arch/arm64/boot/dts/rockchip/rk3399-linux.dtsi    | 14 +-----------
  arch/arm64/boot/dts/rockchip/rk3399-sapphire.dtsi | 17 ++++++++++++---
  arch/arm64/boot/dts/rockchip/rk3399.dtsi          | 26 ++++++++++++++++++++++-
  3 files changed, 40 insertions(+), 17 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-linux.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-linux.dtsi
-index 2851cd529e04..7be2af6b0ba8 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-linux.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-linux.dtsi
-@@ -47,18 +47,7 @@
- 	compatible = "rockchip,linux", "rockchip,rk3399";
- 
- 	chosen {
--		bootargs = "earlycon=uart8250,mmio32,0xff1a0000 swiotlb=1 console=ttyFIQ0 rw root=PARTUUID=614e0000-0000 rootfstype=ext4 rootwait";
--	};
--
--	reserved-memory {
--		#address-cells = <2>;
--		#size-cells = <2>;
--		ranges;
--
--		drm_logo: drm-logo@00000000 {
--			compatible = "rockchip,drm-logo";
--			reg = <0x0 0x0 0x0 0x0>;
--		};
-+		bootargs = "earlycon=uart8250,mmio32,0xff1a0000 swiotlb=1";
- 	};
- 
- 	cif_isp0: cif_isp@ff910000 {
-@@ -120,7 +109,6 @@
- 	status = "disabled";
- 
- 	ports = <&vopb_out>, <&vopl_out>;
--	logo-memory-region = <&drm_logo>;
- 
- 	route {
- 		route_hdmi: route-hdmi {
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399-sapphire.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-sapphire.dtsi
 index 3d76b9733665..62ba4281197e 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399-sapphire.dtsi
@@ -6391,7 +6316,7 @@ index 02b8ba7dcc94..aa1aee547036 100644
  	compatible = "pine64,rockpro64", "rockchip,rk3399";
  
 -	chosen {
--		bootargs = "earlyprintk=uart8250,mmio32,0xff1a0000 swiotlb=1";
+-		bootargs = "earlycon=uart8250,mmio32,0xff1a0000 swiotlb=1 coherent_pool=1m";
 -		stdout-path = "serial2:1500000n8";
 -	};
 -
@@ -9111,3 +9036,29 @@ index 000000000000..7b376aee97c4
 +&vopl_mmu {
 +	status = "disabled";
 +};
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-linux.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-linux.dtsi
+index a57b372..910fee7 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-linux.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-linux.dtsi
+@@ -47,7 +47,7 @@
+ 	compatible = "rockchip,linux", "rockchip,rk3399";
+ 
+ 	chosen {
+-		bootargs = "earlycon=uart8250,mmio32,0xff1a0000 swiotlb=1 console=ttyFIQ0 rw root=PARTUUID=614e0000-0000 rootfstype=ext4 rootwait coherent_pool=1m";
++		bootargs = "earlycon=uart8250,mmio32,0xff1a0000 swiotlb=1 coherent_pool=1m";
+ 	};
+ 
+ 	reserved-memory {
+@@ -55,11 +55,6 @@
+ 		#size-cells = <2>;
+ 		ranges;
+ 
+-		drm_logo: drm-logo@00000000 {
+-			compatible = "rockchip,drm-logo";
+-			reg = <0x0 0x0 0x0 0x0>;
+-		};
+-
+ 		ramoops_mem: region@110000 {
+ 			reg = <0x0 0x110000 0x0 0xf0000>;
+ 			reg-names = "ramoops_mem";
