@@ -1582,3 +1582,83 @@ index 0000000..98b01e5
 +		};
 +	};
 +};
+diff --git a/arch/arm/boot/dts/rk3228b-box-v88mars-II.dts b/arch/arm/boot/dts/rk3228b-box-v88mars-II.dts
+new file mode 100644
+index 0000000..a0d29bd
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3228b-box-v88mars-II.dts
+@@ -0,0 +1,74 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk3228b-box.dtsi"
++
++/ {
++	model = "RK3228b V88 Mars II";
++
++	leds {
++                compatible = "gpio-leds";
++
++                led_blue {
++                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
++                        default-state = "on";
++                };
++
++                led_red {
++                        gpios = <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>;
++                        default-state = "off";
++                        linux,default-trigger = "rc-feedback";
++                };
++        };
++
++
++	wireless-wlan {
++		compatible = "wlan-platdata";
++		rockchip,grf = <&grf>;
++		sdio_vref = <3300>;
++		WIFI,host_wake_irq = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
++		status = "okay";
++	};
++
++
++	sdio_pwrseq: sdio-pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		pinctrl-names = "default";
++		pinctrl-0 = <&wifi_enable_h>;
++		reset-gpios = <&gpio2 26 GPIO_ACTIVE_LOW>; /* GPIO2_D2 */
++	};
++};
++
++
++&nandc {
++	status = "okay";
++};
++
++&sdmmc {
++	clock-frequency = <37500000>;
++	max-frequency = <37500000>;
++	status = "okay";
++};
++
++&sdio {
++	clock-frequency = <37500000>;
++	max-frequency = <37500000>;
++	mmc-pwrseq = <&sdio_pwrseq>;
++	status = "okay";
++};
++
++
++&usb_otg {
++        dr_mode = "host";
++};
++
++&ir_receiver {
++	status = "okay";
++};

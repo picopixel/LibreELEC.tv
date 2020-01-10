@@ -26,6 +26,7 @@
     KERNEL_MAKE_EXTRACMD+=" rk3229-box-v88mars.dtb"
     KERNEL_MAKE_EXTRACMD+=" rk3229-box-ntn8.dtb"
     KERNEL_MAKE_EXTRACMD+=" rk3228a-box-h96mini.dtb"
+    KERNEL_MAKE_EXTRACMD+=" rk3228b-box-v88mars-II.dtb"
 
   # Mali GPU family
     MALI_FAMILY="400"

@@ -9,8 +9,9 @@ This is a SoC device for RK322x
 * `PROJECT=Rockchip DEVICE=RK322x ARCH=arm UBOOT_SYSTEM=rk3229-d88 make image`
 * `PROJECT=Rockchip DEVICE=RK322x ARCH=arm UBOOT_SYSTEM=rk3229-v884k make image`
 * `PROJECT=Rockchip DEVICE=RK322x ARCH=arm UBOOT_SYSTEM=rk3229-v88mars make image`
-* `PROJECT=Rockchip DEVICE=RK322x ARCH=arm UBOOT_SYSTEM=rk3229-box-ntn8 make image`
+* `PROJECT=Rockchip DEVICE=RK322x ARCH=arm UBOOT_SYSTEM=rk3229-ntn8 make image`
 * `PROJECT=Rockchip DEVICE=RK322x ARCH=arm UBOOT_SYSTEM=rk3228a-h96mini SOC=RK3228 DDR_SPEED=600 make image`
+* `PROJECT=Rockchip DEVICE=RK322x ARCH=arm UBOOT_SYSTEM=rk3228b-v88marsII SOC=RK3228 make image`
 
 **How to use on an Android device**
 - Flash image to a sd-card
