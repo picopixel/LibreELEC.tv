@@ -34,7 +34,7 @@ case "$PKG_SOC" in
    PKG_LOADER="$PKG_RKBIN/rk32/rk322x_miniloader_v2.56.bin"
    PKG_DATAFILE="${PKG_RKBIN}/rk32/rk322x_ddr_${DDR_SPEED:-300}MHz_v1.10.bin"
    if [ "$SOC" = "RK3228" ]; then
-       PKG_TOSTA="$PKG_RKBIN/rk32/rk3228_tee_ta-51.1.0-295-gf3faf77.bin"
+       PKG_TOSTA="$PKG_RKBIN/rk32/rk3228_tee_ta-51.1.0-333-gc9d95d1.bin"
    else
        PKG_TOSTA="$PKG_RKBIN/rk32/rk322x_tee_ta_v2.05.bin"
    fi
