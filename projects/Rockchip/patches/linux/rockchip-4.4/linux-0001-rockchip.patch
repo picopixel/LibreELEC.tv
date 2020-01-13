@@ -1204,3 +1204,30 @@ index f3ad402..d8112c9 100644
  		drvname[sizeof(info.driver)-1] = '\0';
  
  		/* clear struct for return */
+--- b/drivers/gpu/drm/rockchip/rockchip_drm_fbdev.c
++++ a/drivers/gpu/drm/rockchip/rockchip_drm_fbdev.c
+@@ -50,15 +50,6 @@
+ 	return buf;
+ }
+ 
+-static int rockchip_fbdev_blank(int blank, struct fb_info *info)
+-{
+-	struct drm_fb_helper *helper = info->par;
+-
+-	drm_fb_helper_restore_fbdev_mode_unlocked(helper);
+-
+-	return drm_fb_helper_blank(blank, info);
+-}
+-
+ static struct fb_ops rockchip_drm_fbdev_ops = {
+ 	.owner		= THIS_MODULE,
+ 	.fb_mmap	= rockchip_fbdev_mmap,
+@@ -67,7 +58,7 @@
+ 	.fb_imageblit	= drm_fb_helper_cfb_imageblit,
+ 	.fb_check_var	= drm_fb_helper_check_var,
+ 	.fb_set_par	= drm_fb_helper_set_par,
++	.fb_blank	= drm_fb_helper_blank,
+-	.fb_blank	= rockchip_fbdev_blank,
+ 	.fb_pan_display	= drm_fb_helper_pan_display,
+ 	.fb_read	= drm_fb_helper_sys_read,
+ 	.fb_write	= drm_fb_helper_sys_write,
