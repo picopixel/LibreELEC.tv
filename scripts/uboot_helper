@@ -58,8 +58,9 @@ devices = {
        'rk3229-d88' : { 'dtb' : 'rk3229-box-d88.dtb', 'config' : 'rk322x-linux-miniloader-nand_defconfig' },
        'rk3229-v88mars' : { 'dtb' : 'rk3229-box-v88mars.dtb', 'config' : 'rk322x-linux-miniloader-nand_defconfig' },
        'rk3229-ntn8' : {'dtb' : 'rk3229-box-ntn8.dtb', 'config': 'rk322x-linux-miniloader-emmc_defconfig' },
-       'rk3228a-h96mini' : {'dtb' : 'rk3228a-box-h96mini.dtb', 'config' : 'rk322x-linux-miniloader-emmc-boot_defconfig' },
+       'rk3228a-h96mini' : {'dtb' : 'rk3228a-box-h96mini.dtb', 'config' : 'rk322x-linux-miniloader-emmc_defconfig' },
        'rk3228b-v88marsII' : {'dtb' : 'rk3228b-box-v88mars-II.dtb', 'config' : 'rk322x-linux-miniloader-nand_defconfig' },
+       'rk3228b-mk809iv' : {'dtb': 'rk3228b-box-mkv809vii.dtb', 'config' : 'rk322x-linux-miniloader-emmc_defconfig'},
     },
 
   },
