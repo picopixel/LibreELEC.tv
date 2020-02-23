@@ -2,9 +2,9 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="rkbin"
-# Version is: Kwiboo/tag:libreelec-4563e24
-PKG_VERSION="4563e249a3f47e7fcd47a4c3769b6c05683b6e9d"
-PKG_SHA256="0b3479117700bce9afea2110c1f027b626c76d99045802218b35a53606547d60"
+# Version is: knaerzche/tag:libreelec-2c54a33
+PKG_VERSION="2c54a33a402bacf331dd85f3dcafcf1999bf939b"
+PKG_SHA256="38392195a166f18fb1b935805fc7e407f9294a061c43b7769d652102272179e8"
 PKG_ARCH="arm aarch64"
 PKG_LICENSE="nonfree"
 PKG_SITE="https://github.com/rockchip-linux/rkbin"

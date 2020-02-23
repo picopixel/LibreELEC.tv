@@ -1,0 +1,30 @@
+################################################################################
+# setup device defaults
+################################################################################
+
+  # The TARGET_CPU variable controls which processor should be targeted for
+  # generated code.
+    case $TARGET_ARCH in
+      arm)
+        TARGET_FLOAT="hard"
+        TARGET_CPU="cortex-a7"
+        TARGET_FPU="neon-vfpv4"
+        TARGET_FEATURES="32bit"
+        ;;
+    esac
+
+  # Kernel target
+    KERNEL_TARGET="zImage"
+
+  # GPU family
+  GRAPHIC_DRIVERS="lima"
+
+  # OpenGL-ES implementation to use (no / bcm2835-driver / gpu-viv-bin-mx6q)
+    OPENGLES="mesa"
+
+  # KODI Player implementation to use (default / bcm2835-driver / libfslvpuwrap)
+    KODIPLAYER_DRIVER="$OPENGLES"
+
+
+  # kernel serial console
+    EXTRA_CMDLINE="console=uart8250,mmio32,0x11030000 console=tty0 coherent_pool=2M"

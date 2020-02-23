@@ -197,6 +197,24 @@ devices = \
     },
   },
   'Rockchip': {
+  'RK322x' : {
+      'rk3229-box': {
+        'dtb' : 'rk3229-box.dtb',
+        'config' : 'evb-rk3229_defconfig'
+       },
+      'rk3229-a95rx1': {
+        'dtb' : 'rk3229-box-a95xr1.dtb',
+        'config' : 'evb-rk3229_defconfig'
+       },
+       'rk3228a-box': {
+        'dtb' : 'rk3228a-box.dtb',
+        'config' : 'evb-rk3229_defconfig'
+       },
+       'rk3228a-h96mini': {
+         'dtb' : 'rk3228a-box-h96mini.dtb',
+         'config' : 'evb-rk3229_defconfig',
+        },
+    },
     'RK3288': {
       'miqi': {
         'dtb': 'rk3288-miqi.dtb',

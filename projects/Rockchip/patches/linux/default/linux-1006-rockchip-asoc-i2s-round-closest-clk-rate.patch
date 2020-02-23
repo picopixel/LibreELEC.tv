@@ -1,0 +1,29 @@
+diff --git a/sound/soc/rockchip/rockchip_i2s.c b/sound/soc/rockchip/rockchip_i2s.c
+index 61c984f10d..da4a1db3b0 100644
+--- a/sound/soc/rockchip/rockchip_i2s.c
++++ b/sound/soc/rockchip/rockchip_i2s.c
+@@ -279,10 +279,13 @@ static int rockchip_i2s_hw_params(struct snd_pcm_substream *substream,
+ 	if (i2s->is_master_mode) {
+ 		mclk_rate = clk_get_rate(i2s->mclk);
+ 		bclk_rate = 2 * 32 * params_rate(params);
+-		if (bclk_rate && mclk_rate % bclk_rate)
++		if (!bclk_rate) {
++			dev_err(i2s->dev, "invalid bclk_rate: %d\n",
++				bclk_rate);
+ 			return -EINVAL;
++		}
+ 
+-		div_bclk = mclk_rate / bclk_rate;
++		div_bclk = DIV_ROUND_CLOSEST(mclk_rate, bclk_rate);
+ 		div_lrck = bclk_rate / params_rate(params);
+ 		regmap_update_bits(i2s->regmap, I2S_CKR,
+ 				   I2S_CKR_MDIV_MASK,
+@@ -312,6 +315,8 @@ static int rockchip_i2s_hw_params(struct snd_pcm_substream *substream,
+ 		val |= I2S_TXCR_VDW(32);
+ 		break;
+ 	default:
++		dev_err(i2s->dev, "invalid format: %d\n",
++			params_format(params));
+ 		return -EINVAL;
+ 	}
+ 
