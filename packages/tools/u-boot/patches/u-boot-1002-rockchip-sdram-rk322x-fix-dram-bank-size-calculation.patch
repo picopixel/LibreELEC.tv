@@ -1,0 +1,34 @@
+From 48b23658e623f97da3c0f26f03deb03ca702984b Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Thu, 20 Feb 2020 13:26:56 +0100
+Subject: [PATCH] rockchip: sdram: rk322x: fix dram bank size calculation
+
+The DRAM bank size calculation does not work this way on RK322x. It is absolutely
+unclear, why CONFIG_SYS_SDRAM_BASE is added here. This might also apply to other
+none ARM64 rockchip platforms (not tested)
+
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+---
+ arch/arm/mach-rockchip/sdram.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/arm/mach-rockchip/sdram.c b/arch/arm/mach-rockchip/sdram.c
+index 530644c043..02ae0cbe15 100644
+--- a/arch/arm/mach-rockchip/sdram.c
++++ b/arch/arm/mach-rockchip/sdram.c
+@@ -35,8 +35,12 @@ struct tos_parameter_t {
+ 
+ int dram_init_banksize(void)
+ {
++#ifdef CONFIG_ROCKCHIP_RK322X
++	size_t top = min((unsigned long)(gd->ram_size), gd->ram_top);
++#else
+ 	size_t top = min((unsigned long)(gd->ram_size + CONFIG_SYS_SDRAM_BASE),
+ 			 gd->ram_top);
++#endif
+ 
+ #ifdef CONFIG_ARM64
+ 	/* Reserve 0x200000 for ATF bl31 */
+-- 
+2.17.1
+
