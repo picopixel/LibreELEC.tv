@@ -2,7 +2,7 @@ diff --git a/drivers/gpu/drm/rockchip/rockchip_vop_reg.c b/drivers/gpu/drm/rockc
 index 73d24c6bbf..6768b6c580 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
-@@ -614,6 +614,43 @@ static const struct vop_common rk3288_common = {
+@@ -614,6 +614,44 @@ static const struct vop_common rk3288_common = {
  	.dsp_background = VOP_REG(RK3288_DSP_BG, 0xffffffff, 0),
  };
  
@@ -26,6 +26,7 @@ index 73d24c6bbf..6768b6c580 100644
 +};
 +
 +static const struct vop_win_phy rk3228_win1_data = {
++	.scl = &rk3288_win_full_scl,
 +	.data_formats = formats_win_lite,
 +	.nformats = ARRAY_SIZE(formats_win_lite),
 +	.enable = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 0),
