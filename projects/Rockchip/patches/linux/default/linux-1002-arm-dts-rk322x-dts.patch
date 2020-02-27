@@ -1,5 +1,5 @@
 diff --git a/arch/arm/boot/dts/rk322x.dtsi b/arch/arm/boot/dts/rk322x.dtsi
-index 02314b8f6f..580cf7e534 100644
+index 02314b8f6f..28d9c7f6fd 100644
 --- a/arch/arm/boot/dts/rk322x.dtsi
 +++ b/arch/arm/boot/dts/rk322x.dtsi
 @@ -5,6 +5,8 @@
@@ -19,7 +19,7 @@ index 02314b8f6f..580cf7e534 100644
  		serial0 = &uart0;
  		serial1 = &uart1;
  		serial2 = &uart2;
-@@ -121,11 +126,52 @@
+@@ -121,11 +124,52 @@
  		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
  	};
  
@@ -72,7 +72,7 @@ index 02314b8f6f..580cf7e534 100644
  	timer {
  		compatible = "arm,armv7-timer";
  		arm,cpu-registers-not-fw-configured;
-@@ -143,17 +189,13 @@
+@@ -143,17 +187,13 @@
  		#clock-cells = <0>;
  	};
  
@@ -91,7 +91,7 @@ index 02314b8f6f..580cf7e534 100644
  		clock-names = "i2s_clk", "i2s_hclk";
  		clocks = <&cru SCLK_I2S1>, <&cru HCLK_I2S1_8CH>;
  		dmas = <&pdma 14>, <&pdma 15>;
-@@ -169,6 +211,7 @@
+@@ -169,6 +209,7 @@
  		interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
  		#address-cells = <1>;
  		#size-cells = <0>;
@@ -99,7 +99,7 @@ index 02314b8f6f..580cf7e534 100644
  		clock-names = "i2s_clk", "i2s_hclk";
  		clocks = <&cru SCLK_I2S0>, <&cru HCLK_I2S0_8CH>;
  		dmas = <&pdma 11>, <&pdma 12>;
-@@ -186,6 +229,7 @@
+@@ -186,6 +227,7 @@
  		dma-names = "tx";
  		pinctrl-names = "default";
  		pinctrl-0 = <&spdif_tx>;
@@ -107,7 +107,7 @@ index 02314b8f6f..580cf7e534 100644
  		status = "disabled";
  	};
  
-@@ -213,6 +257,43 @@
+@@ -213,6 +255,43 @@
  			status = "disabled";
  		};
  
@@ -151,7 +151,7 @@ index 02314b8f6f..580cf7e534 100644
  		u2phy0: usb2-phy@760 {
  			compatible = "rockchip,rk3228-usb2phy";
  			reg = <0x0760 0x0c>;
-@@ -263,6 +344,7 @@
+@@ -263,6 +342,7 @@
  				status = "disabled";
  			};
  		};
@@ -159,7 +159,7 @@ index 02314b8f6f..580cf7e534 100644
  	};
  
  	uart0: serial@11010000 {
-@@ -301,7 +383,7 @@
+@@ -301,7 +381,7 @@
  		clocks = <&cru SCLK_UART2>, <&cru PCLK_UART2>;
  		clock-names = "baudclk", "apb_pclk";
  		pinctrl-names = "default";
@@ -168,7 +168,7 @@ index 02314b8f6f..580cf7e534 100644
  		reg-shift = <2>;
  		reg-io-width = <4>;
  		status = "disabled";
-@@ -460,13 +542,15 @@
+@@ -460,13 +540,15 @@
  			<&cru PLL_CPLL>, <&cru ACLK_PERI>,
  			<&cru HCLK_PERI>, <&cru PCLK_PERI>,
  			<&cru ACLK_CPU>, <&cru HCLK_CPU>,
@@ -187,7 +187,7 @@ index 02314b8f6f..580cf7e534 100644
  	};
  
  	thermal-zones {
-@@ -529,8 +613,9 @@
+@@ -529,8 +611,9 @@
  		pinctrl-0 = <&otp_gpio>;
  		pinctrl-1 = <&otp_out>;
  		pinctrl-2 = <&otp_gpio>;
@@ -198,7 +198,7 @@ index 02314b8f6f..580cf7e534 100644
  		status = "disabled";
  	};
  
-@@ -562,8 +647,8 @@
+@@ -562,8 +645,8 @@
  				  "ppmmu1";
  		clocks = <&cru ACLK_GPU>, <&cru ACLK_GPU>;
  		clock-names = "core", "bus";
@@ -208,7 +208,7 @@ index 02314b8f6f..580cf7e534 100644
  	};
  
  	vpu_mmu: iommu@20020800 {
-@@ -573,8 +658,8 @@
+@@ -573,8 +656,8 @@
  		interrupt-names = "vpu_mmu";
  		clocks = <&cru ACLK_VPU>, <&cru HCLK_VPU>;
  		clock-names = "aclk", "iface";
@@ -219,7 +219,7 @@ index 02314b8f6f..580cf7e534 100644
  	};
  
  	vdec_mmu: iommu@20030480 {
-@@ -584,8 +669,8 @@
+@@ -584,8 +667,8 @@
  		interrupt-names = "vdec_mmu";
  		clocks = <&cru ACLK_RKVDEC>, <&cru HCLK_RKVDEC>;
  		clock-names = "aclk", "iface";
@@ -230,7 +230,7 @@ index 02314b8f6f..580cf7e534 100644
  	};
  
  	vop: vop@20050000 {
-@@ -639,7 +724,7 @@
+@@ -639,7 +722,7 @@
  		interrupt-names = "iep_mmu";
  		clocks = <&cru ACLK_IEP>, <&cru HCLK_IEP>;
  		clock-names = "aclk", "iface";
@@ -239,7 +239,7 @@ index 02314b8f6f..580cf7e534 100644
  		status = "disabled";
  	};
  
-@@ -659,6 +744,7 @@
+@@ -659,6 +742,7 @@
  		phys = <&hdmi_phy>;
  		phy-names = "hdmi";
  		rockchip,grf = <&grf>;
@@ -247,7 +247,7 @@ index 02314b8f6f..580cf7e534 100644
  		status = "disabled";
  
  		ports {
-@@ -680,9 +766,13 @@
+@@ -680,9 +764,13 @@
  		clocks = <&cru HCLK_SDMMC>, <&cru SCLK_SDMMC>,
  			 <&cru SCLK_SDMMC_DRV>, <&cru SCLK_SDMMC_SAMPLE>;
  		clock-names = "biu", "ciu", "ciu-drive", "ciu-sample";
@@ -262,7 +262,7 @@ index 02314b8f6f..580cf7e534 100644
  		status = "disabled";
  	};
  
-@@ -692,10 +782,14 @@
+@@ -692,10 +780,14 @@
  		interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
  		clocks = <&cru HCLK_SDIO>, <&cru SCLK_SDIO>,
  			 <&cru SCLK_SDIO_DRV>, <&cru SCLK_SDIO_SAMPLE>;
@@ -277,7 +277,7 @@ index 02314b8f6f..580cf7e534 100644
  		status = "disabled";
  	};
  
-@@ -703,14 +797,13 @@
+@@ -703,14 +795,13 @@
  		compatible = "rockchip,rk3228-dw-mshc", "rockchip,rk3288-dw-mshc";
  		reg = <0x30020000 0x4000>;
  		interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>;
@@ -293,7 +293,7 @@ index 02314b8f6f..580cf7e534 100644
  		pinctrl-names = "default";
  		pinctrl-0 = <&emmc_clk &emmc_cmd &emmc_bus8>;
  		resets = <&cru SRST_EMMC>;
-@@ -820,6 +913,26 @@
+@@ -820,6 +911,26 @@
  		status = "disabled";
  	};
  
@@ -320,7 +320,7 @@ index 02314b8f6f..580cf7e534 100644
  	gic: interrupt-controller@32010000 {
  		compatible = "arm,gic-400";
  		interrupt-controller;
-@@ -923,6 +1036,10 @@
+@@ -923,6 +1034,10 @@
  						<1 RK_PC4 1 &pcfg_pull_none_drv_12ma>,
  						<1 RK_PC5 1 &pcfg_pull_none_drv_12ma>;
  			};
@@ -331,7 +331,7 @@ index 02314b8f6f..580cf7e534 100644
  		};
  
  		sdio {
-@@ -1104,12 +1221,20 @@
+@@ -1104,12 +1219,20 @@
  			pwm1_pin: pwm1-pin {
  				rockchip,pins = <0 RK_PD6 2 &pcfg_pull_none>;
  			};
@@ -352,7 +352,7 @@ index 02314b8f6f..580cf7e534 100644
  		};
  
  		pwm3 {
-@@ -1164,16 +1289,31 @@
+@@ -1164,16 +1287,31 @@
  			};
  		};
  
@@ -388,7 +388,7 @@ index 02314b8f6f..580cf7e534 100644
  
  			uart2_cts: uart2-cts {
  				rockchip,pins = <0 RK_PD1 1 &pcfg_pull_none>;
-@@ -1183,5 +1323,23 @@
+@@ -1183,5 +1321,23 @@
  				rockchip,pins = <0 RK_PD0 1 &pcfg_pull_none>;
  			};
  		};
@@ -414,7 +414,7 @@ index 02314b8f6f..580cf7e534 100644
  };
 diff --git a/arch/arm/boot/dts/rk3229-cpu-opp.dtsi b/arch/arm/boot/dts/rk3229-cpu-opp.dtsi
 new file mode 100644
-index 0000000000..c9a20207d5
+index 0000000000..7b1909f32d
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-cpu-opp.dtsi
 @@ -0,0 +1,50 @@
@@ -470,10 +470,10 @@ index 0000000000..c9a20207d5
 +};
 diff --git a/arch/arm/boot/dts/rk322x-dcdc.dtsi b/arch/arm/boot/dts/rk322x-dcdc.dtsi
 new file mode 100644
-index 0000000000..06b8dd2791
+index 0000000000..6076cb1d0d
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk322x-dcdc.dtsi
-@@ -0,0 +1,173 @@
+@@ -0,0 +1,164 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +
 +/dts-v1/;
@@ -483,15 +483,6 @@ index 0000000000..06b8dd2791
 +#include "rk322x.dtsi"
 +
 +/ {
-+
-+	dc_12v: dc-12v-regulator {
-+		compatible = "regulator-fixed";
-+		regulator-name = "dc_12v";
-+		regulator-always-on;
-+		regulator-boot-on;
-+		regulator-min-microvolt = <12000000>;
-+		regulator-max-microvolt = <12000000>;
-+	};
 +
 +	vcc_host: vcc-host-regulator {
 +		compatible = "regulator-fixed";
@@ -503,30 +494,6 @@ index 0000000000..06b8dd2791
 +		regulator-always-on;
 +		regulator-boot-on;
 +		vin-supply = <&vcc_sys>;
-+	};
-+
-+	vcc_otg: vcc-otg-regulator {
-+		compatible = "regulator-fixed";
-+		enable-active-high;
-+		gpio = <&gpio3 RK_PC6 GPIO_ACTIVE_HIGH>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&otg_vbus_drv>;
-+		regulator-name = "vcc_otg_vbus";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		regulator-always-on;
-+		regulator-boot-on;
-+		vin-supply = <&vcc_sys>;
-+	};
-+
-+	vcc_sys: vcc-sys-regulator {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcc_sys";
-+		regulator-always-on;
-+		regulator-boot-on;
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		vin-supply = <&dc_12v>;
 +	};
 +
 +	vccio_1v8: vccio-1v8-regulator {
@@ -547,6 +514,21 @@ index 0000000000..06b8dd2791
 +		vin-supply = <&vcc_sys>;
 +	};
 +
++
++	vcc_otg: vcc-otg-regulator {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&gpio3 RK_PC6 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&otg_vbus_drv>;
++		regulator-name = "vcc_otg_vbus";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		regulator-always-on;
++		regulator-boot-on;
++		vin-supply = <&vcc_sys>;
++	};
++
 +	vcc_phy: vcc-phy-regulator {
 +		compatible = "regulator-fixed";
 +		enable-active-high;
@@ -556,6 +538,15 @@ index 0000000000..06b8dd2791
 +		regulator-always-on;
 +		regulator-boot-on;
 +		vin-supply = <&vccio_1v8>;
++	};
++
++	vcc_sys: vcc-sys-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc_sys";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
 +	};
 +
 +	vdd_arm: vdd-arm-regulator {
@@ -649,10 +640,10 @@ index 0000000000..06b8dd2791
 +};
 diff --git a/arch/arm/boot/dts/rk322x-box.dtsi b/arch/arm/boot/dts/rk322x-box.dtsi
 new file mode 100644
-index 0000000000..5b7af486bb
+index 0000000000..7ccfa490da
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk322x-box.dtsi
-@@ -0,0 +1,259 @@
+@@ -0,0 +1,258 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +
 +/dts-v1/;
@@ -742,8 +733,6 @@ index 0000000000..5b7af486bb
 +	non-removable;
 +	no-sdio;
 +	no-sd;
-+	mmc-ddr-1_8v;
-+	mmc-hs200-1_8v;
 +};
 +
 +&gmac {
@@ -815,8 +804,10 @@ index 0000000000..5b7af486bb
 +
 +&sdio {
 +	mmc-pwrseq = <&sdio_pwrseq>;
++	num-slots = <1>;
 +	cap-sd-highspeed;
 +	cap-sdio-irq;
++	disable-wp;
 +	keep-power-in-suspend;
 +	non-removable;
 +	no-mmc;
@@ -863,8 +854,7 @@ index 0000000000..5b7af486bb
 +
 +&uart1 {
 +	pinctrl-names = "default";
-+	pinctrl-0 = <&uart11_xfer &uart11_cts>;
-+	status = "okay";
++	pinctrl-0 = <&uart11_xfer &uart11_rts &uart11_cts>;
 +};
 +
 +&uart2 {
@@ -941,7 +931,7 @@ index 0000000000..79e2524e07
 +};
 diff --git a/arch/arm/boot/dts/rk3228a-box.dtsi b/arch/arm/boot/dts/rk3228a-box.dtsi
 new file mode 100644
-index 0000000000..2b9cb9a00c
+index 0000000000..dbd5c5dc44
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3228a-box.dtsi
 @@ -0,0 +1,12 @@
@@ -959,10 +949,10 @@ index 0000000000..2b9cb9a00c
 +};
 diff --git a/arch/arm/boot/dts/rk3229-box-a95xr1.dts b/arch/arm/boot/dts/rk3229-box-a95xr1.dts
 new file mode 100644
-index 0000000000..985b472109
+index 0000000000..b3695fb0b2
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box-a95xr1.dts
-@@ -0,0 +1,56 @@
+@@ -0,0 +1,57 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +
 +/dts-v1/;
@@ -991,6 +981,7 @@ index 0000000000..985b472109
 +};
 +
 +&emmc {
++	mmc-hs200-1_8v;
 +	status = "okay";
 +};
 +
@@ -1021,10 +1012,10 @@ index 0000000000..985b472109
 +};
 diff --git a/arch/arm/boot/dts/rk3228a-box-h96mini.dts b/arch/arm/boot/dts/rk3228a-box-h96mini.dts
 new file mode 100644
-index 0000000000..8e2ebdcc7e
+index 0000000000..17d4a64fa7
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3228a-box-h96mini.dts
-@@ -0,0 +1,68 @@
+@@ -0,0 +1,106 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +
 +/dts-v1/;
@@ -1033,6 +1024,7 @@ index 0000000000..8e2ebdcc7e
 +#include "rk3228a-box.dtsi"
 +
 +/ {
++	compatible = "eledvb,h96mini", "rockchip,rk3228a-box", "rockchip,rk3229";
 +	model = "Rockchip RK3228A Box H96 mini";
 +
 +	leds {
@@ -1052,6 +1044,7 @@ index 0000000000..8e2ebdcc7e
 +};
 +
 +&emmc {
++	mmc-hs200-1_8v;
 +	status = "okay";
 +};
 +
@@ -1070,6 +1063,20 @@ index 0000000000..8e2ebdcc7e
 +			rockchip,pins = <0 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
 +	};
++
++	bt {
++		bt_host_wake_l: bt-host-wake-l {
++			rockchip,pins = <3 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		bt_reg_on_h: bt-reg-on-h {
++			rockchip,pins = <2 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		bt_wake_l: bt-wake-l {
++			rockchip,pins = <3 RK_PD3 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
 +};
 +
 +&power_key {
@@ -1077,10 +1084,13 @@ index 0000000000..8e2ebdcc7e
 +};
 +
 +&sdio {
++	#address-cells = <1>;
++	#size-cells = <0>;
 +	status = "okay";
 +
 +	brcmf: wifi@1 {
 +		compatible = "brcm,bcm4329-fmac";
++		reg = <1>;
 +		interrupt-parent = <&gpio0>;
 +		interrupts = <RK_PD4 GPIO_ACTIVE_HIGH>;
 +		interrupt-names = "host-wake";
@@ -1090,15 +1100,34 @@ index 0000000000..8e2ebdcc7e
 +	};
 +};
 +
++&sdmmc {
++	disable-wp;
++	status = "okay";
++};
++
++&uart1 {
++	status = "okay";
++
++	bluetooth {
++		compatible = "brcm,bcm4330-bt";
++		host-wakeup-gpios = <&gpio3 RK_PD2 GPIO_ACTIVE_HIGH>;
++		device-wakeup-gpios = <&gpio3 RK_PD3 GPIO_ACTIVE_HIGH>;
++		shutdown-gpios = <&gpio2 RK_PD5 GPIO_ACTIVE_HIGH>;
++		max-speed = <4000000>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&bt_reg_on_h &bt_host_wake_l &bt_wake_l>;
++	};
++};
++
 +&usb_otg {
 +        dr_mode = "host";
 +};
 diff --git a/arch/arm/boot/dts/rk3228a-box.dts b/arch/arm/boot/dts/rk3228a-box.dts
 new file mode 100644
-index 0000000000..43ce92caac
+index 0000000000..09e30e81c5
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3228a-box.dts
-@@ -0,0 +1,29 @@
+@@ -0,0 +1,47 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +
 +/dts-v1/;
@@ -1106,6 +1135,20 @@ index 0000000000..43ce92caac
 +
 +/ {
 +	model = "Rockchip RK3228A Box";
++
++	leds {
++		compatible = "gpio-leds";
++
++		led_blue {
++			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
++			default-state = "on";
++		};
++
++		led_red {
++			gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++	};
 +
 +};
 +
@@ -1125,15 +1168,19 @@ index 0000000000..43ce92caac
 +	status = "okay";
 +};
 +
++&uart1 {
++	status = "okay";
++};
++
 +&usb_otg {
 +        dr_mode = "host";
 +};
 diff --git a/arch/arm/boot/dts/rk3229-box.dts b/arch/arm/boot/dts/rk3229-box.dts
 new file mode 100644
-index 0000000000..1631e26dbc
+index 0000000000..5df7205274
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box.dts
-@@ -0,0 +1,32 @@
+@@ -0,0 +1,50 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +
 +/dts-v1/;
@@ -1141,6 +1188,20 @@ index 0000000000..1631e26dbc
 +
 +/ {
 +	model = "Rockchip RK3229 Box";
++
++	leds {
++		compatible = "gpio-leds";
++
++		led_green {
++			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
++			default-state = "on";
++		};
++
++		led_red {
++			gpios = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++	};
 +};
 +
 +&emmc {
@@ -1163,20 +1224,23 @@ index 0000000000..1631e26dbc
 +	status = "okay";
 +};
 +
++&uart1 {
++	status = "okay";
++};
++
 +&usb_otg {
 +	dr_mode = "host";
 +};
 diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 08011dc8c7..ee51920471 100644
+index 08011dc8c7..4b8cb78bdd 100644
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
-@@ -920,7 +920,11 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += \
- 	rk3188-bqedison2qc.dtb \
+@@ -921,6 +921,10 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += \
  	rk3188-px3-evb.dtb \
  	rk3188-radxarock.dtb \
+ 	rk3228-evb.dtb \
 +	rk3228a-box.dtb \
 +	rk3228a-box-h96mini.dtb \
- 	rk3228-evb.dtb \
 +	rk3229-box.dtb \
 +	rk3229-box-a95xr1.dtb \
  	rk3229-evb.dtb \

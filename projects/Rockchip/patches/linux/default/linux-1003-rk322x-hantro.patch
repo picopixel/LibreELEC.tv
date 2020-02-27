@@ -78,10 +78,10 @@ index 339252d9c5..79fae3bde2 100644
  - clocks: phandle to VPU aclk, hclk clocks
  - clock-names: should be "aclk" and "hclk"
 diff --git a/arch/arm/boot/dts/rk322x.dtsi b/arch/arm/boot/dts/rk322x.dtsi
-index 0857e4d79e..bdff1fdf5d 100644
+index 28d9c7f6fd..cb04b18c35 100644
 --- a/arch/arm/boot/dts/rk322x.dtsi
 +++ b/arch/arm/boot/dts/rk322x.dtsi
-@@ -643,6 +643,18 @@
+@@ -649,6 +649,18 @@
  		resets = <&cru SRST_GPU_A>;
  	};
  
@@ -89,7 +89,7 @@ index 0857e4d79e..bdff1fdf5d 100644
 +		compatible = "rockchip,rk322x-vpu";
 +		reg = <0x20020000 0x800>;
 +		interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
-+			    <GIC_SPI  9 IRQ_TYPE_LEVEL_HIGH>;
++			     <GIC_SPI  9 IRQ_TYPE_LEVEL_HIGH>;
 +		interrupt-names = "vepu", "vdpu";
 +		clocks = <&cru ACLK_VPU>, <&cru HCLK_VPU>;
 +		clock-names = "aclk", "hclk";
