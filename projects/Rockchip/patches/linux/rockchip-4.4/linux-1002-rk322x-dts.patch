@@ -121,10 +121,10 @@ index 0000000000..98b01e5947
 +};
 diff --git a/arch/arm/boot/dts/rk322x-box.dtsi b/arch/arm/boot/dts/rk322x-box.dtsi
 new file mode 100644
-index 0000000000..e5ae8427bc
+index 0000000000..a25074b1c1
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk322x-box.dtsi
-@@ -0,0 +1,517 @@
+@@ -0,0 +1,578 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -150,6 +150,7 @@ index 0000000000..e5ae8427bc
 +	aliases {
 +		serial0 = &uart1;
 +		serial1 = &uart0;
++		ethernet0 = &gmac;
 +	};
 +
 +
@@ -236,6 +237,13 @@ index 0000000000..e5ae8427bc
 +		};
 +	};
 +
++	sdio_pwrseq: sdio-pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		pinctrl-names = "default";
++		pinctrl-0 = <&wifi_enable_h>;
++		reset-gpios = <&gpio2 RK_PD2 GPIO_ACTIVE_LOW>;
++	};
++
 +	spdif_out: spdif-out {
 +		status = "okay";
 +		compatible = "linux,spdif-dit";
@@ -320,6 +328,45 @@ index 0000000000..e5ae8427bc
 +		linux,rc-map-name = "rc-rktvbox";
 +		pinctrl-0 = <&ir_int>;
 +		pinctrl-names = "default";
++		status = "okay";
++	};
++
++	gpio_keys {
++		compatible = "gpio-keys";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		autorepeat;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&pwr_key>;
++
++		power_key: power-key {
++			label = "GPIO Key Power";
++			gpios = <&gpio3 RK_PD1 GPIO_ACTIVE_HIGH>;
++			linux,code = <KEY_POWER>;
++			debounce-interval = <100>;
++			wakeup-source;
++			status = "okay";
++		};
++	};
++
++	wifi: wireless-wlan {
++		compatible = "wlan-platdata";
++		rockchip,grf = <&grf>;
++		wifi_chip_type = "[00]";
++		sdio_vref = <3300>;
++		WIFI,host_wake_irq = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
++		status = "disabled";
++	};
++
++	bluetooth: wireless-bluetooth {
++		compatible = "bluetooth-platdata";
++		uart_rts_gpios = <&gpio3 RK_PA6 GPIO_ACTIVE_LOW>;
++		pinctrl-names = "default", "rts_gpio";
++		pinctrl-0 = <&uart11_rts>;
++		pinctrl-1 = <&uart11_rts_gpio>;
++		BT,power_gpio = <&gpio2 RK_PD5 GPIO_ACTIVE_HIGH>;
++		BT,wake_host_irq = <&gpio3 RK_PD3 GPIO_ACTIVE_HIGH>;
 +		status = "disabled";
 +	};
 +
@@ -382,8 +429,6 @@ index 0000000000..e5ae8427bc
 +	mali-supply = <&vdd_log>;
 +};
 +
-+
-+
 +&hdmi {
 +	status = "okay";
 +	#sound-dai-cells = <0>;
@@ -407,14 +452,15 @@ index 0000000000..e5ae8427bc
 +};
 +
 +&emmc {
-+	broken-cd;
 +	bus-width = <8>;
++	num-slots = <1>;
++	max-frequency = <150000000>;
++	broken-cd;
 +	cap-mmc-highspeed;
-+	mmc-hs200-1_8v;
-+	supports-emmc;
 +	disable-wp;
 +	non-removable;
-+	num-slots = <1>;
++	supports-emmc;
++	/delete-property/ clock-frequency;
 +	/delete-property/ default-sample-phase;
 +	/delete-property/ pinctrl-names;
 +	/delete-property/ pinctrl-0;
@@ -422,26 +468,33 @@ index 0000000000..e5ae8427bc
 +
 +&sdmmc {
 +	bus-width = <4>;
-+	cap-sd-highspeed;
 +	card-detect-delay = <200>;
-+	disable-wp;
-+	max-frequency = <50000000>;
++	max-frequency = <150000000>;
 +	num-slots = <1>;
-+	supports-sd;
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&sdmmc_pwr &sdmmc_clk &sdmmc_cmd &sdmmc_bus4>;
++	cap-sd-highspeed;
++	disable-wp;
++	sd-uhs-sdr50;
++	sd-uhs-sdr104;
++	supports-sd;
++	status = "okay";
 +};
 +
 +&sdio {
 +	bus-width = <4>;
-+	cap-mmc-highspeed;
++	max-frequency = <150000000>;
++	mmc-pwrseq = <&sdio_pwrseq>;
 +	cap-sd-highspeed;
 +	cap-sdio-irq;
-+	non-removable;
++	disable-wp;
 +	ignore-pm-notify;
 +	keep-power-in-suspend;
-+	max-frequency = <150000000>;
++	non-removable;
++	sd-uhs-sdr50;
++	sd-uhs-sdr104;
 +	supports-sdio;
++	status = "okay";
 +};
 +
 +&i2s0 {
@@ -466,25 +519,25 @@ index 0000000000..e5ae8427bc
 +&pinctrl {
 +	keys {
 +		pwr_key: pwr-key {
-+			rockchip,pins = <3 23 RK_FUNC_GPIO &pcfg_pull_up>;
++			rockchip,pins = <3 RK_PC7 RK_FUNC_GPIO &pcfg_pull_up>;
 +		};
 +	};
 +
 +	sdmmc {
 +		sdmmc_pwr: sdmmc-pwr {
-+			rockchip,pins = <1 14 RK_FUNC_GPIO &pcfg_pull_none>;
++			rockchip,pins = <1 RK_PB6 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
 +	};
 +
 +	sdio-pwrseq {
 +		wifi_enable_h: wifi-enable-h {
-+			rockchip,pins = <2 26 RK_FUNC_GPIO &pcfg_pull_none>;
++			rockchip,pins = <2 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
 +	};
 +
 +	usb {
 +		host_vbus_drv: host-vbus-drv {
-+			rockchip,pins = <3 20 RK_FUNC_GPIO &pcfg_pull_none>;
++			rockchip,pins = <3 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
 +
 +		otg_vbus_drv: otg-vbus-drv {
@@ -522,7 +575,6 @@ index 0000000000..e5ae8427bc
 +		)
 +	>;
 +};
-+
 +
 +&tsadc {
 +	rockchip,hw-tshut-mode = <0>; /* tshut mode 0:CRU 1:GPIO */
@@ -596,6 +648,11 @@ index 0000000000..e5ae8427bc
 +	status = "okay";
 +};
 +
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart11_xfer &uart11_cts>;
++};
++
 +&usb_host0_ehci {
 +	status = "okay";
 +};
@@ -618,6 +675,10 @@ index 0000000000..e5ae8427bc
 +
 +&usb_host2_ohci {
 +	status = "okay";
++};
++
++&usb_otg {
++        dr_mode = "host";
 +};
 +
 +&vop {
@@ -741,10 +802,10 @@ index 0000000000..8a4b25eeae
 +};
 diff --git a/arch/arm/boot/dts/rk3228a-box-h96mini.dts b/arch/arm/boot/dts/rk3228a-box-h96mini.dts
 new file mode 100644
-index 0000000000..9682f8c2d7
+index 0000000000..37f2ddd383
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3228a-box-h96mini.dts
-@@ -0,0 +1,151 @@
+@@ -0,0 +1,96 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -776,52 +837,6 @@ index 0000000000..9682f8c2d7
 +		};
 +	};
 +
-+	wireless-wlan {
-+		compatible = "wlan-platdata";
-+		rockchip,grf = <&grf>;
-+		wifi_chip_type = "ap6330";
-+		sdio_vref = <3300>;
-+		WIFI,host_wake_irq = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
-+		status = "okay";
-+	};
-+
-+	wireless-bluetooth {
-+		compatible = "bluetooth-platdata";
-+		uart_rts_gpios = <&gpio3 6 GPIO_ACTIVE_LOW>;
-+		pinctrl-names = "default", "rts_gpio";
-+		pinctrl-0 = <&uart11_rts>;
-+		pinctrl-1 = <&uart11_rts_gpio>;
-+		BT,power_gpio = <&gpio2 29 GPIO_ACTIVE_HIGH>;
-+		BT,wake_gpio = <&gpio3 27 GPIO_ACTIVE_HIGH>;
-+		BT,wake_host_irq = <&gpio3 26 GPIO_ACTIVE_HIGH>;
-+		status = "okay";
-+	};
-+
-+	gpio_keys {
-+		compatible = "gpio-keys";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		autorepeat;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwr_key>;
-+
-+		power_key: power-key {
-+			label = "GPIO Key Power";
-+			gpios = <&gpio3 RK_PC7 GPIO_ACTIVE_LOW>;
-+			linux,code = <KEY_POWER>;
-+			debounce-interval = <100>;
-+			wakeup-source;
-+			status = "okay";
-+		};
-+	};
-+
-+	sdio_pwrseq: sdio-pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&wifi_enable_h>;
-+		reset-gpios = <&gpio2 26 GPIO_ACTIVE_LOW>; /* GPIO2_D2 */
-+	};
 +};
 +
 +&dram_timing {
@@ -835,6 +850,10 @@ index 0000000000..9682f8c2d7
 +                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
 +};
 +
++&bluetooth {
++	status = "okay";
++};
++
 +&dmc {
 +	system-status-freq = <
 +		/*system status         freq(KHz)*/
@@ -842,8 +861,6 @@ index 0000000000..9682f8c2d7
 +		SYS_STATUS_VIDEO_4K	700000
 +		SYS_STATUS_VIDEO_4K_10B 800000
 +	>;
-+
-+	dram_freq = <300000000>;
 +	status = "okay";
 +};
 +
@@ -864,15 +881,7 @@ index 0000000000..9682f8c2d7
 +};
 +
 +&emmc {
-+	clock-frequency = <37500000>;
-+	max-frequency  = <37500000>;
-+	status = "okay";
-+};
-+
-+&sdio {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	mmc-pwrseq = <&sdio_pwrseq>;
++	mmc-hs200-1_8v;
 +	status = "okay";
 +};
 +
@@ -881,27 +890,24 @@ index 0000000000..9682f8c2d7
 +	rx_delay = <0x11>;
 +};
 +
-+&usb_otg {
-+        dr_mode = "host";
-+};
-+
 +&ir_receiver {
 +	linux,rc-map-name = "rc-trn9";
-+	status = "okay";
 +};
 +
 +&uart1 {
++	status = "okay";
++};
 +
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&uart11_xfer &uart11_cts>;
++&wifi {
++	wifi_chip_type = "ap6330";
 +	status = "okay";
 +};
 diff --git a/arch/arm/boot/dts/rk3228b-box-v88mars-II.dts b/arch/arm/boot/dts/rk3228b-box-v88mars-II.dts
 new file mode 100644
-index 0000000000..7089495f69
+index 0000000000..96f3536073
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3228b-box-v88mars-II.dts
-@@ -0,0 +1,104 @@
+@@ -0,0 +1,69 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -932,22 +938,6 @@ index 0000000000..7089495f69
 +                };
 +        };
 +
-+
-+	wireless-wlan {
-+		compatible = "wlan-platdata";
-+		rockchip,grf = <&grf>;
-+		sdio_vref = <3300>;
-+		WIFI,host_wake_irq = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
-+		status = "okay";
-+	};
-+
-+
-+	sdio_pwrseq: sdio-pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&wifi_enable_h>;
-+		reset-gpios = <&gpio2 26 GPIO_ACTIVE_LOW>; /* GPIO2_D2 */
-+	};
 +};
 +
 +&dram_timing {
@@ -962,7 +952,6 @@ index 0000000000..7089495f69
 +		SYS_STATUS_VIDEO_4K_10B 800000
 +	>;
 +
-+	dram_freq = <300000000>;
 +	status = "okay";
 +};
 +
@@ -980,38 +969,20 @@ index 0000000000..7089495f69
 +
 +};
 +
-+
 +&nandc {
 +	status = "okay";
 +};
 +
-+&sdmmc {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	status = "okay";
-+};
-+
-+&sdio {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	mmc-pwrseq = <&sdio_pwrseq>;
-+	status = "okay";
-+};
-+
-+
-+&usb_otg {
-+        dr_mode = "host";
-+};
-+
-+&ir_receiver {
++&wifi {
++	wifi_chip_type = "ssv6051";
 +	status = "okay";
 +};
 diff --git a/arch/arm/boot/dts/rk3229-box-a95xr1.dts b/arch/arm/boot/dts/rk3229-box-a95xr1.dts
 new file mode 100644
-index 0000000000..4c9daf3740
+index 0000000000..fe31b0934f
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box-a95xr1.dts
-@@ -0,0 +1,120 @@
+@@ -0,0 +1,68 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -1042,45 +1013,11 @@ index 0000000000..4c9daf3740
 +		};
 +	};
 +
-+	wireless-wlan {
-+		compatible = "wlan-platdata";
-+		rockchip,grf = <&grf>;
-+		wifi_chip_type = "ssv6051";
-+		sdio_vref = <3300>;
-+		WIFI,host_wake_irq = <&gpio0 28 GPIO_ACTIVE_HIGH>;
-+		status = "okay";
-+	};
-+
-+	gpio_keys {
-+		compatible = "gpio-keys";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		autorepeat;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwr_key>;
-+
-+		power_key: power-key {
-+			label = "GPIO Key Power";
-+			gpios = <&gpio0 35 GPIO_ACTIVE_HIGH>;
-+			linux,code = <KEY_POWER>;
-+			debounce-interval = <100>;
-+			wakeup-source;
-+			status = "okay";
-+		};
-+	};
-+
-+	sdio_pwrseq: sdio-pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&wifi_enable_h>;
-+		reset-gpios = <&gpio2 26 GPIO_ACTIVE_LOW>; /* GPIO2_D2 */
-+	};
 +};
 +
 +&dram_timing {
-+                sr_idle = <0x0>;
-+                pd_idle = <0x0>;
++                sr_idle = <0>;
++                pd_idle = <0>;
 +                ddr3_drv = <DDR3_DS_34ohm>;
 +                ddr3_odt = <DDR3_ODT_40ohm>;
 +                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_34ohm>;
@@ -1097,26 +1034,11 @@ index 0000000000..4c9daf3740
 +		SYS_STATUS_VIDEO_4K_10B 800000
 +	>;
 +
-+	dram_freq = <786000000>;
 +	status = "okay";
 +};
 +
 +&emmc {
-+	clock-frequency = <100000000>;
-+	max-frequency  = <100000000>;
-+	status = "okay";
-+};
-+
-+&sdmmc {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	status = "okay";
-+};
-+
-+&sdio {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	mmc-pwrseq = <&sdio_pwrseq>;
++	mmc-hs200-1_8v;
 +	status = "okay";
 +};
 +
@@ -1125,19 +1047,16 @@ index 0000000000..4c9daf3740
 +	rx_delay = <0x11>;
 +};
 +
-+&usb_otg {
-+        dr_mode = "host";
-+};
-+
-+&ir_receiver {
++&wifi {
++	wifi_chip_type = "ssv6051";
 +	status = "okay";
 +};
 diff --git a/arch/arm/boot/dts/rk3229-box-d88.dts b/arch/arm/boot/dts/rk3229-box-d88.dts
 new file mode 100644
-index 0000000000..d8e236f30f
+index 0000000000..3ea6747ef0
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box-d88.dts
-@@ -0,0 +1,134 @@
+@@ -0,0 +1,84 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -1163,14 +1082,6 @@ index 0000000000..d8e236f30f
 +
 +        };
 +
-+	wireless-wlan {
-+		compatible = "wlan-platdata";
-+		rockchip,grf = <&grf>;
-+		sdio_vref = <3300>;
-+		WIFI,host_wake_irq = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
-+		status = "okay";
-+	};
-+
 +	wireless-bluetooth {
 +		compatible = "bluetooth-platdata";
 +		uart_rts_gpios = <&gpio3 6 GPIO_ACTIVE_LOW>;
@@ -1183,40 +1094,15 @@ index 0000000000..d8e236f30f
 +		status = "okay";
 +	};
 +
-+	gpio_keys {
-+		compatible = "gpio-keys";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		autorepeat;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwr_key>;
-+
-+		power_key: power-key {
-+			label = "GPIO Key Power";
-+			gpios = <&gpio3 RK_PC7 GPIO_ACTIVE_LOW>;
-+			linux,code = <KEY_POWER>;
-+			debounce-interval = <100>;
-+			wakeup-source;
-+			status = "okay";
-+		};
-+	};
-+
-+	sdio_pwrseq: sdio-pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&wifi_enable_h>;
-+		reset-gpios = <&gpio2 26 GPIO_ACTIVE_LOW>; /* GPIO2_D2 */
-+	};
 +};
 +
-+&gmac {
-+	status = "disabled";
++&bluetooth {
++	status = "okay";
 +};
 +
 +&dram_timing {
-+                sr_idle = <0x18>;
-+                pd_idle = <0x20>;
++                sr_idle = <24>;
++                pd_idle = <32>;
 +                ddr3_drv = <DDR3_DS_40ohm>;
 +                ddr3_odt = <DDR3_ODT_120ohm>;
 +                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
@@ -1233,7 +1119,6 @@ index 0000000000..d8e236f30f
 +		SYS_STATUS_VIDEO_4K_10B	800000
 +	>;
 +
-+	dram_freq = <786000000>;
 +	status = "okay";
 +};
 +
@@ -1241,27 +1126,7 @@ index 0000000000..d8e236f30f
 +	status = "okay";
 +};
 +
-+&sdmmc {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	status = "okay";
-+};
-+
-+&sdio {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	mmc-pwrseq = <&sdio_pwrseq>;
-+	status = "okay";
-+};
-+
-+
-+&usb_otg {
-+        dr_mode = "host";
-+};
-+
 +&uart1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&uart11_xfer &uart11_cts>;
 +	status="okay";
 +};
 +
@@ -1272,12 +1137,16 @@ index 0000000000..d8e236f30f
 +&route_tve {
 +	status = "disabled";
 +};
++
++&wifi {
++	status = "okay";
++};
 diff --git a/arch/arm/boot/dts/rk3229-box-hk1mini.dts b/arch/arm/boot/dts/rk3229-box-hk1mini.dts
 new file mode 100644
-index 0000000000..a86bc01297
+index 0000000000..9635c48b9d
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box-hk1mini.dts
-@@ -0,0 +1,245 @@
+@@ -0,0 +1,192 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -1308,45 +1177,11 @@ index 0000000000..a86bc01297
 +                };
 +        };
 +
-+	wireless-wlan {
-+		compatible = "wlan-platdata";
-+		rockchip,grf = <&grf>;
-+		wifi_chip_type = "ssv6051";
-+		sdio_vref = <3300>;
-+		WIFI,host_wake_irq = <&gpio0 28 GPIO_ACTIVE_HIGH>;
-+		status = "okay";
-+	};
-+
-+	gpio_keys {
-+		compatible = "gpio-keys";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		autorepeat;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwr_key>;
-+
-+		power_key: power-key {
-+			label = "GPIO Key Power";
-+			gpios = <&gpio0 35 GPIO_ACTIVE_HIGH>;
-+			linux,code = <KEY_POWER>;
-+			debounce-interval = <100>;
-+			wakeup-source;
-+			status = "okay";
-+		};
-+	};
-+
-+	sdio_pwrseq: sdio-pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&wifi_enable_h>;
-+		reset-gpios = <&gpio2 26 GPIO_ACTIVE_LOW>; /* GPIO2_D2 */
-+	};
 +};
 +
 +&dram_timing {
-+                sr_idle = <0x18>;
-+                pd_idle = <0x20>;
++                sr_idle = <24>;
++                pd_idle = <32>;
 +                ddr3_drv = <DDR3_DS_40ohm>;
 +                ddr3_odt = <DDR3_ODT_120ohm>;
 +                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
@@ -1365,34 +1200,10 @@ index 0000000000..a86bc01297
 +		SYS_STATUS_VIDEO_4K	800000
 +		SYS_STATUS_VIDEO_4K_10B 800000
 +	>;
-+
-+	dram_freq = <800000000>;
 +	status = "okay";
 +};
 +
 +&nandc {
-+	status = "okay";
-+};
-+
-+&sdmmc {
-+	clock-frequency = <50000000>;
-+	max-frequency = <50000000>;
-+	status = "okay";
-+};
-+
-+&sdio {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	mmc-pwrseq = <&sdio_pwrseq>;
-+	status = "okay";
-+};
-+
-+
-+&usb_otg {
-+        dr_mode = "host";
-+};
-+
-+&ir_receiver {
 +	status = "okay";
 +};
 +
@@ -1523,12 +1334,17 @@ index 0000000000..a86bc01297
 +		opp-microvolt-L0 = <1100000>;
 +	};
 +};
++
++&wifi {
++	wifi_chip_type = "ssv6051";
++	status = "okay";
++};
 diff --git a/arch/arm/boot/dts/rk3229-box-ntn8.dts b/arch/arm/boot/dts/rk3229-box-ntn8.dts
 new file mode 100644
-index 0000000000..88bd6e173b
+index 0000000000..5cc114257e
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box-ntn8.dts
-@@ -0,0 +1,139 @@
+@@ -0,0 +1,76 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -1558,57 +1374,11 @@ index 0000000000..88bd6e173b
 +			linux,default-trigger = "rc-feedback";
 +		};
 +	};
-+
-+	wireless-wlan {
-+		compatible = "wlan-platdata";
-+		rockchip,grf = <&grf>;
-+		wifi_chip_type = "ap6212";
-+		sdio_vref = <3300>;
-+		WIFI,host_wake_irq = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
-+		status = "okay";
-+	};
-+
-+	wireless-bluetooth {
-+		compatible = "bluetooth-platdata";
-+		uart_rts_gpios = <&gpio3 6 GPIO_ACTIVE_LOW>;
-+		pinctrl-names = "default", "rts_gpio";
-+		pinctrl-0 = <&uart11_rts>;
-+		pinctrl-1 = <&uart11_rts_gpio>;
-+		BT,power_gpio = <&gpio2 29 GPIO_ACTIVE_HIGH>;
-+		BT,wake_host_irq = <&gpio3 26 GPIO_ACTIVE_HIGH>;
-+		status = "okay";
-+	};
-+
-+	gpio_keys {
-+		compatible = "gpio-keys";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		autorepeat;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwr_key>;
-+
-+		power_key: power-key {
-+			label = "GPIO Key Power";
-+			gpios = <&gpio3 RK_PC7 GPIO_ACTIVE_LOW>;
-+			linux,code = <KEY_POWER>;
-+			debounce-interval = <100>;
-+			wakeup-source;
-+			status = "okay";
-+		};
-+	};
-+
-+	sdio_pwrseq: sdio-pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&wifi_enable_h>;
-+		reset-gpios = <&gpio2 26 GPIO_ACTIVE_LOW>; /* GPIO2_D2 */
-+	};
 +};
 +
 +&dram_timing {
-+                sr_idle = <0xc>;
-+                pd_idle = <0x20>;
++                sr_idle = <12>;
++                pd_idle = <32>;
 +                ddr3_drv = <DDR3_DS_40ohm>;
 +                ddr3_odt = <DDR3_ODT_120ohm>;
 +                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
@@ -1625,26 +1395,11 @@ index 0000000000..88bd6e173b
 +		SYS_STATUS_VIDEO_4K_10B 800000
 +	>;
 +
-+	dram_freq = <786000000>;
 +	status = "okay";
 +};
 +
 +&emmc {
-+	clock-frequency = <125000000>;
-+	max-frequency  = <125000000>;
-+	status = "okay";
-+};
-+
-+&sdmmc {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	status = "okay";
-+};
-+
-+&sdio {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	mmc-pwrseq = <&sdio_pwrseq>;
++	mmc-hs200-1_8v;
 +	status = "okay";
 +};
 +
@@ -1653,27 +1408,25 @@ index 0000000000..88bd6e173b
 +	rx_delay = <0x11>;
 +};
 +
-+&usb_otg {
-+        dr_mode = "host";
-+};
-+
 +&ir_receiver {
 +	linux,rc-map-name = "rc-trn9";
-+	status = "okay";
 +};
 +
 +&uart1 {
++	status = "okay";
++};
 +
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&uart11_xfer &uart11_cts>;
++&wifi {
++	wifi_chip_type = "ap6212";
++	sdio_vref = <3300>;
 +	status = "okay";
 +};
 diff --git a/arch/arm/boot/dts/rk3229-box-v884k.dts b/arch/arm/boot/dts/rk3229-box-v884k.dts
 new file mode 100644
-index 0000000000..d306c7a32f
+index 0000000000..e9cadf4c7c
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box-v884k.dts
-@@ -0,0 +1,109 @@
+@@ -0,0 +1,57 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -1698,46 +1451,12 @@ index 0000000000..d306c7a32f
 +                };
 +        };
 +
-+
-+	wireless-wlan {
-+		compatible = "wlan-platdata";
-+		rockchip,grf = <&grf>;
-+		sdio_vref = <3300>;
-+		WIFI,host_wake_irq = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
-+		status = "okay";
-+	};
-+
-+	gpio_keys {
-+		compatible = "gpio-keys";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		autorepeat;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwr_key>;
-+
-+		power_key: power-key {
-+			label = "GPIO Key Power";
-+			gpios = <&gpio3 RK_PC7 GPIO_ACTIVE_LOW>;
-+			linux,code = <KEY_POWER>;
-+			debounce-interval = <100>;
-+			wakeup-source;
-+			status = "okay";
-+		};
-+	};
-+
-+	sdio_pwrseq: sdio-pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&wifi_enable_h>;
-+		reset-gpios = <&gpio2 26 GPIO_ACTIVE_LOW>; /* GPIO2_D2 */
-+	};
 +};
 +
 +&dram_timing {
-+                dram_spd_bin = <0x15>;
-+		sr_idle = <0xc>;
-+                pd_idle = <0x20>;
++                dram_spd_bin = <21>;
++		sr_idle = <12>;
++                pd_idle = <32>;
 +                ddr3_drv = <DDR3_DS_40ohm>;
 +                ddr3_odt = <DDR3_ODT_120ohm>;
 +                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
@@ -1754,7 +1473,6 @@ index 0000000000..d306c7a32f
 +		SYS_STATUS_VIDEO_4K_10B	800000
 +	>;
 +
-+	dram_freq = <786000000>;
 +	status = "okay";
 +};
 +
@@ -1762,33 +1480,16 @@ index 0000000000..d306c7a32f
 +	status = "okay";
 +};
 +
-+&sdmmc {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	status = "okay";
-+};
-+
-+&sdio {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	mmc-pwrseq = <&sdio_pwrseq>;
-+	status = "okay";
-+};
-+
-+
-+&usb_otg {
-+        dr_mode = "host";
-+};
-+
-+&ir_receiver {
++&wifi {
++	wifi_chip_type = "ssv6051";
 +	status = "okay";
 +};
 diff --git a/arch/arm/boot/dts/rk3229-box-v88mars.dts b/arch/arm/boot/dts/rk3229-box-v88mars.dts
 new file mode 100644
-index 0000000000..1a92b7d5c5
+index 0000000000..a44ba9efd0
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box-v88mars.dts
-@@ -0,0 +1,92 @@
+@@ -0,0 +1,40 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -1818,41 +1519,6 @@ index 0000000000..1a92b7d5c5
 +                        linux,default-trigger = "rc-feedback";
 +                };
 +        };
-+
-+
-+	wireless-wlan {
-+		compatible = "wlan-platdata";
-+		rockchip,grf = <&grf>;
-+		sdio_vref = <3300>;
-+		WIFI,host_wake_irq = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
-+		status = "okay";
-+	};
-+
-+	gpio_keys {
-+		compatible = "gpio-keys";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		autorepeat;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwr_key>;
-+
-+		power_key: power-key {
-+			label = "GPIO Key Power";
-+			gpios = <&gpio3 RK_PC7 GPIO_ACTIVE_LOW>;
-+			linux,code = <KEY_POWER>;
-+			debounce-interval = <100>;
-+			wakeup-source;
-+			status = "okay";
-+		};
-+	};
-+
-+	sdio_pwrseq: sdio-pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&wifi_enable_h>;
-+		reset-gpios = <&gpio2 26 GPIO_ACTIVE_LOW>; /* GPIO2_D2 */
-+	};
 +};
 +
 +
@@ -1860,33 +1526,16 @@ index 0000000000..1a92b7d5c5
 +	status = "okay";
 +};
 +
-+&sdmmc {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	status = "okay";
-+};
-+
-+&sdio {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	mmc-pwrseq = <&sdio_pwrseq>;
-+	status = "okay";
-+};
-+
-+
-+&usb_otg {
-+        dr_mode = "host";
-+};
-+
-+&ir_receiver {
++&wifi {
++	wifi_chip_type = "ssv6051";
 +	status = "okay";
 +};
 diff --git a/arch/arm/boot/dts/rk3228b-box-mkv809vii.dts b/arch/arm/boot/dts/rk3228b-box-mkv809vii.dts
 new file mode 100644
-index 0000000000..cee27fef1a
+index 0000000000..550b7c5670
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3228b-box-mkv809vii.dts
-@@ -0,0 +1,254 @@
+@@ -0,0 +1,189 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -2019,55 +1668,10 @@ index 0000000000..cee27fef1a
 +
 +        };
 +
-+	wireless-wlan {
-+		compatible = "wlan-platdata";
-+		rockchip,grf = <&grf>;
-+		sdio_vref = <3300>;
-+		WIFI,host_wake_irq = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
-+		status = "okay";
-+	};
-+
-+	wireless-bluetooth {
-+		compatible = "bluetooth-platdata";
-+		uart_rts_gpios = <&gpio3 6 GPIO_ACTIVE_LOW>;
-+		pinctrl-names = "default", "rts_gpio";
-+		pinctrl-0 = <&uart11_rts>;
-+		pinctrl-1 = <&uart11_rts_gpio>;
-+		BT,power_gpio = <&gpio2 29 GPIO_ACTIVE_HIGH>;
-+		BT,wake_gpio = <&gpio3 27 GPIO_ACTIVE_HIGH>;
-+		BT,wake_host_irq = <&gpio3 26 GPIO_ACTIVE_HIGH>;
-+		status = "okay";
-+	};
-+
-+	gpio_keys {
-+		compatible = "gpio-keys";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		autorepeat;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwr_key>;
-+
-+		power_key: power-key {
-+			label = "GPIO Key Power";
-+			gpios = <&gpio3 RK_PC7 GPIO_ACTIVE_LOW>;
-+			linux,code = <KEY_POWER>;
-+			debounce-interval = <100>;
-+			wakeup-source;
-+			status = "okay";
-+		};
-+	};
-+
-+	sdio_pwrseq: sdio-pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&wifi_enable_h>;
-+		reset-gpios = <&gpio2 26 GPIO_ACTIVE_LOW>; /* GPIO2_D2 */
-+	};
 +};
 +
-+&gmac {
-+	status = "disabled";
++&bluetooth {
++	status = "okay";
 +};
 +
 +&dram_timing {
@@ -2089,34 +1693,12 @@ index 0000000000..cee27fef1a
 +		SYS_STATUS_VIDEO_4K_10B	456000
 +	>;
 +
-+	dram_freq = <456000000>;
 +	status = "okay";
 +};
 +
 +
 +&emmc {
-+	clock-frequency = <37500000>;
-+	max-frequency  = <37500000>;
-+	/delete-property/ mmc-hs200-1_8v;
 +	status = "okay";
-+};
-+
-+&sdmmc {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	status = "okay";
-+};
-+
-+&sdio {
-+	clock-frequency = <37500000>;
-+	max-frequency = <37500000>;
-+	mmc-pwrseq = <&sdio_pwrseq>;
-+	status = "okay";
-+};
-+
-+
-+&usb_otg {
-+        dr_mode = "host";
 +};
 +
 +&cru {
@@ -2129,8 +1711,6 @@ index 0000000000..cee27fef1a
 +};
 +
 +&uart1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&uart11_xfer &uart11_cts>;
 +	status="okay";
 +};
 +
@@ -2140,4 +1720,8 @@ index 0000000000..cee27fef1a
 +
 +&route_tve {
 +	status = "disabled";
++};
++
++&wifi {
++	status = "okay";
 +};
