@@ -6,6 +6,7 @@ This is a SoC device for RK3328
 
 * `PROJECT=Rockchip DEVICE=RK3328 ARCH=arm UBOOT_SYSTEM=box make image`
 * `PROJECT=Rockchip DEVICE=RK3328 ARCH=arm UBOOT_SYSTEM=box-trn9 make image`
+* `PROJECT=Rockchip DEVICE=RK3328 ARCH=arm UBOOT_SYSTEM=box-v88miniIII make image`
 * `PROJECT=Rockchip DEVICE=RK3328 ARCH=arm UBOOT_SYSTEM=box-z28 make image`
 * `PROJECT=Rockchip DEVICE=RK3328 ARCH=arm UBOOT_SYSTEM=roc-cc make image`
 * `PROJECT=Rockchip DEVICE=RK3328 ARCH=arm UBOOT_SYSTEM=rock64 make image`
