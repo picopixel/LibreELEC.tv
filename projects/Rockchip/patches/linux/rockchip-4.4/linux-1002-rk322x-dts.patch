@@ -1725,3 +1725,199 @@ index 0000000000..550b7c5670
 +&wifi {
 +	status = "okay";
 +};
+diff --git a/arch/arm/boot/dts/rk3228a-box-mxq4kpro.dts b/arch/arm/boot/dts/rk3228a-box-mxq4kpro.dts
+new file mode 100644
+index 0000000000..d9163f990d
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3228a-box-mxq4kpro.dts
+@@ -0,0 +1,84 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk3228a-box.dtsi"
++
++/ {
++	model = "RK3228a MXQ 4K Pro";
++
++	leds {
++                compatible = "gpio-leds";
++
++                led_blue {
++                        gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
++                        default-state = "on";
++                };
++
++                led_red {
++                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
++                        default-state = "off";
++                        linux,default-trigger = "rc-feedback";
++                };
++        };
++
++};
++
++&dram_timing {
++	ddr3_drv = <DDR3_DS_34ohm>;
++	phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_22ohm>;
++	phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_22ohm>;
++	phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_22ohm>;
++};
++
++&dmc {
++	system-status-freq = <
++		/*system status         freq(KHz)*/
++		SYS_STATUS_NORMAL       600000
++		SYS_STATUS_VIDEO_4K	700000
++		SYS_STATUS_VIDEO_4K_10B 700000
++	>;
++
++	status = "okay";
++};
++
++&dmc_opp_table {
++
++	opp-600000000 {
++		opp-microvolt = <1100000>;
++		opp-microvolt-L0 = <1100000>;
++		opp-microvolt-L1 = <1050000>;
++	};
++
++	/delete-node/ opp-666000000;
++
++	opp-700000000 {
++		opp-microvolt = <1175000>;
++		opp-microvolt-L0 = <1175000>;
++		opp-microvolt-L1 = <1125000>;
++	};
++
++	/delete-node/ opp-786000000;
++
++	opp-800000000 {
++		opp-microvolt = <1175000>;
++		opp-microvolt-L0 = <1175000>;
++		opp-microvolt-L1 = <1125000>;
++	};
++
++};
++
++
++&nandc {
++	status = "okay";
++};
++
++&wifi {
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/rk3228b-box-a8.dts b/arch/arm/boot/dts/rk3228b-box-a8.dts
+new file mode 100644
+index 0000000000..886abc8894
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3228b-box-a8.dts
+@@ -0,0 +1,36 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk3228b-box.dtsi"
++
++/ {
++	model = "RK3228b Alfawise A8";
++
++	leds {
++                compatible = "gpio-leds";
++
++                led_blue {
++                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
++                        default-state = "on";
++                };
++
++        };
++
++};
++
++&emmc {
++	mmc-hs200-1_8v;
++	status = "okay";
++};
++
++&wifi {
++	wifi_chip_type = "ssv6051";
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/rk3229-box-tx2.dts b/arch/arm/boot/dts/rk3229-box-tx2.dts
+new file mode 100644
+index 0000000000..26da4aa561
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3229-box-tx2.dts
+@@ -0,0 +1,58 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk3229-box.dtsi"
++
++/ {
++	model = "RK3229 Tanix TX2";
++
++	leds {
++		compatible = "gpio-leds";
++
++		led_green {
++			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
++			default-state = "on";
++		};
++
++	};
++};
++
++&bluetooth {
++	status = "okay";
++};
++
++&dmc {
++	system-status-freq = <
++		/*system status         freq(KHz)*/
++		SYS_STATUS_NORMAL       786000
++		SYS_STATUS_VIDEO_4K	786000
++		SYS_STATUS_VIDEO_4K_10B 800000
++	>;
++
++	status = "okay";
++};
++
++&emmc {
++	mmc-hs200-1_8v;
++	status = "okay";
++};
++
++&gmac {
++	tx_delay = <0x26>;
++	rx_delay = <0x11>;
++};
++
++&uart1 {
++	status = "okay";
++};
++
++&wifi {
++	status = "okay";
++};
