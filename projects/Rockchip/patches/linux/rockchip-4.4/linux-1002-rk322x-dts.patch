@@ -1056,7 +1056,7 @@ new file mode 100644
 index 0000000000..3ea6747ef0
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box-d88.dts
-@@ -0,0 +1,84 @@
+@@ -0,0 +1,72 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -1076,23 +1076,11 @@ index 0000000000..3ea6747ef0
 +                compatible = "gpio-leds";
 +
 +                led_red {
-+                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-+                        default-state = "off";
++                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
++                        default-state = "on";
 +                };
 +
 +        };
-+
-+	wireless-bluetooth {
-+		compatible = "bluetooth-platdata";
-+		uart_rts_gpios = <&gpio3 6 GPIO_ACTIVE_LOW>;
-+		pinctrl-names = "default", "rts_gpio";
-+		pinctrl-0 = <&uart11_rts>;
-+		pinctrl-1 = <&uart11_rts_gpio>;
-+		BT,power_gpio = <&gpio2 29 GPIO_ACTIVE_HIGH>;
-+		BT,wake_gpio = <&gpio3 27 GPIO_ACTIVE_HIGH>;
-+		BT,wake_host_irq = <&gpio3 26 GPIO_ACTIVE_HIGH>;
-+		status = "okay";
-+	};
 +
 +};
 +
@@ -1166,13 +1154,13 @@ index 0000000000..9635c48b9d
 +                compatible = "gpio-leds";
 +
 +                led_red {
-+                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
++                        gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
 +                        default-state = "off";
 +			linux,default-trigger = "rc-feedback";
 +                };
 +
 +                led_blue {
-+                        gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_HIGH>;
++                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
 +                        default-state = "on";
 +                };
 +        };
