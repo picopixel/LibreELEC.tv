@@ -1,9 +1,9 @@
-diff --git a/arch/arm/dts/rk322x-emmc.dts b/arch/arm/dts/rk322x-emmc.dts
+diff --git a/arch/arm/dts/rk322x-box.dtsi b/arch/arm/dts/rk322x-box.dtsi
 new file mode 100644
-index 0000000..997556d
---- a/arch/arm/dts/rk322x-emmc.dts
-+++ b/arch/arm/dts/rk322x-emmc.dts
-@@ -0,0 +1,121 @@
+index 0000000000..b7f4662f2a
+--- /dev/null
++++ b/arch/arm/dts/rk322x-box.dtsi
+@@ -0,0 +1,134 @@
 +/*
 + * (C) Copyright 2017 Rockchip Electronics Co., Ltd.
 + *
@@ -13,124 +13,171 @@ index 0000000..997556d
 +/dts-v1/;
 +
 +#include "rk322x.dtsi"
++#include "rk322x-u-boot.dtsi"
++#include <dt-bindings/input/input.h>
++
++/ {
++	model = "Rockchip RK322x SoC";
++	compatible = "rockchip,rk3229-evb", "rockchip,rk3229";
++
++	aliases {
++               serial0 = &uart0;
++               serial1 = &uart1;
++               serial2 = &uart2;
++               mmc0 = &sdmmc;
++        };
++
++	ext_gmac: ext_gmac {
++		compatible = "fixed-clock";
++		clock-frequency = <125000000>;
++		clock-output-names = "ext_gmac";
++		#clock-cells = <0>;
++	};
++
++	vcc_phy: vcc-phy-regulator {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		regulator-name = "vcc_phy";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		regulator-always-on;
++		regulator-boot-on;
++	};
++
++	vcc_otg_vbus: otg-vbus-regulator {
++		compatible = "regulator-fixed";
++		gpio = <&gpio3 RK_PC6 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&otg_vbus_drv>;
++		regulator-name = "vcc_otg_vbus";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		enable-active-high;
++	};
++
++	gpio-keys {
++		u-boot,dm-pre-reloc;
++		compatible = "gpio-keys";
++		status = "okay";
++
++		volume-up {
++			u-boot,dm-pre-reloc;
++			linux,code = <KEY_VOLUMEUP>;
++			label = "Volume Up";
++			gpios = <&gpio3 25 GPIO_ACTIVE_LOW>;
++		};
++	};
++
++};
++
++&dmc {
++	rockchip,pctl-timing = <0x96 0xC8 0x1F3 0xF 0x8000004D 0x4 0x4E 0x6 0x3
++		0x0 0x6 0x5 0xC 0x10 0x6 0x4 0x4
++		0x5 0x4 0x200 0x3 0xA 0x40 0x0 0x1
++		0x5 0x5 0x3 0xC 0x1E 0x100 0x0 0x4
++		0x0 0x924>;
++	rockchip,phy-timing = <0x220 0x1 0x0 0x0 0x0 0x4 0x60>;
++	rockchip,sdram-params = <0x428B188 0x0 0x21 0x472 0x15
++		0 300 3 0 120>;
++};
++
++&gmac {
++	assigned-clocks = <&cru SCLK_MAC_EXTCLK>, <&cru SCLK_MAC>;
++	assigned-clock-parents = <&ext_gmac>, <&cru SCLK_MAC_EXTCLK>;
++	clock_in_out = "input";
++	phy-supply = <&vcc_phy>;
++	phy-mode = "rgmii";
++	pinctrl-names = "default";
++	pinctrl-0 = <&rgmii_pins>;
++	snps,reset-gpio = <&gpio2 RK_PD0 GPIO_ACTIVE_LOW>;
++	snps,reset-active-low;
++	snps,reset-delays-us = <0 10000 1000000>;
++	tx_delay = <0x30>;
++	rx_delay = <0x10>;
++	status = "okay";
++};
++
++&sdmmc {
++	bus-width = <4>;
++	cap-mmc-highspeed;
++	cap-sd-highspeed;
++	card-detect-delay = <200>;
++	disable-wp;
++	num-slots = <1>;
++	supports-sd;
++	status = "okay";
++};
++
++&uart2 {
++	status = "okay";
++};
++
++&u2phy0 {
++	status = "okay";
++
++	u2phy0_otg: otg-port {
++		status = "okay";
++	};
++
++	u2phy0_host: host-port {
++		status = "okay";
++	};
++};
++
++&usb20_otg {
++       status = "okay";
++};
++
++
++&pinctrl {
++
++	usb {
++		otg_vbus_drv: otg-vbus-drv {
++			rockchip,pins = <3 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++};
+diff --git a/arch/arm/dts/rk322x-box-emmc.dts b/arch/arm/dts/rk322x-box-emmc.dts
+new file mode 100644
+index 0000000000..451df3e5c3
+--- /dev/null
++++ b/arch/arm/dts/rk322x-box-emmc.dts
+@@ -0,0 +1,28 @@
++/*
++ * (C) Copyright 2017 Rockchip Electronics Co., Ltd.
++ *
++ * SPDX-License-Identifier:     GPL-2.0+ X11
++ */
++
++/dts-v1/;
++
++#include "rk322x-box.dtsi"
 +#include "rk322x-u-boot.dtsi"
 +#include <dt-bindings/input/input.h>
 +
 +/ {
 +	model = "Rockchip RK322x SoC (eMMC)";
-+	compatible = "rockchip,rk3229-evb", "rockchip,rk3229";
++
++	aliases {
++		mmc1 = &emmc;
++	};
 +
 +	chosen {
 +		u-boot,spl-boot-order = &sdmmc, &emmc;
 +	};
 +
-+	ext_gmac: ext_gmac {
-+		compatible = "fixed-clock";
-+		clock-frequency = <125000000>;
-+		clock-output-names = "ext_gmac";
-+		#clock-cells = <0>;
-+	};
-+
-+	vcc_phy: vcc-phy-regulator {
-+		compatible = "regulator-fixed";
-+		enable-active-high;
-+		regulator-name = "vcc_phy";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+		regulator-always-on;
-+		regulator-boot-on;
-+	};
-+
-+	gpio-keys {
-+		u-boot,dm-pre-reloc;
-+		compatible = "gpio-keys";
-+		status = "okay";
-+
-+		volume-up {
-+			u-boot,dm-pre-reloc;
-+			linux,code = <KEY_VOLUMEUP>;
-+			label = "Volume Up";
-+			gpios = <&gpio3 25 GPIO_ACTIVE_LOW>;
-+		};
-+	};
-+
-+	aliases {
-+               serial0 = &uart0;
-+               serial1 = &uart1;
-+               serial2 = &uart2;
-+               mmc0 = &sdmmc;
-+               mmc1 = &emmc;
-+        };
-+
-+};
-+
-+&dmc {
-+	rockchip,pctl-timing = <0x96 0xC8 0x1F3 0xF 0x8000004D 0x4 0x4E 0x6 0x3
-+		0x0 0x6 0x5 0xC 0x10 0x6 0x4 0x4
-+		0x5 0x4 0x200 0x3 0xA 0x40 0x0 0x1
-+		0x5 0x5 0x3 0xC 0x1E 0x100 0x0 0x4
-+		0x0 0x924>;
-+	rockchip,phy-timing = <0x220 0x1 0x0 0x0 0x0 0x4 0x60>;
-+	rockchip,sdram-params = <0x428B188 0x0 0x21 0x472 0x15
-+		0 300 3 0 120>;
-+};
-+
-+&gmac {
-+	assigned-clocks = <&cru SCLK_MAC_EXTCLK>, <&cru SCLK_MAC>;
-+	assigned-clock-parents = <&ext_gmac>, <&cru SCLK_MAC_EXTCLK>;
-+	clock_in_out = "input";
-+	phy-supply = <&vcc_phy>;
-+	phy-mode = "rgmii";
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&rgmii_pins>;
-+	snps,reset-gpio = <&gpio2 RK_PD0 GPIO_ACTIVE_LOW>;
-+	snps,reset-active-low;
-+	snps,reset-delays-us = <0 10000 1000000>;
-+	tx_delay = <0x30>;
-+	rx_delay = <0x10>;
-+	status = "okay";
 +};
 +
 +&emmc {
 +	status = "okay";
 +};
-+
-+&sdmmc {
-+	bus-width = <4>;
-+	cap-mmc-highspeed;
-+	cap-sd-highspeed;
-+	card-detect-delay = <200>;
-+	disable-wp;
-+	num-slots = <1>;
-+	supports-sd;
-+	status = "okay";
-+};
-+
-+&uart2 {
-+	status = "okay";
-+};
-+
-+&u2phy0 {
-+	status = "okay";
-+
-+	u2phy0_otg: otg-port {
-+		status = "okay";
-+	};
-+
-+	u2phy0_host: host-port {
-+		status = "okay";
-+	};
-+};
-+
-+&usb20_otg {
-+       status = "okay";
-+};
-diff --git a/arch/arm/dts/rk322x-nand.dts b/arch/arm/dts/rk322x-nand.dts
+diff --git a/arch/arm/dts/rk322x-box-nand.dts b/arch/arm/dts/rk322x-box-nand.dts
 new file mode 100644
-index 0000000..c39602c
---- a/arch/arm/dts/rk322x-nand.dts
-+++ b/arch/arm/dts/rk322x-nand.dts
-@@ -0,0 +1,121 @@
+index 0000000000..3400713538
+--- /dev/null
++++ b/arch/arm/dts/rk322x-box-nand.dts
+@@ -0,0 +1,27 @@
 +/*
 + * (C) Copyright 2017 Rockchip Electronics Co., Ltd.
 + *
@@ -139,125 +186,31 @@ index 0000000..c39602c
 +
 +/dts-v1/;
 +
-+#include "rk322x.dtsi"
++#include "rk322x-box.dtsi"
 +#include "rk322x-u-boot.dtsi"
 +#include <dt-bindings/input/input.h>
 +
 +/ {
 +	model = "Rockchip RK322x SoC (NAND)";
-+	compatible = "rockchip,rk3229-evb", "rockchip,rk3229";
++
++	aliases {
++		mmc1 = &nandc;
++	};
 +
 +	chosen {
 +		u-boot,spl-boot-order = &sdmmc, &nandc;
 +	};
-+
-+	ext_gmac: ext_gmac {
-+		compatible = "fixed-clock";
-+		clock-frequency = <125000000>;
-+		clock-output-names = "ext_gmac";
-+		#clock-cells = <0>;
-+	};
-+
-+	vcc_phy: vcc-phy-regulator {
-+		compatible = "regulator-fixed";
-+		enable-active-high;
-+		regulator-name = "vcc_phy";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+		regulator-always-on;
-+		regulator-boot-on;
-+	};
-+
-+	gpio-keys {
-+		u-boot,dm-pre-reloc;
-+		compatible = "gpio-keys";
-+		status = "okay";
-+
-+		volume-up {
-+			u-boot,dm-pre-reloc;
-+			linux,code = <KEY_VOLUMEUP>;
-+			label = "Volume Up";
-+			gpios = <&gpio3 25 GPIO_ACTIVE_LOW>;
-+		};
-+	};
-+
-+	aliases {
-+               serial0 = &uart0;
-+               serial1 = &uart1;
-+               serial2 = &uart2;
-+               mmc0 = &sdmmc;
-+               mmc1 = &emmc;
-+        };
-+
-+};
-+
-+&dmc {
-+	rockchip,pctl-timing = <0x96 0xC8 0x1F3 0xF 0x8000004D 0x4 0x4E 0x6 0x3
-+		0x0 0x6 0x5 0xC 0x10 0x6 0x4 0x4
-+		0x5 0x4 0x200 0x3 0xA 0x40 0x0 0x1
-+		0x5 0x5 0x3 0xC 0x1E 0x100 0x0 0x4
-+		0x0 0x924>;
-+	rockchip,phy-timing = <0x220 0x1 0x0 0x0 0x0 0x4 0x60>;
-+	rockchip,sdram-params = <0x428B188 0x0 0x21 0x472 0x15
-+		0 300 3 0 120>;
-+};
-+
-+&gmac {
-+	assigned-clocks = <&cru SCLK_MAC_EXTCLK>, <&cru SCLK_MAC>;
-+	assigned-clock-parents = <&ext_gmac>, <&cru SCLK_MAC_EXTCLK>;
-+	clock_in_out = "input";
-+	phy-supply = <&vcc_phy>;
-+	phy-mode = "rgmii";
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&rgmii_pins>;
-+	snps,reset-gpio = <&gpio2 RK_PD0 GPIO_ACTIVE_LOW>;
-+	snps,reset-active-low;
-+	snps,reset-delays-us = <0 10000 1000000>;
-+	tx_delay = <0x30>;
-+	rx_delay = <0x10>;
-+	status = "okay";
 +};
 +
 +&nandc {
 +	status = "okay";
 +};
-+
-+&sdmmc {
-+	bus-width = <4>;
-+	cap-mmc-highspeed;
-+	cap-sd-highspeed;
-+	card-detect-delay = <200>;
-+	disable-wp;
-+	num-slots = <1>;
-+	supports-sd;
-+	status = "okay";
-+};
-+
-+&uart2 {
-+	status = "okay";
-+};
-+
-+&u2phy0 {
-+	status = "okay";
-+
-+	u2phy0_otg: otg-port {
-+		status = "okay";
-+	};
-+
-+	u2phy0_host: host-port {
-+		status = "okay";
-+	};
-+};
-+
-+&usb20_otg {
-+       status = "okay";
-+};
 diff --git a/configs/rk322x-linux-miniloader-emmc_defconfig b/configs/rk322x-linux-miniloader-emmc_defconfig
 new file mode 100644
-index 0000000..50af4f8
---- b/configs/rk322x-linux-miniloader-emmc_defconfig
+index 0000000000..ab0e9c11fc
+--- /dev/null
 +++ b/configs/rk322x-linux-miniloader-emmc_defconfig
-@@ -0,0 +1,94 @@
+@@ -0,0 +1,103 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_ROCKCHIP=y
 +CONFIG_SPL_LIBCOMMON_SUPPORT=y
@@ -275,7 +228,7 @@ index 0000000..50af4f8
 +CONFIG_RKIMG_BOOTLOADER=y
 +CONFIG_TARGET_EVB_RK3229=y
 +CONFIG_SPL_STACK_R_ADDR=0x60600000
-+CONFIG_DEFAULT_DEVICE_TREE="rk322x-emmc"
++CONFIG_DEFAULT_DEVICE_TREE="rk322x-box-emmc"
 +CONFIG_BOOTDELAY=1
 +CONFIG_DEBUG_UART=y
 +CONFIG_FIT=y
@@ -352,12 +305,21 @@ index 0000000..50af4f8
 +CONFIG_LZ4=y
 +CONFIG_LZO=y
 +CONFIG_LZMA=y
++CONFIG_DM_KEY=y
++CONFIG_USB_STORAGE=y
++CONFIG_ROCKCHIP_USB_BOOT=y
++CONFIG_INPUT=y
++CONFIG_DM_KEY=y
++CONFIG_ADC_KEY=y
++CONFIG_GPIO_KEY=y
++CONFIG_RK_KEY=y
++CONFIG_PWRKEY_DNL_TRIGGER_NUM=0
 diff --git a/configs/rk322x-linux-miniloader-nand_defconfig b/configs/rk322x-linux-miniloader-nand_defconfig
 new file mode 100644
-index 0000000..50af4f8
---- b/configs/rk322x-linux-miniloader-nand_defconfig
+index 0000000000..1f9ad0aa0b
+--- /dev/null
 +++ b/configs/rk322x-linux-miniloader-nand_defconfig
-@@ -0,0 +1,95 @@
+@@ -0,0 +1,104 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_ROCKCHIP=y
 +CONFIG_SPL_LIBCOMMON_SUPPORT=y
@@ -375,7 +337,7 @@ index 0000000..50af4f8
 +CONFIG_RKIMG_BOOTLOADER=y
 +CONFIG_TARGET_EVB_RK3229=y
 +CONFIG_SPL_STACK_R_ADDR=0x60600000
-+CONFIG_DEFAULT_DEVICE_TREE="rk322x-nand"
++CONFIG_DEFAULT_DEVICE_TREE="rk322x-box-nand"
 +CONFIG_BOOTDELAY=1
 +CONFIG_DEBUG_UART=y
 +CONFIG_FIT=y
@@ -453,3 +415,12 @@ index 0000000..50af4f8
 +CONFIG_LZO=y
 +CONFIG_LZMA=y
 +CONFIG_RKNAND=y
++CONFIG_DM_KEY=y
++CONFIG_USB_STORAGE=y
++CONFIG_ROCKCHIP_USB_BOOT=y
++CONFIG_INPUT=y
++CONFIG_DM_KEY=y
++CONFIG_ADC_KEY=y
++CONFIG_GPIO_KEY=y
++CONFIG_RK_KEY=y
++CONFIG_PWRKEY_DNL_TRIGGER_NUM=0
