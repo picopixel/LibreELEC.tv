@@ -124,7 +124,7 @@ new file mode 100644
 index 0000000000..a25074b1c1
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk322x-box.dtsi
-@@ -0,0 +1,578 @@
+@@ -0,0 +1,574 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -475,8 +475,6 @@ index 0000000000..a25074b1c1
 +	pinctrl-0 = <&sdmmc_pwr &sdmmc_clk &sdmmc_cmd &sdmmc_bus4>;
 +	cap-sd-highspeed;
 +	disable-wp;
-+	sd-uhs-sdr50;
-+	sd-uhs-sdr104;
 +	supports-sd;
 +	status = "okay";
 +};
@@ -491,8 +489,6 @@ index 0000000000..a25074b1c1
 +	ignore-pm-notify;
 +	keep-power-in-suspend;
 +	non-removable;
-+	sd-uhs-sdr50;
-+	sd-uhs-sdr104;
 +	supports-sdio;
 +	status = "okay";
 +};
