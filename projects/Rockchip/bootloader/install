@@ -36,7 +36,7 @@ case "$PKG_SOC" in
    if [ "$SOC" = "RK3228" ]; then
        PKG_TOSTA="$PKG_RKBIN/rk32/rk3228_tee_ta-51.1.0-333-gc9d95d1.bin"
    else
-       PKG_TOSTA="$PKG_RKBIN/rk32/rk322x_tee_ta_v2.05.bin"
+       PKG_TOSTA="$PKG_RKBIN/rk32/rk322x_tee_ta_v2.07.bin"
    fi
    PKG_LOAD_ADDR="0x60200000"
    PKG_TOSXX_LOAD_ADDR="0x68400000"
