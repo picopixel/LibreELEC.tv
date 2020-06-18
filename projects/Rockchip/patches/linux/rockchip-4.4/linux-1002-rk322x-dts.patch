@@ -1,29 +1,251 @@
-diff --git a/arch/arm/boot/dts/rk322x.dtsi b/arch/arm/boot/dts/rk322x.dtsi
-index af417ae376..b55b0fd2b0 100644
---- a/arch/arm/boot/dts/rk322x.dtsi
-+++ b/arch/arm/boot/dts/rk322x.dtsi
-@@ -283,6 +283,18 @@
- 		status = "disabled";
- 	};
- 
-+	crypto: cypto-controller@100a0000 {
-+		compatible = "rockchip,rk3288-crypto";
-+		reg = <0x100a0000 0x4000>;
-+		interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
-+		clocks = <&cru HCLK_M_CRYPTO>, <&cru HCLK_S_CRYPTO>,
-+			 <&cru SCLK_CRYPTO>, <&cru ACLK_DMAC>;
-+		clock-names = "aclk", "hclk", "sclk", "apb_pclk";
-+		resets = <&cru SRST_CRYPTO>;
-+		reset-names = "crypto-rst";
-+		status = "disabled";
+diff --git a/arch/arm/boot/dts/rk3228a-box-h96mini.dts b/arch/arm/boot/dts/rk3228a-box-h96mini.dts
+new file mode 100644
+index 000000000000..ecbcada21f97
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3228a-box-h96mini.dts
+@@ -0,0 +1,96 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++
++/dts-v1/;
++
++#include "rk3228a-box.dtsi"
++
++/ {
++	model = "RK3228a H96 mini";
++
++	leds {
++		compatible = "gpio-leds";
++
++		led_green {
++			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
++			default-state = "on";
++		};
++
++		led_red {
++			gpios = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++			linux,default-trigger = "rc-feedback";
++		};
 +	};
 +
- 	i2s1: i2s1@100b0000 {
- 		compatible = "rockchip,rk3228-i2s", "rockchip,rk3066-i2s";
- 		reg = <0x100b0000 0x4000>;
++};
++
++&dram_timing {
++                sr_idle = <0x18>;
++                pd_idle = <0x20>;
++                ddr3_drv = <DDR3_DS_40ohm>;
++                ddr3_odt = <DDR3_ODT_120ohm>;
++                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
++                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_45ohm>;
++                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
++                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
++};
++
++&bluetooth {
++	status = "okay";
++};
++
++&dmc {
++	system-status-freq = <
++		/*system status         freq(KHz)*/
++		SYS_STATUS_NORMAL       600000
++		SYS_STATUS_VIDEO_4K	700000
++		SYS_STATUS_VIDEO_4K_10B 800000
++	>;
++	status = "okay";
++};
++
++&dmc_opp_table {
++
++	/delete-node/ opp-400000000;
++
++	/delete-node/ opp-666000000;
++
++	opp-700000000 {
++		opp-microvolt = <1100000>;
++		opp-microvolt-L0 = <1100000>;
++		opp-microvolt-L1 = <1050000>;
++	};
++
++	/delete-node/ opp-786000000;
++
++};
++
++&emmc {
++	mmc-hs200-1_8v;
++	status = "okay";
++};
++
++&gmac {
++	tx_delay = <0x26>;
++	rx_delay = <0x11>;
++};
++
++&ir_receiver {
++	linux,rc-map-name = "rc-trn9";
++};
++
++&uart1 {
++	status = "okay";
++};
++
++&wifi {
++	wifi_chip_type = "ap6330";
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/rk3228a-box-mxq4kpro.dts b/arch/arm/boot/dts/rk3228a-box-mxq4kpro.dts
+new file mode 100644
+index 000000000000..67949cec1037
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3228a-box-mxq4kpro.dts
+@@ -0,0 +1,84 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk3228a-box.dtsi"
++
++/ {
++	model = "RK3228a MXQ 4K Pro";
++
++	leds {
++                compatible = "gpio-leds";
++
++                led_blue {
++                        gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
++                        default-state = "on";
++                };
++
++                led_red {
++                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
++                        default-state = "off";
++                        linux,default-trigger = "rc-feedback";
++                };
++        };
++
++};
++
++&dram_timing {
++	ddr3_drv = <DDR3_DS_34ohm>;
++	phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_22ohm>;
++	phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_22ohm>;
++	phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_22ohm>;
++};
++
++&dmc {
++	system-status-freq = <
++		/*system status         freq(KHz)*/
++		SYS_STATUS_NORMAL       600000
++		SYS_STATUS_VIDEO_4K	700000
++		SYS_STATUS_VIDEO_4K_10B 700000
++	>;
++
++	status = "okay";
++};
++
++&dmc_opp_table {
++
++	opp-600000000 {
++		opp-microvolt = <1100000>;
++		opp-microvolt-L0 = <1100000>;
++		opp-microvolt-L1 = <1050000>;
++	};
++
++	/delete-node/ opp-666000000;
++
++	opp-700000000 {
++		opp-microvolt = <1175000>;
++		opp-microvolt-L0 = <1175000>;
++		opp-microvolt-L1 = <1125000>;
++	};
++
++	/delete-node/ opp-786000000;
++
++	opp-800000000 {
++		opp-microvolt = <1175000>;
++		opp-microvolt-L0 = <1175000>;
++		opp-microvolt-L1 = <1125000>;
++	};
++
++};
++
++
++&nandc {
++	status = "okay";
++};
++
++&wifi {
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/rk3228a-box.dtsi b/arch/arm/boot/dts/rk3228a-box.dtsi
+new file mode 100644
+index 000000000000..997055c18fdf
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3228a-box.dtsi
+@@ -0,0 +1,47 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk322x-box.dtsi"
++#include "rk3228a-cpu-opp.dtsi"
++
++/ {
++	compatible = "rockchip,rk3228a-box", "rockchip,rk3229";
++
++	/delete-node/ opp-table2;
++
++	gpu_opp_table: opp-table2 {
++		compatible = "operating-points-v2";
++		rockchip,leakage-voltage-sel = <
++			1   5    0
++			6   254  1
++		>;
++		nvmem-cells = <&logic_leakage>;
++		nvmem-cell-names = "gpu_leakage";
++
++		opp-200000000 {
++			opp-hz = /bits/ 64 <200000000>;
++			opp-microvolt = <1050000>;
++			opp-microvolt-L0 = <1050000>;
++			opp-microvolt-L1 = <1000000>;
++		};
++		opp-300000000 {
++			opp-hz = /bits/ 64 <300000000>;
++			opp-microvolt = <1050000>;
++			opp-microvolt-L0 = <1050000>;
++			opp-microvolt-L1 = <1000000>;
++		};
++		opp-400000000 {
++			opp-hz = /bits/ 64 <400000000>;
++			opp-microvolt = <1150000>;
++			opp-microvolt-L0 = <1150000>;
++			opp-microvolt-L1 = <1100000>;
++		};
++	};
++};
 diff --git a/arch/arm/boot/dts/rk3228a-cpu-opp.dtsi b/arch/arm/boot/dts/rk3228a-cpu-opp.dtsi
 new file mode 100644
-index 0000000000..98b01e5947
+index 000000000000..98b01e5947d8
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3228a-cpu-opp.dtsi
 @@ -0,0 +1,92 @@
@@ -119,9 +341,970 @@ index 0000000000..98b01e5947
 +		};
 +	};
 +};
+diff --git a/arch/arm/boot/dts/rk3228b-box-a8.dts b/arch/arm/boot/dts/rk3228b-box-a8.dts
+new file mode 100644
+index 000000000000..886abc889464
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3228b-box-a8.dts
+@@ -0,0 +1,36 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk3228b-box.dtsi"
++
++/ {
++	model = "RK3228b Alfawise A8";
++
++	leds {
++                compatible = "gpio-leds";
++
++                led_blue {
++                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
++                        default-state = "on";
++                };
++
++        };
++
++};
++
++&emmc {
++	mmc-hs200-1_8v;
++	status = "okay";
++};
++
++&wifi {
++	wifi_chip_type = "ssv6051";
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/rk3228b-box-mkv809vii.dts b/arch/arm/boot/dts/rk3228b-box-mkv809vii.dts
+new file mode 100644
+index 000000000000..550b7c567046
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3228b-box-mkv809vii.dts
+@@ -0,0 +1,189 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk3228b-box.dtsi"
++
++/ {
++	model = "RK3228B MK809IV HDMI Stick";
++
++
++	/delete-node/ dmc-opp-table;
++
++	dmc_opp_table: dmc-opp-table {
++		compatible = "operating-points-v2";
++
++		rockchip,leakage-voltage-sel = <
++			1   5    0
++			6   254  1
++		>;
++		nvmem-cells = <&logic_leakage>;
++		nvmem-cell-names = "ddr_leakage";
++
++		opp-240000000 {
++			opp-hz = /bits/ 64 <240000000>;
++			opp-microvolt = <1250000>;
++			opp-microvolt-L0 = <1250000>;
++			opp-microvolt-L1 = <1200000>;
++		};
++
++		opp-324000000 {
++			opp-hz = /bits/ 64 <324000000>;
++			opp-microvolt = <1250000>;
++			opp-microvolt-L0 = <1250000>;
++			opp-microvolt-L1 = <1200000>;
++		};
++
++		opp-396000000 {
++			opp-hz = /bits/ 64 <396000000>;
++			opp-microvolt = <1250000>;
++			opp-microvolt-L0 = <1250000>;
++			opp-microvolt-L1 = <1200000>;
++		};
++
++		opp-456000000 {
++			opp-hz = /bits/ 64 <456000000>;
++			opp-microvolt = <1250000>;
++			opp-microvolt-L0 = <1250000>;
++			opp-microvolt-L1 = <1200000>;
++		};
++
++		opp-528000000 {
++			opp-hz = /bits/ 64 <528000000>;
++			opp-microvolt = <1250000>;
++			opp-microvolt-L0 = <1250000>;
++			opp-microvolt-L1 = <1200000>;
++		};
++
++		opp-600000000 {
++			opp-hz = /bits/ 64 <600000000>;
++			opp-microvolt = <1250000>;
++			opp-microvolt-L0 = <1250000>;
++			opp-microvolt-L1 = <1200000>;
++		};
++
++		opp-700000000 {
++			opp-hz = /bits/ 64 <600000000>;
++			opp-microvolt = <1250000>;
++			opp-microvolt-L0 = <1250000>;
++			opp-microvolt-L1 = <1200000>;
++		};
++
++		opp-800000000 {
++			opp-hz = /bits/ 64 <600000000>;
++			opp-microvolt = <1250000>;
++			opp-microvolt-L0 = <1250000>;
++			opp-microvolt-L1 = <1200000>;
++		};
++	};
++
++	/delete-node/ opp-table2;
++
++	gpu_opp_table: opp-table2 {
++		compatible = "operating-points-v2";
++
++		rockchip,leakage-voltage-sel = <
++			1   5    0
++			6   254  1
++		>;
++		nvmem-cells = <&logic_leakage>;
++		nvmem-cell-names = "gpu_leakage";
++
++		opp-200000000 {
++			opp-hz = /bits/ 64 <200000000>;
++			opp-microvolt = <1250000>;
++			opp-microvolt-L0 = <1250000>;
++			opp-microvolt-L1 = <1200000>;
++		};
++		opp-300000000 {
++			opp-hz = /bits/ 64 <300000000>;
++			opp-microvolt = <1250000>;
++			opp-microvolt-L0 = <1250000>;
++			opp-microvolt-L1 = <1200000>;
++		};
++		opp-500000000 {
++			opp-hz = /bits/ 64 <500000000>;
++			opp-microvolt = <1250000>;
++			opp-microvolt-L0 = <1250000>;
++			opp-microvolt-L1 = <1200000>;
++		};
++	};
++
++	leds {
++                compatible = "gpio-leds";
++
++                led_standby {
++                        gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
++                        default-state = "off";
++                };
++
++		led_power {
++                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
++                        default-state = "on";
++                };
++
++        };
++
++};
++
++&bluetooth {
++	status = "okay";
++};
++
++&dram_timing {
++                sr_idle = <0xc>;
++                pd_idle = <0x20>;
++                ddr3_drv = <DDR3_DS_40ohm>;
++                ddr3_odt = <DDR3_ODT_120ohm>;
++                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
++                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_45ohm>;
++                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
++                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
++};
++
++&dmc {
++	system-status-freq = <
++		/*system status         freq(KHz)*/
++		SYS_STATUS_NORMAL	456000
++		SYS_STATUS_VIDEO_4K	456000
++		SYS_STATUS_VIDEO_4K_10B	456000
++	>;
++
++	status = "okay";
++};
++
++
++&emmc {
++	status = "okay";
++};
++
++&cru {
++	assigned-clock-rates =
++			<1200000000>, <816000000>,
++			<960000000>, <150000000>,
++			<150000000>, <75000000>,
++			<150000000>, <150000000>,
++			<75000000>, <400000000>;
++};
++
++&uart1 {
++	status="okay";
++};
++
++&tve {
++	status = "disabled";
++};
++
++&route_tve {
++	status = "disabled";
++};
++
++&wifi {
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/rk3228b-box-v88mars-II.dts b/arch/arm/boot/dts/rk3228b-box-v88mars-II.dts
+new file mode 100644
+index 000000000000..96f3536073b9
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3228b-box-v88mars-II.dts
+@@ -0,0 +1,69 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk3228b-box.dtsi"
++
++/ {
++	model = "RK3228b V88 Mars II";
++
++	leds {
++                compatible = "gpio-leds";
++
++                led_blue {
++                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
++                        default-state = "on";
++                };
++
++                led_red {
++                        gpios = <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>;
++                        default-state = "off";
++                        linux,default-trigger = "rc-feedback";
++                };
++        };
++
++};
++
++&dram_timing {
++	dram_dll_disb_freq = <300>;
++};
++
++&dmc {
++	system-status-freq = <
++		/*system status         freq(KHz)*/
++		SYS_STATUS_NORMAL       600000
++		SYS_STATUS_VIDEO_4K	700000
++		SYS_STATUS_VIDEO_4K_10B 800000
++	>;
++
++	status = "okay";
++};
++
++&dmc_opp_table {
++
++	/delete-node/ opp-666000000;
++
++	opp-700000000 {
++		opp-microvolt = <1100000>;
++		opp-microvolt-L0 = <1100000>;
++		opp-microvolt-L1 = <1050000>;
++	};
++
++	/delete-node/ opp-786000000;
++
++};
++
++&nandc {
++	status = "okay";
++};
++
++&wifi {
++	wifi_chip_type = "ssv6051";
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/rk3228b-box.dtsi b/arch/arm/boot/dts/rk3228b-box.dtsi
+new file mode 100644
+index 000000000000..1aa448e37ab7
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3228b-box.dtsi
+@@ -0,0 +1,16 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk322x-box.dtsi"
++#include "rk3229-cpu-opp.dtsi"
++
++/ {
++	compatible = "rockchip,rk3228b-box", "rockchip,rk3229";
++};
+diff --git a/arch/arm/boot/dts/rk3229-box-a95xr1.dts b/arch/arm/boot/dts/rk3229-box-a95xr1.dts
+new file mode 100644
+index 000000000000..fe31b0934f64
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3229-box-a95xr1.dts
+@@ -0,0 +1,68 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk3229-box.dtsi"
++
++/ {
++	model = "RK3229 Box A95X-R1";
++
++	leds {
++		compatible = "gpio-leds";
++
++		led_blue {
++			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
++			default-state = "on";
++		};
++
++		led_red {
++			gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++			linux,default-trigger = "rc-feedback";
++		};
++	};
++
++};
++
++&dram_timing {
++                sr_idle = <0>;
++                pd_idle = <0>;
++                ddr3_drv = <DDR3_DS_34ohm>;
++                ddr3_odt = <DDR3_ODT_40ohm>;
++                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_34ohm>;
++                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_34ohm>;
++                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
++                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
++};
++
++&dmc {
++	system-status-freq = <
++		/*system status         freq(KHz)*/
++		SYS_STATUS_NORMAL       786000
++		SYS_STATUS_VIDEO_4K	786000
++		SYS_STATUS_VIDEO_4K_10B 800000
++	>;
++
++	status = "okay";
++};
++
++&emmc {
++	mmc-hs200-1_8v;
++	status = "okay";
++};
++
++&gmac {
++	tx_delay = <0x26>;
++	rx_delay = <0x11>;
++};
++
++&wifi {
++	wifi_chip_type = "ssv6051";
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/rk3229-box-d88.dts b/arch/arm/boot/dts/rk3229-box-d88.dts
+new file mode 100644
+index 000000000000..20ae33d1fa8b
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3229-box-d88.dts
+@@ -0,0 +1,72 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk3229-box.dtsi"
++
++/ {
++	model = "RK3229 D88 HDMI Stick";
++
++	leds {
++                compatible = "gpio-leds";
++
++                led_red {
++                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
++                        default-state = "on";
++                };
++
++        };
++
++};
++
++&bluetooth {
++	status = "okay";
++};
++
++&dram_timing {
++                sr_idle = <24>;
++                pd_idle = <32>;
++                ddr3_drv = <DDR3_DS_40ohm>;
++                ddr3_odt = <DDR3_ODT_120ohm>;
++                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
++                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_45ohm>;
++                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
++                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
++};
++
++&dmc {
++	system-status-freq = <
++		/*system status         freq(KHz)*/
++		SYS_STATUS_NORMAL	600000
++		SYS_STATUS_VIDEO_4K	786000
++		SYS_STATUS_VIDEO_4K_10B	800000
++	>;
++
++	status = "okay";
++};
++
++&nandc {
++	status = "okay";
++};
++
++&uart1 {
++	status="okay";
++};
++
++&tve {
++	status = "disabled";
++};
++
++&route_tve {
++	status = "disabled";
++};
++
++&wifi {
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/rk3229-box-hk1mini.dts b/arch/arm/boot/dts/rk3229-box-hk1mini.dts
+new file mode 100644
+index 000000000000..c685ef637e05
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3229-box-hk1mini.dts
+@@ -0,0 +1,192 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk3229-box.dtsi"
++
++/ {
++	model = "RK3229 HK1mini";
++
++	leds {
++                compatible = "gpio-leds";
++
++                led_red {
++                        gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
++                        default-state = "off";
++			linux,default-trigger = "rc-feedback";
++                };
++
++                led_blue {
++                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
++                        default-state = "on";
++                };
++        };
++
++};
++
++&dram_timing {
++                sr_idle = <24>;
++                pd_idle = <32>;
++                ddr3_drv = <DDR3_DS_40ohm>;
++                ddr3_odt = <DDR3_ODT_120ohm>;
++                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
++                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_45ohm>;
++                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
++                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
++		dram_odt_disb_freq = <100>;
++		phy_odt_disb_freq = <100>;
++};
++
++&dmc {
++
++	system-status-freq = <
++		/*system status         freq(KHz)*/
++		SYS_STATUS_NORMAL       800000
++		SYS_STATUS_VIDEO_4K	800000
++		SYS_STATUS_VIDEO_4K_10B 800000
++	>;
++	status = "okay";
++};
++
++&nandc {
++	status = "okay";
++};
++
++&cpu0_opp_table {
++
++	opp-408000000 {
++		opp-microvolt = <1000000 1000000 1375000>;
++		opp-microvolt-L0 = <1000000 1000000 1375000>;
++		opp-microvolt-L1 = <975000 975000 1375000>;
++	};
++
++	opp-600000000 {
++		opp-microvolt = <1025000 1025000 1375000>;
++		opp-microvolt-L0 = <1025000 1025000 1375000>;
++		opp-microvolt-L1 = <1000000 1000000 1375000>;
++	};
++
++	opp-816000000 {
++		opp-microvolt = <1050000 1050000 1375000>;
++		opp-microvolt-L0 = <1050000 1050000 1375000>;
++		opp-microvolt-L1 = <1025000 1025000 1375000>;
++	};
++
++	opp-1008000000 {
++		opp-microvolt = <1175000 1175000 1375000>;
++		opp-microvolt-L0 = <1175000 1175000 1375000>;
++		opp-microvolt-L1 = <1125000 1125000 1375000>;
++	};
++
++	opp-1200000000 {
++		opp-microvolt = <1275000 1275000 1375000>;
++		opp-microvolt-L0 = <1275000 1275000 1375000>;
++		opp-microvolt-L1 = <1225000 1225000 1375000>;
++	};
++
++	opp-1296000000 {
++		opp-microvolt = <1325000 1325000 1375000>;
++		opp-microvolt-L0 = <1325000 1325000 1375000>;
++		opp-microvolt-L1 = <1275000 1275000 1375000>;
++	};
++
++	opp-1392000000 {
++		opp-microvolt = <1375000 1375000 1375000>;
++		opp-microvolt-L0 = <1375000 1375000 1375000>;
++		opp-microvolt-L1 = <1325000 1325000 1375000>;
++	};
++
++	opp-1464000000 {
++		opp-microvolt = <1375000 1375000 1375000>;
++		opp-microvolt-L0 = <1375000 1375000 1375000>;
++		opp-microvolt-L1 = <1350000 1350000 1375000>;
++	};
++
++};
++
++&dmc_opp_table {
++
++	opp-300000000 {
++		opp-microvolt = <1100000>;
++		opp-microvolt-L0 = <1100000>;
++		opp-microvolt-L1 = <1100000>;
++	};
++
++	opp-400000000 {
++		opp-microvolt = <1100000>;
++		opp-microvolt-L0 = <1100000>;
++		opp-microvolt-L1 = <1100000>;
++	};
++
++	opp-600000000 {
++		opp-microvolt-L1 = <1100000>;
++	};
++
++	opp-666000000 {
++		opp-microvolt = <1100000>;
++		opp-microvolt-L0 = <1100000>;
++	};
++
++	opp-700000000 {
++		opp-microvolt = <1100000>;
++		opp-microvolt-L0 = <1100000>;
++	};
++
++	opp-786000000 {
++		opp-microvolt = <1100000>;
++		opp-microvolt-L0 = <1100000>;
++	};
++
++	opp-800000000 {
++		opp-microvolt = <1100000>;
++		opp-microvolt-L0 = <1100000>;
++	};
++};
++
++&threshold {
++	temperature = <85000>;
++};
++
++&target {
++	temperature = <100000>;
++};
++
++&thermal_zones {
++	soc-thermal {
++		cooling-maps {
++
++			/delete-node/ map2;
++			/delete-node/ map3;
++		};
++	};
++};
++
++&gpu_opp_table {
++	opp-200000000 {
++		opp-microvolt = <1100000>;
++		opp-microvolt-L0 = <1100000>;
++		opp-microvolt-L1 = <1100000>;
++	};
++
++	opp-300000000 {
++		opp-microvolt = <1100000>;
++		opp-microvolt-L0 = <1100000>;
++		opp-microvolt-L1 = <1100000>;
++	};
++
++	opp-500000000 {
++		opp-microvolt = <1100000>;
++		opp-microvolt-L0 = <1100000>;
++	};
++};
++
++&wifi {
++	wifi_chip_type = "ssv6051";
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/rk3229-box-ntn8.dts b/arch/arm/boot/dts/rk3229-box-ntn8.dts
+new file mode 100644
+index 000000000000..1e091b1284be
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3229-box-ntn8.dts
+@@ -0,0 +1,76 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk3229-box.dtsi"
++
++/ {
++	model = "RK3229 HPH NT-N8";
++
++	leds {
++		compatible = "gpio-leds";
++
++		led_green {
++			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
++			default-state = "on";
++		};
++
++		led_red {
++			gpios = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++			linux,default-trigger = "rc-feedback";
++		};
++	};
++};
++
++&dram_timing {
++                sr_idle = <12>;
++                pd_idle = <32>;
++                ddr3_drv = <DDR3_DS_40ohm>;
++                ddr3_odt = <DDR3_ODT_120ohm>;
++                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
++                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_45ohm>;
++                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
++                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
++};
++
++&dmc {
++	system-status-freq = <
++		/*system status         freq(KHz)*/
++		SYS_STATUS_NORMAL       786000
++		SYS_STATUS_VIDEO_4K	786000
++		SYS_STATUS_VIDEO_4K_10B 800000
++	>;
++
++	status = "okay";
++};
++
++&emmc {
++	mmc-hs200-1_8v;
++	status = "okay";
++};
++
++&gmac {
++	tx_delay = <0x26>;
++	rx_delay = <0x11>;
++};
++
++&ir_receiver {
++	linux,rc-map-name = "rc-trn9";
++};
++
++&uart1 {
++	status = "okay";
++};
++
++&wifi {
++	wifi_chip_type = "ap6212";
++	sdio_vref = <3300>;
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/rk3229-box-tx2.dts b/arch/arm/boot/dts/rk3229-box-tx2.dts
+new file mode 100644
+index 000000000000..26da4aa561d0
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3229-box-tx2.dts
+@@ -0,0 +1,58 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk3229-box.dtsi"
++
++/ {
++	model = "RK3229 Tanix TX2";
++
++	leds {
++		compatible = "gpio-leds";
++
++		led_green {
++			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
++			default-state = "on";
++		};
++
++	};
++};
++
++&bluetooth {
++	status = "okay";
++};
++
++&dmc {
++	system-status-freq = <
++		/*system status         freq(KHz)*/
++		SYS_STATUS_NORMAL       786000
++		SYS_STATUS_VIDEO_4K	786000
++		SYS_STATUS_VIDEO_4K_10B 800000
++	>;
++
++	status = "okay";
++};
++
++&emmc {
++	mmc-hs200-1_8v;
++	status = "okay";
++};
++
++&gmac {
++	tx_delay = <0x26>;
++	rx_delay = <0x11>;
++};
++
++&uart1 {
++	status = "okay";
++};
++
++&wifi {
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/rk3229-box-v884k.dts b/arch/arm/boot/dts/rk3229-box-v884k.dts
+new file mode 100644
+index 000000000000..e9cadf4c7c86
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3229-box-v884k.dts
+@@ -0,0 +1,57 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk3229-box.dtsi"
++
++/ {
++	model = "RK3229 V88 4K";
++
++	leds {
++                compatible = "gpio-leds";
++
++                led_blue {
++                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
++                        default-state = "on";
++                };
++        };
++
++};
++
++&dram_timing {
++                dram_spd_bin = <21>;
++		sr_idle = <12>;
++                pd_idle = <32>;
++                ddr3_drv = <DDR3_DS_40ohm>;
++                ddr3_odt = <DDR3_ODT_120ohm>;
++                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
++                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_45ohm>;
++                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
++                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
++};
++
++&dmc {
++	system-status-freq = <
++		/*system status         freq(KHz)*/
++		SYS_STATUS_NORMAL	786000
++		SYS_STATUS_VIDEO_4K	786000
++		SYS_STATUS_VIDEO_4K_10B	800000
++	>;
++
++	status = "okay";
++};
++
++&nandc {
++	status = "okay";
++};
++
++&wifi {
++	wifi_chip_type = "ssv6051";
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/rk3229-box-v88mars.dts b/arch/arm/boot/dts/rk3229-box-v88mars.dts
+new file mode 100644
+index 000000000000..a44ba9efd07d
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3229-box-v88mars.dts
+@@ -0,0 +1,40 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk3229-box.dtsi"
++
++/ {
++	model = "RK3229 V88 Mars";
++
++	leds {
++                compatible = "gpio-leds";
++
++                led_blue {
++                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
++                        default-state = "on";
++                };
++
++                led_red {
++                        gpios = <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>;
++                        default-state = "off";
++                        linux,default-trigger = "rc-feedback";
++                };
++        };
++};
++
++
++&nandc {
++	status = "okay";
++};
++
++&wifi {
++	wifi_chip_type = "ssv6051";
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/rk3229-box.dtsi b/arch/arm/boot/dts/rk3229-box.dtsi
+new file mode 100644
+index 000000000000..8a4b25eeaed4
+--- /dev/null
++++ b/arch/arm/boot/dts/rk3229-box.dtsi
+@@ -0,0 +1,16 @@
++/*
++ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "rk322x-box.dtsi"
++#include "rk3229-cpu-opp.dtsi"
++
++/ {
++	compatible = "rockchip,rk3229-box", "rockchip,rk3229";
++};
 diff --git a/arch/arm/boot/dts/rk322x-box.dtsi b/arch/arm/boot/dts/rk322x-box.dtsi
 new file mode 100644
-index 0000000000..a25074b1c1
+index 000000000000..c402e6630b49
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk322x-box.dtsi
 @@ -0,0 +1,574 @@
@@ -699,1209 +1882,26 @@ index 0000000000..a25074b1c1
 +&crypto {
 +	status = "okay";
 +};
-diff --git a/arch/arm/boot/dts/rk3228a-box.dtsi b/arch/arm/boot/dts/rk3228a-box.dtsi
-new file mode 100644
-index 0000000000..997055c18f
---- /dev/null
-+++ b/arch/arm/boot/dts/rk3228a-box.dtsi
-@@ -0,0 +1,47 @@
-+/*
-+ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk322x-box.dtsi"
-+#include "rk3228a-cpu-opp.dtsi"
-+
-+/ {
-+	compatible = "rockchip,rk3228a-box", "rockchip,rk3229";
-+
-+	/delete-node/ opp-table2;
-+
-+	gpu_opp_table: opp-table2 {
-+		compatible = "operating-points-v2";
-+		rockchip,leakage-voltage-sel = <
-+			1   5    0
-+			6   254  1
-+		>;
-+		nvmem-cells = <&logic_leakage>;
-+		nvmem-cell-names = "gpu_leakage";
-+
-+		opp-200000000 {
-+			opp-hz = /bits/ 64 <200000000>;
-+			opp-microvolt = <1050000>;
-+			opp-microvolt-L0 = <1050000>;
-+			opp-microvolt-L1 = <1000000>;
-+		};
-+		opp-300000000 {
-+			opp-hz = /bits/ 64 <300000000>;
-+			opp-microvolt = <1050000>;
-+			opp-microvolt-L0 = <1050000>;
-+			opp-microvolt-L1 = <1000000>;
-+		};
-+		opp-400000000 {
-+			opp-hz = /bits/ 64 <400000000>;
-+			opp-microvolt = <1150000>;
-+			opp-microvolt-L0 = <1150000>;
-+			opp-microvolt-L1 = <1100000>;
-+		};
-+	};
-+};
-diff --git a/arch/arm/boot/dts/rk3228b-box.dtsi b/arch/arm/boot/dts/rk3228b-box.dtsi
-new file mode 100644
-index 0000000000..1aa448e37a
---- /dev/null
-+++ b/arch/arm/boot/dts/rk3228b-box.dtsi
-@@ -0,0 +1,16 @@
-+/*
-+ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk322x-box.dtsi"
-+#include "rk3229-cpu-opp.dtsi"
-+
-+/ {
-+	compatible = "rockchip,rk3228b-box", "rockchip,rk3229";
-+};
-diff --git a/arch/arm/boot/dts/rk3229-box.dtsi b/arch/arm/boot/dts/rk3229-box.dtsi
-new file mode 100644
-index 0000000000..8a4b25eeae
---- /dev/null
-+++ b/arch/arm/boot/dts/rk3229-box.dtsi
-@@ -0,0 +1,16 @@
-+/*
-+ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk322x-box.dtsi"
-+#include "rk3229-cpu-opp.dtsi"
-+
-+/ {
-+	compatible = "rockchip,rk3229-box", "rockchip,rk3229";
-+};
-diff --git a/arch/arm/boot/dts/rk3228a-box-h96mini.dts b/arch/arm/boot/dts/rk3228a-box-h96mini.dts
-new file mode 100644
-index 0000000000..37f2ddd383
---- /dev/null
-+++ b/arch/arm/boot/dts/rk3228a-box-h96mini.dts
-@@ -0,0 +1,96 @@
-+/*
-+ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+
-+/dts-v1/;
-+
-+#include "rk3228a-box.dtsi"
-+
-+/ {
-+	model = "RK3228a H96 mini";
-+
-+	leds {
-+		compatible = "gpio-leds";
-+
-+		led_green {
-+			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-+			default-state = "on";
-+		};
-+
-+		led_red {
-+			gpios = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+			linux,default-trigger = "rc-feedback";
-+		};
+diff --git a/arch/arm/boot/dts/rk322x.dtsi b/arch/arm/boot/dts/rk322x.dtsi
+index af417ae37605..b55b0fd2b0ea 100644
+--- a/arch/arm/boot/dts/rk322x.dtsi
++++ b/arch/arm/boot/dts/rk322x.dtsi
+@@ -283,6 +283,18 @@
+ 		status = "disabled";
+ 	};
+ 
++	crypto: cypto-controller@100a0000 {
++		compatible = "rockchip,rk3288-crypto";
++		reg = <0x100a0000 0x4000>;
++		interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru HCLK_M_CRYPTO>, <&cru HCLK_S_CRYPTO>,
++			 <&cru SCLK_CRYPTO>, <&cru ACLK_DMAC>;
++		clock-names = "aclk", "hclk", "sclk", "apb_pclk";
++		resets = <&cru SRST_CRYPTO>;
++		reset-names = "crypto-rst";
++		status = "disabled";
 +	};
 +
-+};
-+
-+&dram_timing {
-+                sr_idle = <0x18>;
-+                pd_idle = <0x20>;
-+                ddr3_drv = <DDR3_DS_40ohm>;
-+                ddr3_odt = <DDR3_ODT_120ohm>;
-+                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
-+                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_45ohm>;
-+                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
-+                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
-+};
-+
-+&bluetooth {
-+	status = "okay";
-+};
-+
-+&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL       600000
-+		SYS_STATUS_VIDEO_4K	700000
-+		SYS_STATUS_VIDEO_4K_10B 800000
-+	>;
-+	status = "okay";
-+};
-+
-+&dmc_opp_table {
-+
-+	/delete-node/ opp-400000000;
-+
-+	/delete-node/ opp-666000000;
-+
-+	opp-700000000 {
-+		opp-microvolt = <1100000>;
-+		opp-microvolt-L0 = <1100000>;
-+		opp-microvolt-L1 = <1050000>;
-+	};
-+
-+	/delete-node/ opp-786000000;
-+
-+};
-+
-+&emmc {
-+	mmc-hs200-1_8v;
-+	status = "okay";
-+};
-+
-+&gmac {
-+	tx_delay = <0x26>;
-+	rx_delay = <0x11>;
-+};
-+
-+&ir_receiver {
-+	linux,rc-map-name = "rc-trn9";
-+};
-+
-+&uart1 {
-+	status = "okay";
-+};
-+
-+&wifi {
-+	wifi_chip_type = "ap6330";
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/rk3228b-box-v88mars-II.dts b/arch/arm/boot/dts/rk3228b-box-v88mars-II.dts
-new file mode 100644
-index 0000000000..96f3536073
---- /dev/null
-+++ b/arch/arm/boot/dts/rk3228b-box-v88mars-II.dts
-@@ -0,0 +1,69 @@
-+/*
-+ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk3228b-box.dtsi"
-+
-+/ {
-+	model = "RK3228b V88 Mars II";
-+
-+	leds {
-+                compatible = "gpio-leds";
-+
-+                led_blue {
-+                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-+                        default-state = "on";
-+                };
-+
-+                led_red {
-+                        gpios = <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>;
-+                        default-state = "off";
-+                        linux,default-trigger = "rc-feedback";
-+                };
-+        };
-+
-+};
-+
-+&dram_timing {
-+	dram_dll_disb_freq = <300>;
-+};
-+
-+&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL       600000
-+		SYS_STATUS_VIDEO_4K	700000
-+		SYS_STATUS_VIDEO_4K_10B 800000
-+	>;
-+
-+	status = "okay";
-+};
-+
-+&dmc_opp_table {
-+
-+	/delete-node/ opp-666000000;
-+
-+	opp-700000000 {
-+		opp-microvolt = <1100000>;
-+		opp-microvolt-L0 = <1100000>;
-+		opp-microvolt-L1 = <1050000>;
-+	};
-+
-+	/delete-node/ opp-786000000;
-+
-+};
-+
-+&nandc {
-+	status = "okay";
-+};
-+
-+&wifi {
-+	wifi_chip_type = "ssv6051";
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/rk3229-box-a95xr1.dts b/arch/arm/boot/dts/rk3229-box-a95xr1.dts
-new file mode 100644
-index 0000000000..fe31b0934f
---- /dev/null
-+++ b/arch/arm/boot/dts/rk3229-box-a95xr1.dts
-@@ -0,0 +1,68 @@
-+/*
-+ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk3229-box.dtsi"
-+
-+/ {
-+	model = "RK3229 Box A95X-R1";
-+
-+	leds {
-+		compatible = "gpio-leds";
-+
-+		led_blue {
-+			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-+			default-state = "on";
-+		};
-+
-+		led_red {
-+			gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+			linux,default-trigger = "rc-feedback";
-+		};
-+	};
-+
-+};
-+
-+&dram_timing {
-+                sr_idle = <0>;
-+                pd_idle = <0>;
-+                ddr3_drv = <DDR3_DS_34ohm>;
-+                ddr3_odt = <DDR3_ODT_40ohm>;
-+                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_34ohm>;
-+                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_34ohm>;
-+                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
-+                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
-+};
-+
-+&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL       786000
-+		SYS_STATUS_VIDEO_4K	786000
-+		SYS_STATUS_VIDEO_4K_10B 800000
-+	>;
-+
-+	status = "okay";
-+};
-+
-+&emmc {
-+	mmc-hs200-1_8v;
-+	status = "okay";
-+};
-+
-+&gmac {
-+	tx_delay = <0x26>;
-+	rx_delay = <0x11>;
-+};
-+
-+&wifi {
-+	wifi_chip_type = "ssv6051";
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/rk3229-box-d88.dts b/arch/arm/boot/dts/rk3229-box-d88.dts
-new file mode 100644
-index 0000000000..3ea6747ef0
---- /dev/null
-+++ b/arch/arm/boot/dts/rk3229-box-d88.dts
-@@ -0,0 +1,72 @@
-+/*
-+ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk3229-box.dtsi"
-+
-+/ {
-+	model = "RK3229 D88 HDMI Stick";
-+
-+	leds {
-+                compatible = "gpio-leds";
-+
-+                led_red {
-+                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
-+                        default-state = "on";
-+                };
-+
-+        };
-+
-+};
-+
-+&bluetooth {
-+	status = "okay";
-+};
-+
-+&dram_timing {
-+                sr_idle = <24>;
-+                pd_idle = <32>;
-+                ddr3_drv = <DDR3_DS_40ohm>;
-+                ddr3_odt = <DDR3_ODT_120ohm>;
-+                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
-+                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_45ohm>;
-+                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
-+                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
-+};
-+
-+&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL	600000
-+		SYS_STATUS_VIDEO_4K	786000
-+		SYS_STATUS_VIDEO_4K_10B	800000
-+	>;
-+
-+	status = "okay";
-+};
-+
-+&nandc {
-+	status = "okay";
-+};
-+
-+&uart1 {
-+	status="okay";
-+};
-+
-+&tve {
-+	status = "disabled";
-+};
-+
-+&route_tve {
-+	status = "disabled";
-+};
-+
-+&wifi {
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/rk3229-box-hk1mini.dts b/arch/arm/boot/dts/rk3229-box-hk1mini.dts
-new file mode 100644
-index 0000000000..9635c48b9d
---- /dev/null
-+++ b/arch/arm/boot/dts/rk3229-box-hk1mini.dts
-@@ -0,0 +1,192 @@
-+/*
-+ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk3229-box.dtsi"
-+
-+/ {
-+	model = "RK3229 HK1mini";
-+
-+	leds {
-+                compatible = "gpio-leds";
-+
-+                led_red {
-+                        gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
-+                        default-state = "off";
-+			linux,default-trigger = "rc-feedback";
-+                };
-+
-+                led_blue {
-+                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
-+                        default-state = "on";
-+                };
-+        };
-+
-+};
-+
-+&dram_timing {
-+                sr_idle = <24>;
-+                pd_idle = <32>;
-+                ddr3_drv = <DDR3_DS_40ohm>;
-+                ddr3_odt = <DDR3_ODT_120ohm>;
-+                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
-+                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_45ohm>;
-+                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
-+                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
-+		dram_odt_disb_freq = <100>;
-+		phy_odt_disb_freq = <100>;
-+};
-+
-+&dmc {
-+
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL       800000
-+		SYS_STATUS_VIDEO_4K	800000
-+		SYS_STATUS_VIDEO_4K_10B 800000
-+	>;
-+	status = "okay";
-+};
-+
-+&nandc {
-+	status = "okay";
-+};
-+
-+&cpu0_opp_table {
-+
-+	opp-408000000 {
-+		opp-microvolt = <1000000 1000000 1375000>;
-+		opp-microvolt-L0 = <1000000 1000000 1375000>;
-+		opp-microvolt-L1 = <975000 975000 1375000>;
-+	};
-+
-+	opp-600000000 {
-+		opp-microvolt = <1025000 1025000 1375000>;
-+		opp-microvolt-L0 = <1025000 1025000 1375000>;
-+		opp-microvolt-L1 = <1000000 1000000 1375000>;
-+	};
-+
-+	opp-816000000 {
-+		opp-microvolt = <1050000 1050000 1375000>;
-+		opp-microvolt-L0 = <1050000 1050000 1375000>;
-+		opp-microvolt-L1 = <1025000 1025000 1375000>;
-+	};
-+
-+	opp-1008000000 {
-+		opp-microvolt = <1175000 1175000 1375000>;
-+		opp-microvolt-L0 = <1175000 1175000 1375000>;
-+		opp-microvolt-L1 = <1125000 1125000 1375000>;
-+	};
-+
-+	opp-1200000000 {
-+		opp-microvolt = <1275000 1275000 1375000>;
-+		opp-microvolt-L0 = <1275000 1275000 1375000>;
-+		opp-microvolt-L1 = <1225000 1225000 1375000>;
-+	};
-+
-+	opp-1296000000 {
-+		opp-microvolt = <1325000 1325000 1375000>;
-+		opp-microvolt-L0 = <1325000 1325000 1375000>;
-+		opp-microvolt-L1 = <1275000 1275000 1375000>;
-+	};
-+
-+	opp-1392000000 {
-+		opp-microvolt = <1375000 1375000 1375000>;
-+		opp-microvolt-L0 = <1375000 1375000 1375000>;
-+		opp-microvolt-L1 = <1325000 1325000 1375000>;
-+	};
-+
-+	opp-1464000000 {
-+		opp-microvolt = <1375000 1375000 1375000>;
-+		opp-microvolt-L0 = <1375000 1375000 1375000>;
-+		opp-microvolt-L1 = <1350000 1350000 1375000>;
-+	};
-+
-+};
-+
-+&dmc_opp_table {
-+
-+	opp-300000000 {
-+		opp-microvolt = <1100000>;
-+		opp-microvolt-L0 = <1100000>;
-+		opp-microvolt-L1 = <1100000>;
-+	};
-+
-+	opp-400000000 {
-+		opp-microvolt = <1100000>;
-+		opp-microvolt-L0 = <1100000>;
-+		opp-microvolt-L1 = <1100000>;
-+	};
-+
-+	opp-600000000 {
-+		opp-microvolt-L1 = <1100000>;
-+	};
-+
-+	opp-666000000 {
-+		opp-microvolt = <1100000>;
-+		opp-microvolt-L0 = <1100000>;
-+	};
-+
-+	opp-700000000 {
-+		opp-microvolt = <1100000>;
-+		opp-microvolt-L0 = <1100000>;
-+	};
-+
-+	opp-786000000 {
-+		opp-microvolt = <1100000>;
-+		opp-microvolt-L0 = <1100000>;
-+	};
-+
-+	opp-800000000 {
-+		opp-microvolt = <1100000>;
-+		opp-microvolt-L0 = <1100000>;
-+	};
-+};
-+
-+&threshold {
-+	temperature = <85000>;
-+};
-+
-+&target {
-+	temperature = <100000>;
-+};
-+
-+&thermal_zones {
-+	soc-thermal {
-+		cooling-maps {
-+
-+			/delete-node/ map2;
-+			/delete-node/ map3;
-+		};
-+	};
-+};
-+
-+&gpu_opp_table {
-+	opp-200000000 {
-+		opp-microvolt = <1100000>;
-+		opp-microvolt-L0 = <1100000>;
-+		opp-microvolt-L1 = <1100000>;
-+	};
-+
-+	opp-300000000 {
-+		opp-microvolt = <1100000>;
-+		opp-microvolt-L0 = <1100000>;
-+		opp-microvolt-L1 = <1100000>;
-+	};
-+
-+	opp-500000000 {
-+		opp-microvolt = <1100000>;
-+		opp-microvolt-L0 = <1100000>;
-+	};
-+};
-+
-+&wifi {
-+	wifi_chip_type = "ssv6051";
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/rk3229-box-ntn8.dts b/arch/arm/boot/dts/rk3229-box-ntn8.dts
-new file mode 100644
-index 0000000000..5cc114257e
---- /dev/null
-+++ b/arch/arm/boot/dts/rk3229-box-ntn8.dts
-@@ -0,0 +1,76 @@
-+/*
-+ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk3229-box.dtsi"
-+
-+/ {
-+	model = "RK3229 HPH NT-N8";
-+
-+	leds {
-+		compatible = "gpio-leds";
-+
-+		led_green {
-+			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-+			default-state = "on";
-+		};
-+
-+		led_red {
-+			gpios = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+			linux,default-trigger = "rc-feedback";
-+		};
-+	};
-+};
-+
-+&dram_timing {
-+                sr_idle = <12>;
-+                pd_idle = <32>;
-+                ddr3_drv = <DDR3_DS_40ohm>;
-+                ddr3_odt = <DDR3_ODT_120ohm>;
-+                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
-+                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_45ohm>;
-+                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
-+                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
-+};
-+
-+&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL       786000
-+		SYS_STATUS_VIDEO_4K	786000
-+		SYS_STATUS_VIDEO_4K_10B 800000
-+	>;
-+
-+	status = "okay";
-+};
-+
-+&emmc {
-+	mmc-hs200-1_8v;
-+	status = "okay";
-+};
-+
-+&gmac {
-+	tx_delay = <0x26>;
-+	rx_delay = <0x11>;
-+};
-+
-+&ir_receiver {
-+	linux,rc-map-name = "rc-trn9";
-+};
-+
-+&uart1 {
-+	status = "okay";
-+};
-+
-+&wifi {
-+	wifi_chip_type = "ap6212";
-+	sdio_vref = <3300>;
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/rk3229-box-v884k.dts b/arch/arm/boot/dts/rk3229-box-v884k.dts
-new file mode 100644
-index 0000000000..e9cadf4c7c
---- /dev/null
-+++ b/arch/arm/boot/dts/rk3229-box-v884k.dts
-@@ -0,0 +1,57 @@
-+/*
-+ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk3229-box.dtsi"
-+
-+/ {
-+	model = "RK3229 V88 4K";
-+
-+	leds {
-+                compatible = "gpio-leds";
-+
-+                led_blue {
-+                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-+                        default-state = "on";
-+                };
-+        };
-+
-+};
-+
-+&dram_timing {
-+                dram_spd_bin = <21>;
-+		sr_idle = <12>;
-+                pd_idle = <32>;
-+                ddr3_drv = <DDR3_DS_40ohm>;
-+                ddr3_odt = <DDR3_ODT_120ohm>;
-+                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
-+                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_45ohm>;
-+                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
-+                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
-+};
-+
-+&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL	786000
-+		SYS_STATUS_VIDEO_4K	786000
-+		SYS_STATUS_VIDEO_4K_10B	800000
-+	>;
-+
-+	status = "okay";
-+};
-+
-+&nandc {
-+	status = "okay";
-+};
-+
-+&wifi {
-+	wifi_chip_type = "ssv6051";
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/rk3229-box-v88mars.dts b/arch/arm/boot/dts/rk3229-box-v88mars.dts
-new file mode 100644
-index 0000000000..a44ba9efd0
---- /dev/null
-+++ b/arch/arm/boot/dts/rk3229-box-v88mars.dts
-@@ -0,0 +1,40 @@
-+/*
-+ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk3229-box.dtsi"
-+
-+/ {
-+	model = "RK3229 V88 Mars";
-+
-+	leds {
-+                compatible = "gpio-leds";
-+
-+                led_blue {
-+                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-+                        default-state = "on";
-+                };
-+
-+                led_red {
-+                        gpios = <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>;
-+                        default-state = "off";
-+                        linux,default-trigger = "rc-feedback";
-+                };
-+        };
-+};
-+
-+
-+&nandc {
-+	status = "okay";
-+};
-+
-+&wifi {
-+	wifi_chip_type = "ssv6051";
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/rk3228b-box-mkv809vii.dts b/arch/arm/boot/dts/rk3228b-box-mkv809vii.dts
-new file mode 100644
-index 0000000000..550b7c5670
---- /dev/null
-+++ b/arch/arm/boot/dts/rk3228b-box-mkv809vii.dts
-@@ -0,0 +1,189 @@
-+/*
-+ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk3228b-box.dtsi"
-+
-+/ {
-+	model = "RK3228B MK809IV HDMI Stick";
-+
-+
-+	/delete-node/ dmc-opp-table;
-+
-+	dmc_opp_table: dmc-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		rockchip,leakage-voltage-sel = <
-+			1   5    0
-+			6   254  1
-+		>;
-+		nvmem-cells = <&logic_leakage>;
-+		nvmem-cell-names = "ddr_leakage";
-+
-+		opp-240000000 {
-+			opp-hz = /bits/ 64 <240000000>;
-+			opp-microvolt = <1250000>;
-+			opp-microvolt-L0 = <1250000>;
-+			opp-microvolt-L1 = <1200000>;
-+		};
-+
-+		opp-324000000 {
-+			opp-hz = /bits/ 64 <324000000>;
-+			opp-microvolt = <1250000>;
-+			opp-microvolt-L0 = <1250000>;
-+			opp-microvolt-L1 = <1200000>;
-+		};
-+
-+		opp-396000000 {
-+			opp-hz = /bits/ 64 <396000000>;
-+			opp-microvolt = <1250000>;
-+			opp-microvolt-L0 = <1250000>;
-+			opp-microvolt-L1 = <1200000>;
-+		};
-+
-+		opp-456000000 {
-+			opp-hz = /bits/ 64 <456000000>;
-+			opp-microvolt = <1250000>;
-+			opp-microvolt-L0 = <1250000>;
-+			opp-microvolt-L1 = <1200000>;
-+		};
-+
-+		opp-528000000 {
-+			opp-hz = /bits/ 64 <528000000>;
-+			opp-microvolt = <1250000>;
-+			opp-microvolt-L0 = <1250000>;
-+			opp-microvolt-L1 = <1200000>;
-+		};
-+
-+		opp-600000000 {
-+			opp-hz = /bits/ 64 <600000000>;
-+			opp-microvolt = <1250000>;
-+			opp-microvolt-L0 = <1250000>;
-+			opp-microvolt-L1 = <1200000>;
-+		};
-+
-+		opp-700000000 {
-+			opp-hz = /bits/ 64 <600000000>;
-+			opp-microvolt = <1250000>;
-+			opp-microvolt-L0 = <1250000>;
-+			opp-microvolt-L1 = <1200000>;
-+		};
-+
-+		opp-800000000 {
-+			opp-hz = /bits/ 64 <600000000>;
-+			opp-microvolt = <1250000>;
-+			opp-microvolt-L0 = <1250000>;
-+			opp-microvolt-L1 = <1200000>;
-+		};
-+	};
-+
-+	/delete-node/ opp-table2;
-+
-+	gpu_opp_table: opp-table2 {
-+		compatible = "operating-points-v2";
-+
-+		rockchip,leakage-voltage-sel = <
-+			1   5    0
-+			6   254  1
-+		>;
-+		nvmem-cells = <&logic_leakage>;
-+		nvmem-cell-names = "gpu_leakage";
-+
-+		opp-200000000 {
-+			opp-hz = /bits/ 64 <200000000>;
-+			opp-microvolt = <1250000>;
-+			opp-microvolt-L0 = <1250000>;
-+			opp-microvolt-L1 = <1200000>;
-+		};
-+		opp-300000000 {
-+			opp-hz = /bits/ 64 <300000000>;
-+			opp-microvolt = <1250000>;
-+			opp-microvolt-L0 = <1250000>;
-+			opp-microvolt-L1 = <1200000>;
-+		};
-+		opp-500000000 {
-+			opp-hz = /bits/ 64 <500000000>;
-+			opp-microvolt = <1250000>;
-+			opp-microvolt-L0 = <1250000>;
-+			opp-microvolt-L1 = <1200000>;
-+		};
-+	};
-+
-+	leds {
-+                compatible = "gpio-leds";
-+
-+                led_standby {
-+                        gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
-+                        default-state = "off";
-+                };
-+
-+		led_power {
-+                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
-+                        default-state = "on";
-+                };
-+
-+        };
-+
-+};
-+
-+&bluetooth {
-+	status = "okay";
-+};
-+
-+&dram_timing {
-+                sr_idle = <0xc>;
-+                pd_idle = <0x20>;
-+                ddr3_drv = <DDR3_DS_40ohm>;
-+                ddr3_odt = <DDR3_ODT_120ohm>;
-+                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
-+                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_45ohm>;
-+                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
-+                phy_ddr3_odt = <PHY_DDR3_RON_RTT_225ohm>;
-+};
-+
-+&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL	456000
-+		SYS_STATUS_VIDEO_4K	456000
-+		SYS_STATUS_VIDEO_4K_10B	456000
-+	>;
-+
-+	status = "okay";
-+};
-+
-+
-+&emmc {
-+	status = "okay";
-+};
-+
-+&cru {
-+	assigned-clock-rates =
-+			<1200000000>, <816000000>,
-+			<960000000>, <150000000>,
-+			<150000000>, <75000000>,
-+			<150000000>, <150000000>,
-+			<75000000>, <400000000>;
-+};
-+
-+&uart1 {
-+	status="okay";
-+};
-+
-+&tve {
-+	status = "disabled";
-+};
-+
-+&route_tve {
-+	status = "disabled";
-+};
-+
-+&wifi {
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/rk3228a-box-mxq4kpro.dts b/arch/arm/boot/dts/rk3228a-box-mxq4kpro.dts
-new file mode 100644
-index 0000000000..d9163f990d
---- /dev/null
-+++ b/arch/arm/boot/dts/rk3228a-box-mxq4kpro.dts
-@@ -0,0 +1,84 @@
-+/*
-+ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk3228a-box.dtsi"
-+
-+/ {
-+	model = "RK3228a MXQ 4K Pro";
-+
-+	leds {
-+                compatible = "gpio-leds";
-+
-+                led_blue {
-+                        gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
-+                        default-state = "on";
-+                };
-+
-+                led_red {
-+                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
-+                        default-state = "off";
-+                        linux,default-trigger = "rc-feedback";
-+                };
-+        };
-+
-+};
-+
-+&dram_timing {
-+	ddr3_drv = <DDR3_DS_34ohm>;
-+	phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_22ohm>;
-+	phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_22ohm>;
-+	phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_22ohm>;
-+};
-+
-+&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL       600000
-+		SYS_STATUS_VIDEO_4K	700000
-+		SYS_STATUS_VIDEO_4K_10B 700000
-+	>;
-+
-+	status = "okay";
-+};
-+
-+&dmc_opp_table {
-+
-+	opp-600000000 {
-+		opp-microvolt = <1100000>;
-+		opp-microvolt-L0 = <1100000>;
-+		opp-microvolt-L1 = <1050000>;
-+	};
-+
-+	/delete-node/ opp-666000000;
-+
-+	opp-700000000 {
-+		opp-microvolt = <1175000>;
-+		opp-microvolt-L0 = <1175000>;
-+		opp-microvolt-L1 = <1125000>;
-+	};
-+
-+	/delete-node/ opp-786000000;
-+
-+	opp-800000000 {
-+		opp-microvolt = <1175000>;
-+		opp-microvolt-L0 = <1175000>;
-+		opp-microvolt-L1 = <1125000>;
-+	};
-+
-+};
-+
-+
-+&nandc {
-+	status = "okay";
-+};
-+
-+&wifi {
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/rk3228b-box-a8.dts b/arch/arm/boot/dts/rk3228b-box-a8.dts
-new file mode 100644
-index 0000000000..886abc8894
---- /dev/null
-+++ b/arch/arm/boot/dts/rk3228b-box-a8.dts
-@@ -0,0 +1,36 @@
-+/*
-+ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk3228b-box.dtsi"
-+
-+/ {
-+	model = "RK3228b Alfawise A8";
-+
-+	leds {
-+                compatible = "gpio-leds";
-+
-+                led_blue {
-+                        gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-+                        default-state = "on";
-+                };
-+
-+        };
-+
-+};
-+
-+&emmc {
-+	mmc-hs200-1_8v;
-+	status = "okay";
-+};
-+
-+&wifi {
-+	wifi_chip_type = "ssv6051";
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/rk3229-box-tx2.dts b/arch/arm/boot/dts/rk3229-box-tx2.dts
-new file mode 100644
-index 0000000000..26da4aa561
---- /dev/null
-+++ b/arch/arm/boot/dts/rk3229-box-tx2.dts
-@@ -0,0 +1,58 @@
-+/*
-+ * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk3229-box.dtsi"
-+
-+/ {
-+	model = "RK3229 Tanix TX2";
-+
-+	leds {
-+		compatible = "gpio-leds";
-+
-+		led_green {
-+			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-+			default-state = "on";
-+		};
-+
-+	};
-+};
-+
-+&bluetooth {
-+	status = "okay";
-+};
-+
-+&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL       786000
-+		SYS_STATUS_VIDEO_4K	786000
-+		SYS_STATUS_VIDEO_4K_10B 800000
-+	>;
-+
-+	status = "okay";
-+};
-+
-+&emmc {
-+	mmc-hs200-1_8v;
-+	status = "okay";
-+};
-+
-+&gmac {
-+	tx_delay = <0x26>;
-+	rx_delay = <0x11>;
-+};
-+
-+&uart1 {
-+	status = "okay";
-+};
-+
-+&wifi {
-+	status = "okay";
-+};
+ 	i2s1: i2s1@100b0000 {
+ 		compatible = "rockchip,rk3228-i2s", "rockchip,rk3066-i2s";
+ 		reg = <0x100b0000 0x4000>;

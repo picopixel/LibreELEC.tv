@@ -1,4 +1,4 @@
-From 0dcc2992b7f03fbe5bf9bd9f65edaf5479bf975a Mon Sep 17 00:00:00 2001
+From 216878b2509bdb87257aae80a30f01d398c33a36 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 4 Sep 2017 22:34:19 +0200
 Subject: [PATCH] BACKPORT: HDMI CEC support from v4.15
@@ -7,37 +7,35 @@ Skipped changes:
 857313e51006ff51524579bcd8808b70f9a80812 "media: utilize new cdev_device_add helper function"
 0f7499fddb153a333dff3c1dc4280c178b9b5a80 "[media] rc-main: assign driver type during allocation"
 ---
- Documentation/devicetree/bindings/media/cec.txt    |   8 +
- Documentation/media/kapi/cec-core.rst              | 381 +++++++++++++++++++++
- Documentation/media/uapi/cec/cec-api.rst           |  46 +++
- Documentation/media/uapi/cec/cec-func-close.rst    |  47 +++
- Documentation/media/uapi/cec/cec-func-ioctl.rst    |  66 ++++
- Documentation/media/uapi/cec/cec-func-open.rst     |  78 +++++
- Documentation/media/uapi/cec/cec-func-poll.rst     |  77 +++++
- Documentation/media/uapi/cec/cec-funcs.rst         |  20 ++
- Documentation/media/uapi/cec/cec-header.rst        |  10 +
- Documentation/media/uapi/cec/cec-intro.rst         |  40 +++
- .../media/uapi/cec/cec-ioc-adap-g-caps.rst         | 139 ++++++++
- .../media/uapi/cec/cec-ioc-adap-g-log-addrs.rst    | 371 ++++++++++++++++++++
- .../media/uapi/cec/cec-ioc-adap-g-phys-addr.rst    |  93 +++++
- Documentation/media/uapi/cec/cec-ioc-dqevent.rst   | 226 ++++++++++++
- Documentation/media/uapi/cec/cec-ioc-g-mode.rst    | 293 ++++++++++++++++
- Documentation/media/uapi/cec/cec-ioc-receive.rst   | 344 +++++++++++++++++++
- MAINTAINERS                                        |  16 +
- drivers/media/cec/cec-adap.c                       |  61 +++-
- drivers/media/cec/cec-core.c                       |  15 +-
- drivers/media/rc/keymaps/Makefile                  |   1 +
- drivers/media/rc/keymaps/rc-cec.c                  | 182 ++++++++++
- drivers/media/rc/rc-main.c                         |   1 +
- fs/compat_ioctl.c                                  |  12 +
- include/media/cec-notifier.h                       |  22 ++
- include/media/cec.h                                |   9 +-
- include/media/rc-map.h                             |   5 +-
- include/uapi/linux/cec-funcs.h                     |   1 +
- include/uapi/linux/cec.h                           |   2 +-
- include/uapi/linux/input-event-codes.h             |  31 ++
- include/uapi/linux/input.h                         |   1 +
- 30 files changed, 2606 insertions(+), 15 deletions(-)
+ .../devicetree/bindings/media/cec.txt         |   8 +
+ Documentation/media/kapi/cec-core.rst         | 381 ++++++++++++++++++
+ Documentation/media/uapi/cec/cec-api.rst      |  46 +++
+ .../media/uapi/cec/cec-func-close.rst         |  47 +++
+ .../media/uapi/cec/cec-func-ioctl.rst         |  66 +++
+ .../media/uapi/cec/cec-func-open.rst          |  78 ++++
+ .../media/uapi/cec/cec-func-poll.rst          |  77 ++++
+ Documentation/media/uapi/cec/cec-funcs.rst    |  20 +
+ Documentation/media/uapi/cec/cec-header.rst   |  10 +
+ Documentation/media/uapi/cec/cec-intro.rst    |  40 ++
+ .../media/uapi/cec/cec-ioc-adap-g-caps.rst    | 139 +++++++
+ .../uapi/cec/cec-ioc-adap-g-log-addrs.rst     | 371 +++++++++++++++++
+ .../uapi/cec/cec-ioc-adap-g-phys-addr.rst     |  93 +++++
+ .../media/uapi/cec/cec-ioc-dqevent.rst        | 226 +++++++++++
+ .../media/uapi/cec/cec-ioc-g-mode.rst         | 293 ++++++++++++++
+ .../media/uapi/cec/cec-ioc-receive.rst        | 344 ++++++++++++++++
+ MAINTAINERS                                   |  16 +
+ drivers/media/cec/cec-adap.c                  |  61 ++-
+ drivers/media/cec/cec-core.c                  |  15 +-
+ drivers/media/rc/keymaps/Makefile             |   1 +
+ drivers/media/rc/keymaps/rc-cec.c             | 182 +++++++++
+ fs/compat_ioctl.c                             |  12 +
+ include/media/cec-notifier.h                  |  22 +
+ include/media/cec.h                           |  11 +-
+ include/uapi/linux/cec-funcs.h                |   1 +
+ include/uapi/linux/cec.h                      |   2 +-
+ include/uapi/linux/input-event-codes.h        |  31 ++
+ include/uapi/linux/input.h                    |   1 +
+ 28 files changed, 2585 insertions(+), 9 deletions(-)
  create mode 100644 Documentation/devicetree/bindings/media/cec.txt
  create mode 100644 Documentation/media/kapi/cec-core.rst
  create mode 100644 Documentation/media/uapi/cec/cec-api.rst
@@ -2392,7 +2390,7 @@ index 000000000000..bdad4b197bcd
 +ERESTARTSYS
 +    The wait for a successful transmit was interrupted (e.g. by Ctrl-C).
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 443bc975b562..225ab2c1d35b 100644
+index c8383aeb2140..504a3486cdf9 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
 @@ -2674,6 +2674,22 @@ F:	drivers/net/ieee802154/cc2520.c
@@ -2524,7 +2522,7 @@ index 8c75a51333b2..4f5d382268f7 100644
  		break;
  
 diff --git a/drivers/media/cec/cec-core.c b/drivers/media/cec/cec-core.c
-index 969f770acf77..65d763be4385 100644
+index cb4f0cca0224..6a562d990b91 100644
 --- a/drivers/media/cec/cec-core.c
 +++ b/drivers/media/cec/cec-core.c
 @@ -263,7 +263,7 @@ struct cec_adapter *cec_allocate_adapter(const struct cec_adap_ops *ops,
@@ -2569,7 +2567,7 @@ index 969f770acf77..65d763be4385 100644
  #endif
  
 diff --git a/drivers/media/rc/keymaps/Makefile b/drivers/media/rc/keymaps/Makefile
-index fbbd3bbcd252..9cffcc61fdca 100644
+index 52f6729853b9..65db48066686 100644
 --- a/drivers/media/rc/keymaps/Makefile
 +++ b/drivers/media/rc/keymaps/Makefile
 @@ -18,6 +18,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
@@ -2769,7 +2767,7 @@ index 000000000000..354c8e724b8e
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("Kamil Debski");
 diff --git a/fs/compat_ioctl.c b/fs/compat_ioctl.c
-index a52ca5cba015..b0b96fc01da3 100644
+index 5af973621c73..e39ca3c305b1 100644
 --- a/fs/compat_ioctl.c
 +++ b/fs/compat_ioctl.c
 @@ -57,6 +57,7 @@
@@ -2780,7 +2778,7 @@ index a52ca5cba015..b0b96fc01da3 100644
  
  #include <net/bluetooth/bluetooth.h>
  #include <net/bluetooth/hci_sock.h>
-@@ -1381,6 +1382,17 @@ COMPATIBLE_IOCTL(VIDEO_GET_NAVI)
+@@ -1378,6 +1379,17 @@ COMPATIBLE_IOCTL(VIDEO_GET_NAVI)
  COMPATIBLE_IOCTL(VIDEO_SET_ATTRIBUTES)
  COMPATIBLE_IOCTL(VIDEO_GET_SIZE)
  COMPATIBLE_IOCTL(VIDEO_GET_FRAME_RATE)
@@ -2839,7 +2837,7 @@ index ca19a9305782..8bb169ac7afd 100644
  
  /**
 diff --git a/include/media/cec.h b/include/media/cec.h
-index df3c94f05aa5..f64807a78064 100644
+index f4a05206f1f1..f94c8cb75753 100644
 --- a/include/media/cec.h
 +++ b/include/media/cec.h
 @@ -191,6 +191,11 @@ struct cec_adapter {
@@ -2863,7 +2861,7 @@ index df3c94f05aa5..f64807a78064 100644
  struct cec_adapter *cec_allocate_adapter(const struct cec_adap_ops *ops,
  		void *priv, const char *name, u32 caps, u8 available_las);
  int cec_register_adapter(struct cec_adapter *adap, struct device *parent);
-@@ -427,6 +427,10 @@ static inline u16 cec_phys_addr_for_input(u16 phys_addr, u8 input)
+@@ -427,6 +432,10 @@ static inline u16 cec_phys_addr_for_input(u16 phys_addr, u8 input)
  
  static inline int cec_phys_addr_validate(u16 phys_addr, u16 *parent, u16 *port)
  {
@@ -2900,7 +2898,7 @@ index af6682f5ea85..b9f8df3a0477 100644
  /* The logical address types that the CEC device wants to claim */
  #define CEC_LOG_ADDR_TYPE_TV		0
 diff --git a/include/uapi/linux/input-event-codes.h b/include/uapi/linux/input-event-codes.h
-index 87cf351bab03..b0c5c4888a4b 100644
+index 9e07bf4259e1..68ab0d357e4c 100644
 --- a/include/uapi/linux/input-event-codes.h
 +++ b/include/uapi/linux/input-event-codes.h
 @@ -611,6 +611,37 @@
@@ -2953,8 +2951,11 @@ index 2758687300b4..41e8dff588e1 100644
  
  /*
   * MT_TOOL types
+-- 
+2.17.1
 
-From 8e3b262321c2121f8ceed952be3619039aebea9d Mon Sep 17 00:00:00 2001
+
+From 0aacf7a894888e24650bb28185658a72d059fdcb Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 4 Sep 2017 22:34:22 +0200
 Subject: [PATCH] BACKPORT: Pulse Eight HDMI CEC from v4.15
@@ -2966,7 +2967,7 @@ Subject: [PATCH] BACKPORT: Pulse Eight HDMI CEC from v4.15
  drivers/media/usb/Makefile                |   1 +
  drivers/media/usb/pulse8-cec/Kconfig      |  11 +
  drivers/media/usb/pulse8-cec/Makefile     |   1 +
- drivers/media/usb/pulse8-cec/pulse8-cec.c | 757 ++++++++++++++++++++++++++++++
+ drivers/media/usb/pulse8-cec/pulse8-cec.c | 757 ++++++++++++++++++++++
  include/uapi/linux/serio.h                |   1 +
  8 files changed, 797 insertions(+), 3 deletions(-)
  create mode 100644 drivers/media/usb/pulse8-cec/Kconfig
@@ -2974,10 +2975,10 @@ Subject: [PATCH] BACKPORT: Pulse Eight HDMI CEC from v4.15
  create mode 100644 drivers/media/usb/pulse8-cec/pulse8-cec.c
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 225ab2c1d35b..0c1232c326a5 100644
+index 504a3486cdf9..fdfc17ef6b2d 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -8673,6 +8673,13 @@ F:	include/linux/tracehook.h
+@@ -8686,6 +8686,13 @@ F:	include/linux/tracehook.h
  F:	include/uapi/linux/ptrace.h
  F:	kernel/ptrace.c
  
@@ -3035,10 +3036,10 @@ index 9c927d35c1f5..d189843f3727 100644
  };
  
 diff --git a/drivers/media/usb/Kconfig b/drivers/media/usb/Kconfig
-index 7496f332f3f5..c9644b62f91a 100644
+index 867d6dbb4285..8bb31a8a535c 100644
 --- a/drivers/media/usb/Kconfig
 +++ b/drivers/media/usb/Kconfig
-@@ -60,5 +60,10 @@ source "drivers/media/usb/hackrf/Kconfig"
+@@ -61,5 +61,10 @@ source "drivers/media/usb/hackrf/Kconfig"
  source "drivers/media/usb/msi2500/Kconfig"
  endif
  
@@ -3050,7 +3051,7 @@ index 7496f332f3f5..c9644b62f91a 100644
  endif #MEDIA_USB_SUPPORT
  endif #USB
 diff --git a/drivers/media/usb/Makefile b/drivers/media/usb/Makefile
-index 8874ba774a34..0f15e3351ddc 100644
+index 34bc729af945..7f64513475ae 100644
 --- a/drivers/media/usb/Makefile
 +++ b/drivers/media/usb/Makefile
 @@ -24,3 +24,4 @@ obj-$(CONFIG_VIDEO_EM28XX) += em28xx/
@@ -3856,30 +3857,33 @@ index becdd78295cc..4588c66a8df0 100644
 +#define SERIO_PULSE8_CEC	0x40
  
  #endif /* _UAPI_SERIO_H */
+-- 
+2.17.1
 
-From 7f6dbf0df7f833b1d9e8da72365eebffd046e7c7 Mon Sep 17 00:00:00 2001
+
+From eeb0f2f6720fa2ec0d476468a179633a5d505165 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 4 Sep 2017 22:34:24 +0200
 Subject: [PATCH] BACKPORT: RainShadow Tech HDMI CEC from v4.15
 
 ---
- MAINTAINERS                                       |   7 +
- drivers/media/usb/Kconfig                         |   1 +
- drivers/media/usb/Makefile                        |   1 +
- drivers/media/usb/rainshadow-cec/Kconfig          |  11 +
- drivers/media/usb/rainshadow-cec/Makefile         |   1 +
- drivers/media/usb/rainshadow-cec/rainshadow-cec.c | 384 ++++++++++++++++++++++
- include/uapi/linux/serio.h                        |   1 +
+ MAINTAINERS                                   |   7 +
+ drivers/media/usb/Kconfig                     |   1 +
+ drivers/media/usb/Makefile                    |   1 +
+ drivers/media/usb/rainshadow-cec/Kconfig      |  11 +
+ drivers/media/usb/rainshadow-cec/Makefile     |   1 +
+ .../media/usb/rainshadow-cec/rainshadow-cec.c | 384 ++++++++++++++++++
+ include/uapi/linux/serio.h                    |   1 +
  7 files changed, 406 insertions(+)
  create mode 100644 drivers/media/usb/rainshadow-cec/Kconfig
  create mode 100644 drivers/media/usb/rainshadow-cec/Makefile
  create mode 100644 drivers/media/usb/rainshadow-cec/rainshadow-cec.c
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 0c1232c326a5..551555a162c3 100644
+index fdfc17ef6b2d..420af58663d5 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -8912,6 +8912,13 @@ L:	linux-fbdev@vger.kernel.org
+@@ -8931,6 +8931,13 @@ L:	linux-fbdev@vger.kernel.org
  S:	Maintained
  F:	drivers/video/fbdev/aty/aty128fb.c
  
@@ -3894,10 +3898,10 @@ index 0c1232c326a5..551555a162c3 100644
  P:	rt2x00 project
  M:	Stanislaw Gruszka <sgruszka@redhat.com>
 diff --git a/drivers/media/usb/Kconfig b/drivers/media/usb/Kconfig
-index c9644b62f91a..b24e753c4766 100644
+index 8bb31a8a535c..3bb506754f31 100644
 --- a/drivers/media/usb/Kconfig
 +++ b/drivers/media/usb/Kconfig
-@@ -63,6 +63,7 @@ endif
+@@ -64,6 +64,7 @@ endif
  if MEDIA_CEC_SUPPORT
  	comment "USB HDMI CEC adapters"
  source "drivers/media/usb/pulse8-cec/Kconfig"
@@ -3906,7 +3910,7 @@ index c9644b62f91a..b24e753c4766 100644
  
  endif #MEDIA_USB_SUPPORT
 diff --git a/drivers/media/usb/Makefile b/drivers/media/usb/Makefile
-index 0f15e3351ddc..738b993ec8b0 100644
+index 7f64513475ae..35b7963999cb 100644
 --- a/drivers/media/usb/Makefile
 +++ b/drivers/media/usb/Makefile
 @@ -25,3 +25,4 @@ obj-$(CONFIG_VIDEO_USBTV) += usbtv/
@@ -4339,11 +4343,14 @@ index 4588c66a8df0..89b72003fb68 100644
 +#define SERIO_RAINSHADOW_CEC	0x41
  
  #endif /* _UAPI_SERIO_H */
+-- 
+2.17.1
 
-From f532f514ca373430332f2733be987335af7ae75c Mon Sep 17 00:00:00 2001
+
+From ba866502ac89eb343e4be55aafd529a70dabfdbc Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 2 Sep 2017 16:23:11 +0200
-Subject: [PATCH] [media] rc/keymaps: initialize rc-cec early
+Subject: [PATCH] rc/keymaps: initialize rc-cec early
 
 ---
  drivers/media/rc/keymaps/rc-cec.c | 2 +-
@@ -4362,36 +4369,41 @@ index 354c8e724b8e..fb0c2b1f3814 100644
  module_exit(exit_rc_map_cec);
  
  MODULE_LICENSE("GPL");
+-- 
+2.17.1
 
-From 54c779a399fb852e06f11a03bf03c31090c4b722 Mon Sep 17 00:00:00 2001
+
+From 3cddb3490407a2d860a08bb01b7ba8ba3e951dee Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 2 Sep 2017 16:23:11 +0200
 Subject: [PATCH] drm/bridge: dw-hdmi: read edid on hpd event
 
 ---
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 23 +++++++++++++++++++----
- 1 file changed, 19 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index 8cb2cb4e61a6..c045cc0717cd 100644
+index 1c6bce3f1f39..8b7fcca0017e 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
 +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -2479,6 +2479,7 @@ static void dw_hdmi_bridge_nop(struct drm_bridge *bridge)
+@@ -2565,11 +2565,10 @@ static void dw_hdmi_bridge_nop(struct drm_bridge *bridge)
  static enum drm_connector_status
  dw_hdmi_connector_detect(struct drm_connector *connector, bool force)
  {
-+	enum drm_connector_status status;
++	enum drm_connector_status connect_status;
  	struct dw_hdmi *hdmi = container_of(connector, struct dw_hdmi,
  					     connector);
  
-@@ -2488,7 +2489,24 @@ dw_hdmi_connector_detect(struct drm_connector *connector, bool force)
- 	dw_hdmi_update_phy_mask(hdmi);
- 	mutex_unlock(&hdmi->mutex);
+-	int connect_status;
+-
+ 	mutex_lock(&hdmi->mutex);
+ 	hdmi->force = DRM_FORCE_UNSPECIFIED;
+ 	dw_hdmi_update_power(hdmi);
+@@ -2578,6 +2577,21 @@ dw_hdmi_connector_detect(struct drm_connector *connector, bool force)
  
--	return hdmi->phy.ops->read_hpd(hdmi, hdmi->phy.data);
-+	status = hdmi->phy.ops->read_hpd(hdmi, hdmi->phy.data);
-+
-+	if (status == connector_status_connected && hdmi->ddc) {
+ 	connect_status = hdmi->phy.ops->read_hpd(hdmi, hdmi->phy.data);
+ 
++	if (connect_status == connector_status_connected && hdmi->ddc) {
 +		struct edid *edid = drm_get_edid(connector, hdmi->ddc);
 +		if (edid) {
 +			dev_dbg(hdmi->dev, "got edid: width[%d] x height[%d]\n",
@@ -4406,11 +4418,10 @@ index 8cb2cb4e61a6..c045cc0717cd 100644
 +		}
 +	}
 +
-+	return status;
- }
- 
- static int dw_hdmi_connector_get_modes(struct drm_connector *connector)
-@@ -2891,9 +2909,6 @@ static irqreturn_t dw_hdmi_irq(int irq, void *dev_id)
+ #ifdef CONFIG_SWITCH
+ 	if (connect_status == connector_status_connected)
+ 		switch_set_state(&hdmi->switchdev, 1);
+@@ -2988,9 +3002,6 @@ static irqreturn_t dw_hdmi_irq(int irq, void *dev_id)
  			dw_hdmi_update_phy_mask(hdmi);
  		}
  		mutex_unlock(&hdmi->mutex);
@@ -4420,3 +4431,6 @@ index 8cb2cb4e61a6..c045cc0717cd 100644
  	}
  
  	check_hdmi_irq(hdmi, intr_stat, phy_int_pol);
+-- 
+2.17.1
+

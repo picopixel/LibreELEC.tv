@@ -1,4 +1,4 @@
-From 062e69c83449e4f5f363bb3caf4ba411907636d5 Mon Sep 17 00:00:00 2001
+From 1efb42db10d6289740cd562a04ca62489a3e15de Mon Sep 17 00:00:00 2001
 From: Pantelis Antoniou <pantelis.antoniou@konsulko.com>
 Date: Thu, 22 Oct 2015 23:30:04 +0300
 Subject: [PATCH] UPSTREAM: configfs: implement binary attributes
@@ -25,16 +25,16 @@ Signed-off-by: Pantelis Antoniou <pantelis.antoniou@konsulko.com>
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 (cherry picked from commit 03607ace807b414eab46323c794b6fb8fcc2d48c)
 ---
- Documentation/filesystems/configfs/configfs.txt |  57 +++++-
- fs/configfs/configfs_internal.h                 |  14 +-
- fs/configfs/dir.c                               |  18 +-
- fs/configfs/file.c                              | 255 +++++++++++++++++++++++-
- fs/configfs/inode.c                             |   2 +-
- include/linux/configfs.h                        |  50 +++++
+ .../filesystems/configfs/configfs.txt         |  57 +++-
+ fs/configfs/configfs_internal.h               |  14 +-
+ fs/configfs/dir.c                             |  18 +-
+ fs/configfs/file.c                            | 255 +++++++++++++++++-
+ fs/configfs/inode.c                           |   2 +-
+ include/linux/configfs.h                      |  50 ++++
  6 files changed, 374 insertions(+), 22 deletions(-)
 
 diff --git a/Documentation/filesystems/configfs/configfs.txt b/Documentation/filesystems/configfs/configfs.txt
-index af68efdbbfad..e5fe521eea1d 100644
+index ab65a5cc8d9b..3828e85345ae 100644
 --- a/Documentation/filesystems/configfs/configfs.txt
 +++ b/Documentation/filesystems/configfs/configfs.txt
 @@ -51,15 +51,27 @@ configfs tree is always there, whether mounted on /config or not.
@@ -168,10 +168,10 @@ index b65d1ef532d5..ccc31fa6f1a7 100644
  {
  	struct config_item * item = NULL;
 diff --git a/fs/configfs/dir.c b/fs/configfs/dir.c
-index a7a1b218f308..7ae97e83f121 100644
+index 8b64cc9b484c..83d221bd9ea5 100644
 --- a/fs/configfs/dir.c
 +++ b/fs/configfs/dir.c
-@@ -255,6 +255,12 @@ static void configfs_init_file(struct inode * inode)
+@@ -253,6 +253,12 @@ static void configfs_init_file(struct inode * inode)
  	inode->i_fop = &configfs_file_operations;
  }
  
@@ -184,7 +184,7 @@ index a7a1b218f308..7ae97e83f121 100644
  static void init_symlink(struct inode * inode)
  {
  	inode->i_op = &configfs_symlink_inode_operations;
-@@ -423,7 +429,9 @@ static int configfs_attach_attr(struct configfs_dirent * sd, struct dentry * den
+@@ -421,7 +427,9 @@ static int configfs_attach_attr(struct configfs_dirent * sd, struct dentry * den
  	spin_unlock(&configfs_dirent_lock);
  
  	error = configfs_create(dentry, (attr->ca_mode & S_IALLUGO) | S_IFREG,
@@ -195,15 +195,15 @@ index a7a1b218f308..7ae97e83f121 100644
  	if (error) {
  		configfs_put(sd);
  		return error;
-@@ -583,6 +591,7 @@ static int populate_attrs(struct config_item *item)
+@@ -581,6 +589,7 @@ static int populate_attrs(struct config_item *item)
  {
- 	struct config_item_type *t = item->ci_type;
+ 	const struct config_item_type *t = item->ci_type;
  	struct configfs_attribute *attr;
 +	struct configfs_bin_attribute *bin_attr;
  	int error = 0;
  	int i;
  
-@@ -594,6 +603,13 @@ static int populate_attrs(struct config_item *item)
+@@ -592,6 +601,13 @@ static int populate_attrs(struct config_item *item)
  				break;
  		}
  	}
@@ -576,7 +576,7 @@ index eae87575e681..0cc810e9dccc 100644
  		return attr->ca_name;
  	}
 diff --git a/include/linux/configfs.h b/include/linux/configfs.h
-index 758a029011b1..f7300d023dbe 100644
+index fd5d64e237ef..acf0f098e254 100644
 --- a/include/linux/configfs.h
 +++ b/include/linux/configfs.h
 @@ -51,6 +51,7 @@ struct module;
@@ -595,7 +595,7 @@ index 758a029011b1..f7300d023dbe 100644
  };
  
  /**
-@@ -154,6 +156,54 @@ static struct configfs_attribute _pfx##attr_##_name = {	\
+@@ -161,6 +163,54 @@ static struct configfs_attribute _pfx##attr_##_name = {	\
  	.store		= _pfx##_name##_store,		\
  }
  
@@ -650,8 +650,11 @@ index 758a029011b1..f7300d023dbe 100644
  /*
   * If allow_link() exists, the item can symlink(2) out to other
   * items.  If the item is a group, it may support mkdir(2).
+-- 
+2.17.1
 
-From 2dc994339b24321895cff69fda659e47648871be Mon Sep 17 00:00:00 2001
+
+From 5e61227d5c5dca360da8b3a0dacc0773154b144d Mon Sep 17 00:00:00 2001
 From: Octavian Purdila <octavian.purdila@intel.com>
 Date: Wed, 23 Mar 2016 14:14:48 +0200
 Subject: [PATCH] UPSTREAM: configfs: fix CONFIGFS_BIN_ATTR_[RW]O definitions
@@ -667,10 +670,10 @@ Signed-off-by: Christoph Hellwig <hch@lst.de>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/configfs.h b/include/linux/configfs.h
-index f7300d023dbe..658066d63180 100644
+index acf0f098e254..38e382f07747 100644
 --- a/include/linux/configfs.h
 +++ b/include/linux/configfs.h
-@@ -181,7 +181,7 @@ static struct configfs_bin_attribute _pfx##attr_##_name = {	\
+@@ -188,7 +188,7 @@ static struct configfs_bin_attribute _pfx##attr_##_name = {	\
  }
  
  #define CONFIGFS_BIN_ATTR_RO(_pfx, _name, _priv, _maxsz)	\
@@ -679,7 +682,7 @@ index f7300d023dbe..658066d63180 100644
  	.cb_attr = {						\
  		.ca_name	= __stringify(_name),		\
  		.ca_mode	= S_IRUGO,			\
-@@ -193,7 +193,7 @@ static struct configfs_attribute _pfx##attr_##_name = {		\
+@@ -200,7 +200,7 @@ static struct configfs_attribute _pfx##attr_##_name = {		\
  }
  
  #define CONFIGFS_BIN_ATTR_WO(_pfx, _name, _priv, _maxsz)	\
@@ -688,8 +691,11 @@ index f7300d023dbe..658066d63180 100644
  	.cb_attr = {						\
  		.ca_name	= __stringify(_name),		\
  		.ca_mode	= S_IWUSR,			\
+-- 
+2.17.1
 
-From a2a707f138cf997e098a6d3aceac4b0944f7d76e Mon Sep 17 00:00:00 2001
+
+From 38537fa089a72c0c45c89e8145f3fbf1a2665c29 Mon Sep 17 00:00:00 2001
 From: Pantelis Antoniou <pantelis.antoniou@konsulko.com>
 Date: Wed, 4 Dec 2013 19:32:00 +0200
 Subject: [PATCH] FROMLIST: OF: DT-Overlay configfs interface (v7)
@@ -726,10 +732,10 @@ Signed-off-by: Pantelis Antoniou <pantelis.antoniou@konsulko.com>
 [geert: Let OF_CONFIGFS select OF_FLATTREE to fix sparc all*config]
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- Documentation/devicetree/configfs-overlays.txt |  31 +++
- drivers/of/Kconfig                             |   8 +
- drivers/of/Makefile                            |   1 +
- drivers/of/configfs.c                          | 314 +++++++++++++++++++++++++
+ .../devicetree/configfs-overlays.txt          |  31 ++
+ drivers/of/Kconfig                            |   8 +
+ drivers/of/Makefile                           |   1 +
+ drivers/of/configfs.c                         | 314 ++++++++++++++++++
  4 files changed, 354 insertions(+)
  create mode 100644 Documentation/devicetree/configfs-overlays.txt
  create mode 100644 drivers/of/configfs.c
@@ -1118,3 +1124,6 @@ index 000000000000..908ce4960c30
 +	return ret;
 +}
 +late_initcall(of_cfs_init);
+-- 
+2.17.1
+

@@ -1,4 +1,4 @@
-From 2031709371a600b1b803ec928cc1adb2e9b5a4c1 Mon Sep 17 00:00:00 2001
+From 1290132b69b0ab22ab7d817ee6e29d13e4f12bdf Mon Sep 17 00:00:00 2001
 From: Mauro Carvalho Chehab <mchehab@osg.samsung.com>
 Date: Thu, 19 Nov 2015 11:41:36 -0200
 Subject: [PATCH] UPSTREAM: smsir.h: remove a now duplicated definition
@@ -25,25 +25,27 @@ index fc8b7925c532..d9abd96ef48b 100644
  struct smscore_device_t;
  
  struct ir_t {
+-- 
+2.17.1
 
-From 3b533a5c5f7880759fcad51e9400851a80295764 Mon Sep 17 00:00:00 2001
+
+From 4f21b25b4c9cf0323ae69cfbf66f00f4e86dbe01 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Wed, 6 Sep 2017 18:39:09 +0200
-Subject: [PATCH] [media] rc/keymaps: add keytable for Pine64 IR Remote
- Controller
+Subject: [PATCH] rc/keymaps: add keytable for Pine64 IR Remote Controller
 
 ---
  drivers/media/rc/keymaps/Makefile    |  1 +
- drivers/media/rc/keymaps/rc-pine64.c | 65 ++++++++++++++++++++++++++++++++++++
+ drivers/media/rc/keymaps/rc-pine64.c | 65 ++++++++++++++++++++++++++++
  include/media/rc-map.h               |  1 +
  3 files changed, 67 insertions(+)
  create mode 100644 drivers/media/rc/keymaps/rc-pine64.c
 
 diff --git a/drivers/media/rc/keymaps/Makefile b/drivers/media/rc/keymaps/Makefile
-index fbbd3bbcd252..8816520600f7 100644
+index 793df376e15f..cbf9879d1a83 100644
 --- a/drivers/media/rc/keymaps/Makefile
 +++ b/drivers/media/rc/keymaps/Makefile
-@@ -66,6 +66,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
+@@ -67,6 +67,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
  			rc-norwood.o \
  			rc-npgtech.o \
  			rc-pctv-sedna.o \
@@ -123,10 +125,10 @@ index 000000000000..bdf3975e7445
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("PINE64");
 diff --git a/include/media/rc-map.h b/include/media/rc-map.h
-index 7c4bbc4dfab4..3a34a9631dd1 100644
+index 6c951a1e8af0..6e9d62a80e5c 100644
 --- a/include/media/rc-map.h
 +++ b/include/media/rc-map.h
-@@ -173,6 +173,7 @@ void rc_map_init(void);
+@@ -229,6 +229,7 @@ struct rc_map *rc_map_get(const char *name);
  #define RC_MAP_NORWOOD                   "rc-norwood"
  #define RC_MAP_NPGTECH                   "rc-npgtech"
  #define RC_MAP_PCTV_SEDNA                "rc-pctv-sedna"
@@ -134,25 +136,27 @@ index 7c4bbc4dfab4..3a34a9631dd1 100644
  #define RC_MAP_PINNACLE_COLOR            "rc-pinnacle-color"
  #define RC_MAP_PINNACLE_GREY             "rc-pinnacle-grey"
  #define RC_MAP_PINNACLE_PCTV_HD          "rc-pinnacle-pctv-hd"
+-- 
+2.17.1
 
-From 21e2e6f847c6e1d0f98ce3770e6d380b20af3064 Mon Sep 17 00:00:00 2001
+
+From c1d45b216824b1adb2e6967a9e037ef08690fefe Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Wed, 6 Sep 2017 18:39:09 +0200
-Subject: [PATCH] [media] rc/keymaps: add keytable for ODROID IR Remote
- Controller
+Subject: [PATCH] rc/keymaps: add keytable for ODROID IR Remote Controller
 
 ---
  drivers/media/rc/keymaps/Makefile    |  1 +
- drivers/media/rc/keymaps/rc-odroid.c | 52 ++++++++++++++++++++++++++++++++++++
+ drivers/media/rc/keymaps/rc-odroid.c | 52 ++++++++++++++++++++++++++++
  include/media/rc-map.h               |  1 +
  3 files changed, 54 insertions(+)
  create mode 100644 drivers/media/rc/keymaps/rc-odroid.c
 
 diff --git a/drivers/media/rc/keymaps/Makefile b/drivers/media/rc/keymaps/Makefile
-index 8816520600f7..f4321cfbbc79 100644
+index cbf9879d1a83..f394537a626b 100644
 --- a/drivers/media/rc/keymaps/Makefile
 +++ b/drivers/media/rc/keymaps/Makefile
-@@ -65,6 +65,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
+@@ -66,6 +66,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
  			rc-nec-terratec-cinergy-xs.o \
  			rc-norwood.o \
  			rc-npgtech.o \
@@ -219,10 +223,10 @@ index 000000000000..52089f0b7c1d
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("Hardkernel co., Ltd.");
 diff --git a/include/media/rc-map.h b/include/media/rc-map.h
-index 3a34a9631dd1..f1badbfbca90 100644
+index 6e9d62a80e5c..df86785ba182 100644
 --- a/include/media/rc-map.h
 +++ b/include/media/rc-map.h
-@@ -172,6 +172,7 @@ void rc_map_init(void);
+@@ -228,6 +228,7 @@ struct rc_map *rc_map_get(const char *name);
  #define RC_MAP_NEC_TERRATEC_CINERGY_XS   "rc-nec-terratec-cinergy-xs"
  #define RC_MAP_NORWOOD                   "rc-norwood"
  #define RC_MAP_NPGTECH                   "rc-npgtech"
@@ -230,25 +234,27 @@ index 3a34a9631dd1..f1badbfbca90 100644
  #define RC_MAP_PCTV_SEDNA                "rc-pctv-sedna"
  #define RC_MAP_PINE64                    "rc-pine64"
  #define RC_MAP_PINNACLE_COLOR            "rc-pinnacle-color"
+-- 
+2.17.1
 
-From 0cb159b68f91fb352861a23241a24611201e0d05 Mon Sep 17 00:00:00 2001
+
+From 214d3348e03e94298ffb91e847d7d177b7c4bde8 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Wed, 6 Sep 2017 18:39:09 +0200
-Subject: [PATCH] [media] rc/keymaps: add keytable for WeTek Hub Remote
- Controller
+Subject: [PATCH] rc/keymaps: add keytable for WeTek Hub Remote Controller
 
 ---
  drivers/media/rc/keymaps/Makefile       |  1 +
- drivers/media/rc/keymaps/rc-wetek-hub.c | 52 +++++++++++++++++++++++++++++++++
+ drivers/media/rc/keymaps/rc-wetek-hub.c | 52 +++++++++++++++++++++++++
  include/media/rc-map.h                  |  1 +
  3 files changed, 54 insertions(+)
  create mode 100644 drivers/media/rc/keymaps/rc-wetek-hub.c
 
 diff --git a/drivers/media/rc/keymaps/Makefile b/drivers/media/rc/keymaps/Makefile
-index f4321cfbbc79..e8e6434cbc13 100644
+index f394537a626b..31e73332bbe8 100644
 --- a/drivers/media/rc/keymaps/Makefile
 +++ b/drivers/media/rc/keymaps/Makefile
-@@ -101,6 +101,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
+@@ -102,6 +102,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
  			rc-tt-1500.o \
  			rc-twinhan-dtv-cab-ci.o \
  			rc-twinhan1027.o \
@@ -315,10 +321,10 @@ index 000000000000..0955ecfcb77c
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("WeTek");
 diff --git a/include/media/rc-map.h b/include/media/rc-map.h
-index f1badbfbca90..cd8590c99e22 100644
+index df86785ba182..e20e23870ee4 100644
 --- a/include/media/rc-map.h
 +++ b/include/media/rc-map.h
-@@ -209,6 +209,7 @@ void rc_map_init(void);
+@@ -265,6 +265,7 @@ struct rc_map *rc_map_get(const char *name);
  #define RC_MAP_TT_1500                   "rc-tt-1500"
  #define RC_MAP_TWINHAN_DTV_CAB_CI        "rc-twinhan-dtv-cab-ci"
  #define RC_MAP_TWINHAN_VP1027_DVBS       "rc-twinhan1027"
@@ -326,25 +332,27 @@ index f1badbfbca90..cd8590c99e22 100644
  #define RC_MAP_VIDEOMATE_K100            "rc-videomate-k100"
  #define RC_MAP_VIDEOMATE_S350            "rc-videomate-s350"
  #define RC_MAP_VIDEOMATE_TV_PVR          "rc-videomate-tv-pvr"
+-- 
+2.17.1
 
-From d81bc903c323311f09eb3f8a298c10d99c62f601 Mon Sep 17 00:00:00 2001
+
+From 35a52edcff6aaf72c93823371cf919d41d11fdff Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Wed, 6 Sep 2017 18:39:09 +0200
-Subject: [PATCH] [media] rc/keymaps: add keytable for WeTek Play 2 Remote
- Controller
+Subject: [PATCH] rc/keymaps: add keytable for WeTek Play 2 Remote Controller
 
 ---
  drivers/media/rc/keymaps/Makefile          |  1 +
- drivers/media/rc/keymaps/rc-wetek-play-2.c | 83 ++++++++++++++++++++++++++++++
+ drivers/media/rc/keymaps/rc-wetek-play-2.c | 83 ++++++++++++++++++++++
  include/media/rc-map.h                     |  1 +
  3 files changed, 85 insertions(+)
  create mode 100644 drivers/media/rc/keymaps/rc-wetek-play-2.c
 
 diff --git a/drivers/media/rc/keymaps/Makefile b/drivers/media/rc/keymaps/Makefile
-index e8e6434cbc13..650481039f00 100644
+index 31e73332bbe8..48c028c94272 100644
 --- a/drivers/media/rc/keymaps/Makefile
 +++ b/drivers/media/rc/keymaps/Makefile
-@@ -102,6 +102,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
+@@ -103,6 +103,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
  			rc-twinhan-dtv-cab-ci.o \
  			rc-twinhan1027.o \
  			rc-wetek-hub.o \
@@ -442,10 +450,10 @@ index 000000000000..37586cedbb8a
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("WeTek");
 diff --git a/include/media/rc-map.h b/include/media/rc-map.h
-index cd8590c99e22..93cac05a5170 100644
+index e20e23870ee4..81d1dd3ce0ee 100644
 --- a/include/media/rc-map.h
 +++ b/include/media/rc-map.h
-@@ -210,6 +210,7 @@ void rc_map_init(void);
+@@ -266,6 +266,7 @@ struct rc_map *rc_map_get(const char *name);
  #define RC_MAP_TWINHAN_DTV_CAB_CI        "rc-twinhan-dtv-cab-ci"
  #define RC_MAP_TWINHAN_VP1027_DVBS       "rc-twinhan1027"
  #define RC_MAP_WETEK_HUB                 "rc-wetek-hub"
@@ -453,25 +461,27 @@ index cd8590c99e22..93cac05a5170 100644
  #define RC_MAP_VIDEOMATE_K100            "rc-videomate-k100"
  #define RC_MAP_VIDEOMATE_S350            "rc-videomate-s350"
  #define RC_MAP_VIDEOMATE_TV_PVR          "rc-videomate-tv-pvr"
+-- 
+2.17.1
 
-From 6518b8acbe53a153740bad1e93c9d361fed136fd Mon Sep 17 00:00:00 2001
+
+From 9efc93951b4d22b0f1819e97c09d758bdf53a336 Mon Sep 17 00:00:00 2001
 From: hzq <hzq@t-firefly.com>
 Date: Mon, 19 Mar 2018 16:47:24 +0800
-Subject: [PATCH] [media] rc/keymaps: add keytable for ROC-RK3328-CC Remote
- Controller
+Subject: [PATCH] rc/keymaps: add keytable for ROC-RK3328-CC Remote Controller
 
 ---
  drivers/media/rc/keymaps/Makefile    |  1 +
- drivers/media/rc/keymaps/rc-roc-cc.c | 52 ++++++++++++++++++++++++++++++++++++
+ drivers/media/rc/keymaps/rc-roc-cc.c | 52 ++++++++++++++++++++++++++++
  include/media/rc-map.h               |  1 +
  3 files changed, 54 insertions(+)
  create mode 100644 drivers/media/rc/keymaps/rc-roc-cc.c
 
 diff --git a/drivers/media/rc/keymaps/Makefile b/drivers/media/rc/keymaps/Makefile
-index 650481039f00..b743914487a5 100644
+index 48c028c94272..b254951ed4ea 100644
 --- a/drivers/media/rc/keymaps/Makefile
 +++ b/drivers/media/rc/keymaps/Makefile
-@@ -83,6 +83,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
+@@ -84,6 +84,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
  			rc-rc6-mce.o \
  			rc-real-audio-220-32-keys.o \
  			rc-reddo.o \
@@ -538,10 +548,10 @@ index 000000000000..3a2a255d5723
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("ROC-RK3328-CC");
 diff --git a/include/media/rc-map.h b/include/media/rc-map.h
-index 93cac05a5170..8bbe335e650c 100644
+index 81d1dd3ce0ee..0addf39b121b 100644
 --- a/include/media/rc-map.h
 +++ b/include/media/rc-map.h
-@@ -191,6 +191,7 @@ void rc_map_init(void);
+@@ -247,6 +247,7 @@ struct rc_map *rc_map_get(const char *name);
  #define RC_MAP_RC6_MCE                   "rc-rc6-mce"
  #define RC_MAP_REAL_AUDIO_220_32_KEYS    "rc-real-audio-220-32-keys"
  #define RC_MAP_REDDO                     "rc-reddo"
@@ -549,25 +559,27 @@ index 93cac05a5170..8bbe335e650c 100644
  #define RC_MAP_SNAPSTREAM_FIREFLY        "rc-snapstream-firefly"
  #define RC_MAP_STREAMZAP                 "rc-streamzap"
  #define RC_MAP_TBS_NEC                   "rc-tbs-nec"
+-- 
+2.17.1
 
-From c0220800efec28f6a59eae563f4f083ceedff6cc Mon Sep 17 00:00:00 2001
+
+From 587f0612337aff1a2846e8d78c76cdbe63988814 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Tue, 3 Jul 2018 21:55:56 +0200
-Subject: [PATCH] [media] rc/keymaps: add keytable for T-Chip TRN9 IR Remote
- Controller
+Subject: [PATCH] rc/keymaps: add keytable for T-Chip TRN9 IR Remote Controller
 
 ---
  drivers/media/rc/keymaps/Makefile  |  1 +
- drivers/media/rc/keymaps/rc-trn9.c | 52 ++++++++++++++++++++++++++++++++++++++
+ drivers/media/rc/keymaps/rc-trn9.c | 52 ++++++++++++++++++++++++++++++
  include/media/rc-map.h             |  1 +
  3 files changed, 54 insertions(+)
  create mode 100644 drivers/media/rc/keymaps/rc-trn9.c
 
 diff --git a/drivers/media/rc/keymaps/Makefile b/drivers/media/rc/keymaps/Makefile
-index b743914487a5..2aaa1b33ddca 100644
+index b254951ed4ea..cef8e0f48b49 100644
 --- a/drivers/media/rc/keymaps/Makefile
 +++ b/drivers/media/rc/keymaps/Makefile
-@@ -102,6 +102,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
+@@ -103,6 +103,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
  			rc-tt-1500.o \
  			rc-twinhan-dtv-cab-ci.o \
  			rc-twinhan1027.o \
@@ -634,10 +646,10 @@ index 000000000000..f81bc3a419b3
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("Omegamoon");
 diff --git a/include/media/rc-map.h b/include/media/rc-map.h
-index 8bbe335e650c..66e1c50b38fc 100644
+index 0addf39b121b..845000e92604 100644
 --- a/include/media/rc-map.h
 +++ b/include/media/rc-map.h
-@@ -210,6 +210,7 @@ void rc_map_init(void);
+@@ -266,6 +266,7 @@ struct rc_map *rc_map_get(const char *name);
  #define RC_MAP_TT_1500                   "rc-tt-1500"
  #define RC_MAP_TWINHAN_DTV_CAB_CI        "rc-twinhan-dtv-cab-ci"
  #define RC_MAP_TWINHAN_VP1027_DVBS       "rc-twinhan1027"
@@ -645,25 +657,29 @@ index 8bbe335e650c..66e1c50b38fc 100644
  #define RC_MAP_WETEK_HUB                 "rc-wetek-hub"
  #define RC_MAP_WETEK_PLAY_2              "rc-wetek-play-2"
  #define RC_MAP_VIDEOMATE_K100            "rc-videomate-k100"
+-- 
+2.17.1
 
-From 312b78202feca8f3966343b0362466e9c6ff2297 Mon Sep 17 00:00:00 2001
+
+From fbc0c4d3d868c6c1908331710c7bd3a097a06a33 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 17 Dec 2018 07:41:16 +0100
-Subject: [PATCH] [media] rc/keymaps: add keytable for Khadas IR Remote
- Controller
+Subject: [PATCH] rc/keymaps: add keytable for Khadas IR Remote Controller
 
 ---
- drivers/media/rc/keymaps/Makefile    |  1 +
- drivers/media/rc/keymaps/rc-khadas.c | 52 ++++++++++++++++++++++++++++++++++++
- include/media/rc-map.h               |  1 +
- 3 files changed, 54 insertions(+)
+ drivers/media/rc/keymaps/Makefile     |  2 +
+ drivers/media/rc/keymaps/rc-khadas.c  | 52 +++++++++++++++++++++
+ drivers/media/rc/keymaps/rc-rktvbox.c | 65 +++++++++++++++++++++++++++
+ include/media/rc-map.h                |  2 +
+ 4 files changed, 121 insertions(+)
  create mode 100644 drivers/media/rc/keymaps/rc-khadas.c
+ create mode 100644 drivers/media/rc/keymaps/rc-rktvbox.c
 
 diff --git a/drivers/media/rc/keymaps/Makefile b/drivers/media/rc/keymaps/Makefile
-index 2aaa1b33ddca..fc0207d322a0 100644
+index cef8e0f48b49..52f6729853b9 100644
 --- a/drivers/media/rc/keymaps/Makefile
 +++ b/drivers/media/rc/keymaps/Makefile
-@@ -47,6 +47,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
+@@ -49,6 +49,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
  			rc-it913x-v1.o \
  			rc-it913x-v2.o \
  			rc-kaiomy.o \
@@ -671,6 +687,14 @@ index 2aaa1b33ddca..fc0207d322a0 100644
  			rc-kworld-315u.o \
  			rc-kworld-pc150u.o \
  			rc-kworld-plus-tv-analog.o \
+@@ -69,6 +70,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
+ 			rc-odroid.o \
+ 			rc-pctv-sedna.o \
+ 			rc-pine64.o \
++			rc-rktvbox.o \
+ 			rc-pinnacle-color.o \
+ 			rc-pinnacle-grey.o \
+ 			rc-pinnacle-pctv-hd.o \
 diff --git a/drivers/media/rc/keymaps/rc-khadas.c b/drivers/media/rc/keymaps/rc-khadas.c
 new file mode 100644
 index 000000000000..492368db75d9
@@ -729,19 +753,10 @@ index 000000000000..492368db75d9
 +
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("Khadas");
-diff --git a/include/media/rc-map.h b/include/media/rc-map.h
-index 66e1c50b38fc..6b2db526fac0 100644
---- a/include/media/rc-map.h
-+++ b/include/media/rc-map.h
-@@ -154,6 +154,7 @@ void rc_map_init(void);
- #define RC_MAP_IT913X_V1                 "rc-it913x-v1"
- #define RC_MAP_IT913X_V2                 "rc-it913x-v2"
- #define RC_MAP_KAIOMY                    "rc-kaiomy"
-+#define RC_MAP_KHADAS                    "rc-khadas"
- #define RC_MAP_KWORLD_315U               "rc-kworld-315u"
- #define RC_MAP_KWORLD_PC150U             "rc-kworld-pc150u"
- #define RC_MAP_KWORLD_PLUS_TV_ANALOG     "rc-kworld-plus-tv-analog"
---- a/drivers/media/rc/keymaps/rc-rktvbox.c
+diff --git a/drivers/media/rc/keymaps/rc-rktvbox.c b/drivers/media/rc/keymaps/rc-rktvbox.c
+new file mode 100644
+index 000000000000..d7f8eb7c5f40
+--- /dev/null
 +++ b/drivers/media/rc/keymaps/rc-rktvbox.c
 @@ -0,0 +1,65 @@
 +/* Keytable for Rockchip TV Box IR Remote Controller
@@ -809,19 +824,19 @@ index 66e1c50b38fc..6b2db526fac0 100644
 +
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("knaerzche");
---- a/drivers/media/rc/keymaps/Makefile
-+++ b/drivers/media/rc/keymaps/Makefile
-@@ -69,6 +69,7 @@
- 			rc-odroid.o \
- 			rc-pctv-sedna.o \
- 			rc-pine64.o \
-+			rc-rktvbox.o \
- 			rc-pinnacle-color.o \
- 			rc-pinnacle-grey.o \
- 			rc-pinnacle-pctv-hd.o \
+diff --git a/include/media/rc-map.h b/include/media/rc-map.h
+index 845000e92604..caf91e3882ce 100644
 --- a/include/media/rc-map.h
 +++ b/include/media/rc-map.h
-@@ -178,6 +178,7 @@
+@@ -211,6 +211,7 @@ struct rc_map *rc_map_get(const char *name);
+ #define RC_MAP_IT913X_V1                 "rc-it913x-v1"
+ #define RC_MAP_IT913X_V2                 "rc-it913x-v2"
+ #define RC_MAP_KAIOMY                    "rc-kaiomy"
++#define RC_MAP_KHADAS                    "rc-khadas"
+ #define RC_MAP_KWORLD_315U               "rc-kworld-315u"
+ #define RC_MAP_KWORLD_PC150U             "rc-kworld-pc150u"
+ #define RC_MAP_KWORLD_PLUS_TV_ANALOG     "rc-kworld-plus-tv-analog"
+@@ -231,6 +232,7 @@ struct rc_map *rc_map_get(const char *name);
  #define RC_MAP_ODROID                    "rc-odroid"
  #define RC_MAP_PCTV_SEDNA                "rc-pctv-sedna"
  #define RC_MAP_PINE64                    "rc-pine64"
@@ -829,3 +844,6 @@ index 66e1c50b38fc..6b2db526fac0 100644
  #define RC_MAP_PINNACLE_COLOR            "rc-pinnacle-color"
  #define RC_MAP_PINNACLE_GREY             "rc-pinnacle-grey"
  #define RC_MAP_PINNACLE_PCTV_HD          "rc-pinnacle-pctv-hd"
+-- 
+2.17.1
+

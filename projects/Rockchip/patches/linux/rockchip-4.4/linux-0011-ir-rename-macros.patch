@@ -1,5 +1,5 @@
 diff --git a/drivers/media/cec/cec-adap.c b/drivers/media/cec/cec-adap.c
-index 4f5d382..1d2e98a 100644
+index 4f5d382268f7..1d2e98a99110 100644
 --- a/drivers/media/cec/cec-adap.c
 +++ b/drivers/media/cec/cec-adap.c
 @@ -1933,7 +1933,7 @@ static int cec_receive_notify(struct cec_adapter *adap, struct cec_msg *msg,
@@ -12,7 +12,7 @@ index 4f5d382..1d2e98a 100644
  		/* When in repeating mode, we're done */
  		if (adap->rc_repeating)
 diff --git a/drivers/media/cec/cec-core.c b/drivers/media/cec/cec-core.c
-index 6a562d9..f4ea68f 100644
+index 6a562d990b91..f4ea68ff65a5 100644
 --- a/drivers/media/cec/cec-core.c
 +++ b/drivers/media/cec/cec-core.c
 @@ -263,7 +263,7 @@ struct cec_adapter *cec_allocate_adapter(const struct cec_adap_ops *ops,
@@ -36,7 +36,7 @@ index 6a562d9..f4ea68f 100644
  	adap->rc->map_name = RC_MAP_CEC;
  	adap->rc->timeout = MS_TO_NS(550);
 diff --git a/drivers/media/pci/cx23885/cx23885-input.c b/drivers/media/pci/cx23885/cx23885-input.c
-index c185903..bed2170 100644
+index c18590377223..bed217084742 100644
 --- a/drivers/media/pci/cx23885/cx23885-input.c
 +++ b/drivers/media/pci/cx23885/cx23885-input.c
 @@ -285,37 +285,32 @@ int cx23885_input_init(struct cx23885_dev *dev)
@@ -117,7 +117,7 @@ index c185903..bed2170 100644
  	rc->priv = kernel_ir;
  	rc->open = cx23885_input_ir_open;
 diff --git a/drivers/media/pci/cx88/cx88-input.c b/drivers/media/pci/cx88/cx88-input.c
-index 540eaa3..13c6b21 100644
+index 540eaa36b60b..13c6b21b7d72 100644
 --- a/drivers/media/pci/cx88/cx88-input.c
 +++ b/drivers/media/pci/cx88/cx88-input.c
 @@ -130,7 +130,7 @@ static void cx88_ir_handle_key(struct cx88_IR *ir)
@@ -236,7 +236,7 @@ index 540eaa3..13c6b21 100644
  
  			info.platform_data = &core->init_data;
 diff --git a/drivers/media/pci/saa7134/saa7134-input.c b/drivers/media/pci/saa7134/saa7134-input.c
-index 3e43d8f..3691d18 100644
+index 3e43d8f51339..3691d1875b2e 100644
 --- a/drivers/media/pci/saa7134/saa7134-input.c
 +++ b/drivers/media/pci/saa7134/saa7134-input.c
 @@ -87,14 +87,14 @@ static int build_key(struct saa7134_dev *dev)
@@ -411,7 +411,7 @@ index 3e43d8f..3691d18 100644
  		break;
  	case SAA7134_BOARD_AVERMEDIA_CARDBUS_501:
 diff --git a/drivers/media/pci/smipcie/smipcie-ir.c b/drivers/media/pci/smipcie/smipcie-ir.c
-index a5d4bc7..363d1bc 100644
+index a5d4bc73d7af..363d1bc1d2bf 100644
 --- a/drivers/media/pci/smipcie/smipcie-ir.c
 +++ b/drivers/media/pci/smipcie/smipcie-ir.c
 @@ -183,7 +183,7 @@ int smi_ir_init(struct smi_dev *dev)
@@ -432,7 +432,7 @@ index a5d4bc7..363d1bc 100644
  
  	ir->rc_dev = rc_dev;
 diff --git a/drivers/media/platform/s5p-mfc/regs-mfc-v6.h b/drivers/media/platform/s5p-mfc/regs-mfc-v6.h
-index 83e01f3..5b2cbf8 100644
+index 83e01f3466e9..5b2cbf867974 100644
 --- a/drivers/media/platform/s5p-mfc/regs-mfc-v6.h
 +++ b/drivers/media/platform/s5p-mfc/regs-mfc-v6.h
 @@ -259,7 +259,7 @@
@@ -454,7 +454,7 @@ index 83e01f3..5b2cbf8 100644
  #define S5P_FIMV_E_MVC_RC_RPARA_VIEW1_V6		0xfd50
  #define S5P_FIMV_E_MVC_INTER_VIEW_PREDICTION_ON_V6	0xfd80
 diff --git a/drivers/media/platform/s5p-mfc/regs-mfc.h b/drivers/media/platform/s5p-mfc/regs-mfc.h
-index 6ccc3f8..54eea05 100644
+index 6ccc3f8c122a..54eea05eaf81 100644
 --- a/drivers/media/platform/s5p-mfc/regs-mfc.h
 +++ b/drivers/media/platform/s5p-mfc/regs-mfc.h
 @@ -299,7 +299,7 @@
@@ -467,7 +467,7 @@ index 6ccc3f8..54eea05 100644
  #define S5P_FIMV_ENC_RC_RPARA		0xc5b0 /* rate control reaction coeff */
  #define S5P_FIMV_ENC_RC_MB_CTRL		0xc5b4 /* MB adaptive scaling */
 diff --git a/drivers/media/platform/s5p-mfc/s5p_mfc_opr_v5.c b/drivers/media/platform/s5p-mfc/s5p_mfc_opr_v5.c
-index 873c933..7b322a6 100644
+index 873c933bc7d4..7b322a61e31d 100644
 --- a/drivers/media/platform/s5p-mfc/s5p_mfc_opr_v5.c
 +++ b/drivers/media/platform/s5p-mfc/s5p_mfc_opr_v5.c
 @@ -740,9 +740,9 @@ static int s5p_mfc_set_enc_params(struct s5p_mfc_ctx *ctx)
@@ -483,7 +483,7 @@ index 873c933..7b322a6 100644
  	if (p->rc_frame)
  		mfc_write(dev, p->rc_reaction_coeff, S5P_FIMV_ENC_RC_RPARA);
 diff --git a/drivers/media/platform/s5p-mfc/s5p_mfc_opr_v5.h b/drivers/media/platform/s5p-mfc/s5p_mfc_opr_v5.h
-index ffee39a..0b8cd93 100644
+index ffee39a127d5..0b8cd93671ae 100644
 --- a/drivers/media/platform/s5p-mfc/s5p_mfc_opr_v5.h
 +++ b/drivers/media/platform/s5p-mfc/s5p_mfc_opr_v5.h
 @@ -53,8 +53,8 @@ enum MFC_SHM_OFS {
@@ -498,7 +498,7 @@ index ffee39a..0b8cd93 100644
  			depend on RC_FRAME_RATE_CHANGE in ENC_PARAM_CHANGE */
  	NEW_I_PERIOD		= 0x98, /* E, format as I_FRM_CTRL(0xC504)
 diff --git a/drivers/media/platform/s5p-mfc/s5p_mfc_opr_v6.c b/drivers/media/platform/s5p-mfc/s5p_mfc_opr_v6.c
-index b958453..a826251 100644
+index b95845347348..a82625166019 100644
 --- a/drivers/media/platform/s5p-mfc/s5p_mfc_opr_v6.c
 +++ b/drivers/media/platform/s5p-mfc/s5p_mfc_opr_v6.c
 @@ -2143,7 +2143,7 @@ const struct s5p_mfc_regs *s5p_mfc_init_regs_v6_plus(struct s5p_mfc_dev *dev)
@@ -511,7 +511,7 @@ index b958453..a826251 100644
  	R(e_picture_tag, S5P_FIMV_E_PICTURE_TAG_V6);
  	R(e_bit_count_enable, S5P_FIMV_E_BIT_COUNT_ENABLE_V6);
 diff --git a/drivers/media/rc/igorplugusb.c b/drivers/media/rc/igorplugusb.c
-index 8118769..2052b4e 100644
+index 8118769c89af..2052b4e3ffdd 100644
 --- a/drivers/media/rc/igorplugusb.c
 +++ b/drivers/media/rc/igorplugusb.c
 @@ -190,12 +190,11 @@ static int igorplugusb_probe(struct usb_interface *intf,
@@ -530,7 +530,7 @@ index 8118769..2052b4e 100644
  	 * This device can only store 36 pulses + spaces, which is not enough
  	 * for the NEC protocol and many others.
 diff --git a/drivers/media/rc/img-ir/img-ir-hw.c b/drivers/media/rc/img-ir/img-ir-hw.c
-index 3e5c50b..ab6881b 100644
+index 3e5c50b0d08f..ab6881bf4975 100644
 --- a/drivers/media/rc/img-ir/img-ir-hw.c
 +++ b/drivers/media/rc/img-ir/img-ir-hw.c
 @@ -703,7 +703,7 @@ static void img_ir_set_protocol(struct img_ir_priv *priv, u64 proto)
@@ -543,7 +543,7 @@ index 3e5c50b..ab6881b 100644
  
  	mutex_lock(&rdev->lock);
 diff --git a/drivers/media/rc/imon.c b/drivers/media/rc/imon.c
-index b6dff86..126946b 100644
+index b6dff860fb5d..126946baa42f 100644
 --- a/drivers/media/rc/imon.c
 +++ b/drivers/media/rc/imon.c
 @@ -145,7 +145,7 @@ struct imon_context {
@@ -712,7 +712,7 @@ index b6dff86..126946b 100644
  	else
  		rdev->map_name = RC_MAP_IMON_PAD;
 diff --git a/drivers/media/rc/keymaps/rc-cec.c b/drivers/media/rc/keymaps/rc-cec.c
-index fb0c2b1..6556934 100644
+index fb0c2b1f3814..6556934f5335 100644
 --- a/drivers/media/rc/keymaps/rc-cec.c
 +++ b/drivers/media/rc/keymaps/rc-cec.c
 @@ -160,7 +160,7 @@ static struct rc_map_list cec_map = {
@@ -725,7 +725,7 @@ index fb0c2b1..6556934 100644
  	}
  };
 diff --git a/drivers/media/rc/keymaps/rc-khadas.c b/drivers/media/rc/keymaps/rc-khadas.c
-index 492368d..ad51a8c 100644
+index 492368db75d9..ad51a8c50de1 100644
 --- a/drivers/media/rc/keymaps/rc-khadas.c
 +++ b/drivers/media/rc/keymaps/rc-khadas.c
 @@ -30,7 +30,7 @@ static struct rc_map_list khadas_map = {
@@ -738,7 +738,7 @@ index 492368d..ad51a8c 100644
  	}
  };
 diff --git a/drivers/media/rc/keymaps/rc-odroid.c b/drivers/media/rc/keymaps/rc-odroid.c
-index 52089f0..70b99e5 100644
+index 52089f0b7c1d..70b99e53714c 100644
 --- a/drivers/media/rc/keymaps/rc-odroid.c
 +++ b/drivers/media/rc/keymaps/rc-odroid.c
 @@ -30,7 +30,7 @@ static struct rc_map_list odroid_map = {
@@ -751,7 +751,7 @@ index 52089f0..70b99e5 100644
  	}
  };
 diff --git a/drivers/media/rc/keymaps/rc-pine64.c b/drivers/media/rc/keymaps/rc-pine64.c
-index bdf3975..d47038c 100644
+index bdf3975e7445..d47038c4c79a 100644
 --- a/drivers/media/rc/keymaps/rc-pine64.c
 +++ b/drivers/media/rc/keymaps/rc-pine64.c
 @@ -43,7 +43,7 @@ static struct rc_map_list pine64_map = {
@@ -764,7 +764,7 @@ index bdf3975..d47038c 100644
  	}
  };
 diff --git a/drivers/media/rc/keymaps/rc-roc-cc.c b/drivers/media/rc/keymaps/rc-roc-cc.c
-index 3a2a255..c8a8205 100644
+index 3a2a255d5723..c8a8205bf44c 100644
 --- a/drivers/media/rc/keymaps/rc-roc-cc.c
 +++ b/drivers/media/rc/keymaps/rc-roc-cc.c
 @@ -30,7 +30,7 @@ static struct rc_map_list roc_cc_map = {
@@ -777,7 +777,7 @@ index 3a2a255..c8a8205 100644
  	}
  };
 diff --git a/drivers/media/rc/keymaps/rc-trn9.c b/drivers/media/rc/keymaps/rc-trn9.c
-index f81bc3a..21f0983 100644
+index f81bc3a419b3..21f0983830e4 100644
 --- a/drivers/media/rc/keymaps/rc-trn9.c
 +++ b/drivers/media/rc/keymaps/rc-trn9.c
 @@ -30,7 +30,7 @@ static struct rc_map_list trn9_map = {
@@ -790,7 +790,7 @@ index f81bc3a..21f0983 100644
  	}
  };
 diff --git a/drivers/media/rc/keymaps/rc-wetek-hub.c b/drivers/media/rc/keymaps/rc-wetek-hub.c
-index 0955ecf..733a6be 100644
+index 0955ecfcb77c..733a6be49855 100644
 --- a/drivers/media/rc/keymaps/rc-wetek-hub.c
 +++ b/drivers/media/rc/keymaps/rc-wetek-hub.c
 @@ -30,7 +30,7 @@ static struct rc_map_list wetek_hub_map = {
@@ -803,7 +803,7 @@ index 0955ecf..733a6be 100644
  	}
  };
 diff --git a/drivers/media/rc/keymaps/rc-wetek-play-2.c b/drivers/media/rc/keymaps/rc-wetek-play-2.c
-index 37586ce..8f34ae0 100644
+index 37586cedbb8a..8f34ae0c325e 100644
 --- a/drivers/media/rc/keymaps/rc-wetek-play-2.c
 +++ b/drivers/media/rc/keymaps/rc-wetek-play-2.c
 @@ -61,7 +61,7 @@ static struct rc_map_list wetek_play_2_map = {
@@ -816,7 +816,7 @@ index 37586ce..8f34ae0 100644
  	}
  };
 diff --git a/drivers/media/rc/mceusb.c b/drivers/media/rc/mceusb.c
-index 43811a4..52a532d 100644
+index 43811a463b54..52a532d4a3eb 100644
 --- a/drivers/media/rc/mceusb.c
 +++ b/drivers/media/rc/mceusb.c
 @@ -979,7 +979,7 @@ static void mceusb_handle_command(struct mceusb_dev *ir, int index)
@@ -837,7 +837,7 @@ index 43811a4..52a532d 100644
  			rawir.duration = (ir->buf_in[i] & MCE_PULSE_MASK)
  					 * US_TO_NS(MCE_TIME_UNIT);
 diff --git a/drivers/media/rc/meson-ir.c b/drivers/media/rc/meson-ir.c
-index bd7b0c4..c0fa0d7 100644
+index bd7b0c4e052b..c0fa0d7ccf28 100644
 --- a/drivers/media/rc/meson-ir.c
 +++ b/drivers/media/rc/meson-ir.c
 @@ -77,7 +77,7 @@ static irqreturn_t meson_ir_irq(int irqno, void *dev_id)
@@ -859,7 +859,7 @@ index bd7b0c4..c0fa0d7 100644
  	ir->rc->timeout = MS_TO_NS(200);
  	ir->rc->driver_name = DRIVER_NAME;
 diff --git a/drivers/media/rc/nuvoton-cir.c b/drivers/media/rc/nuvoton-cir.c
-index 6d47b9c..e23c0ab 100644
+index 6d47b9c70136..e23c0ab365c2 100644
 --- a/drivers/media/rc/nuvoton-cir.c
 +++ b/drivers/media/rc/nuvoton-cir.c
 @@ -626,8 +626,6 @@ static void nvt_process_rx_ir_data(struct nvt_dev *nvt)
@@ -897,7 +897,7 @@ index 6d47b9c..e23c0ab 100644
  	rdev->input_id.bustype = BUS_HOST;
  	rdev->input_id.vendor = PCI_VENDOR_ID_WINBOND2;
 diff --git a/drivers/media/rc/redrat3.c b/drivers/media/rc/redrat3.c
-index c889530..df6b5c7 100644
+index c88953082c99..df6b5c72e3cd 100644
 --- a/drivers/media/rc/redrat3.c
 +++ b/drivers/media/rc/redrat3.c
 @@ -336,7 +336,7 @@ static void redrat3_rx_timeout(unsigned long data)
@@ -928,7 +928,7 @@ index c889530..df6b5c7 100644
  	rc->tx_ir = redrat3_transmit_ir;
  	rc->s_tx_carrier = redrat3_set_tx_carrier;
 diff --git a/drivers/media/rc/winbond-cir.c b/drivers/media/rc/winbond-cir.c
-index a47637f..b188cdf 100644
+index a47637f06089..b188cdf44611 100644
 --- a/drivers/media/rc/winbond-cir.c
 +++ b/drivers/media/rc/winbond-cir.c
 @@ -1078,7 +1078,7 @@ wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
@@ -941,7 +941,7 @@ index a47637f..b188cdf 100644
  	err = rc_register_device(data->dev);
  	if (err)
 diff --git a/drivers/media/usb/dvb-usb/dib0700_devices.c b/drivers/media/usb/dvb-usb/dib0700_devices.c
-index 38c0328..a254374 100644
+index 38c03283a441..a254374fd0e0 100644
 --- a/drivers/media/usb/dvb-usb/dib0700_devices.c
 +++ b/drivers/media/usb/dvb-usb/dib0700_devices.c
 @@ -519,7 +519,7 @@ static u8 rc_request[] = { REQUEST_POLL_RC, 0 };
@@ -1279,7 +1279,7 @@ index 38c0328..a254374 100644
  		},
  	},
 diff --git a/drivers/media/usb/em28xx/em28xx-input.c b/drivers/media/usb/em28xx/em28xx-input.c
-index 1e3d33a..0a886ac 100644
+index 1e3d33a7a440..0a886ace0215 100644
 --- a/drivers/media/usb/em28xx/em28xx-input.c
 +++ b/drivers/media/usb/em28xx/em28xx-input.c
 @@ -54,7 +54,7 @@ struct em28xx_ir_poll_result {
@@ -1609,7 +1609,7 @@ index 1e3d33a..0a886ac 100644
  			goto error;
  	}
 diff --git a/drivers/media/usb/tm6000/tm6000-input.c b/drivers/media/usb/tm6000/tm6000-input.c
-index af18423..99cdbc0 100644
+index af184238da36..99cdbc04e295 100644
 --- a/drivers/media/usb/tm6000/tm6000-input.c
 +++ b/drivers/media/usb/tm6000/tm6000-input.c
 @@ -71,7 +71,7 @@ struct tm6000_IR {

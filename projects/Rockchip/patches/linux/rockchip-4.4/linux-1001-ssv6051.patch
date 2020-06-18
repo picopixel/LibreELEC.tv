@@ -1,29 +1,21 @@
---- a/drivers/net/wireless/rockchip_wlan/ssv6xxx/ssvdevice/ssvdevice.c
-+++ b/drivers/net/wireless/rockchip_wlan/ssv6xxx/ssvdevice/ssvdevice.c
-@@ -58,7 +58,7 @@
- char *ssv6xxx_result_buf;
- extern struct ssv6xxx_cfg_cmd_table cfg_cmds[];
- extern struct ssv6xxx_cfg ssv_cfg;
--char DEFAULT_CFG_PATH[] = "/vendor/etc/firmware/ssv6051-wifi.cfg";
-+char DEFAULT_CFG_PATH[] = "/etc/firmware/ssv6051/ssv6051-wifi.cfg";
- static int ssv6xxx_dbg_open(struct inode *inode, struct file *filp)
- {
-     filp->private_data = inode->i_private;
-
---- a/drivers/net/wireless/rockchip_wlan/ssv6xxx/ssvdevice/ssv_cmd.c
-+++ b/drivers/net/wireless/rockchip_wlan/ssv6xxx/ssvdevice/ssv_cmd.c
-@@ -1541,7 +1541,7 @@
-  size_per_frame = simple_strtoul(argv[2], &endp, 10);
-  loop_times = simple_strtoul(argv[3], &endp, 10);
-  sprintf(tmpbf, "type&size&frames:%d&%d&%d\n", pkt_type, size_per_frame, loop_times);
-- strncat(ssv6xxx_result_buf, tmpbf, sizeof(tmpbf));
-+ strcat(ssv6xxx_result_buf, tmpbf);
-  if (ssv6xxx_txtput->txtput_tsk) {
-   sprintf(tmpbf, "txtput already in progress\n");
-   strcat(ssv6xxx_result_buf, tmpbf);
+diff --git a/drivers/net/wireless/rockchip_wlan/ssv6xxx/Makefile b/drivers/net/wireless/rockchip_wlan/ssv6xxx/Makefile
+index f86faef51b85..e1df615ef4c4 100644
+--- a/drivers/net/wireless/rockchip_wlan/ssv6xxx/Makefile
++++ b/drivers/net/wireless/rockchip_wlan/ssv6xxx/Makefile
+@@ -19,7 +19,7 @@ include $(KBUILD_TOP)/ssv6051.cfg
+ include $(KBUILD_TOP)/platform-config.mak
+ 
+ 
+-EXTRA_CFLAGS := -I$(KBUILD_TOP) -I$(KBUILD_TOP)/include
++EXTRA_CFLAGS := -I$(KBUILD_TOP) -I$(KBUILD_TOP)/include -Wno-error=missing-attributes
+ DEF_PARSER_H = $(KBUILD_TOP)/include/ssv_conf_parser.h
+ $(shell env ccflags="$(ccflags-y)" $(KBUILD_TOP)/parser-conf.sh $(DEF_PARSER_H))
+ 
+diff --git a/drivers/net/wireless/rockchip_wlan/ssv6xxx/smac/dev.c b/drivers/net/wireless/rockchip_wlan/ssv6xxx/smac/dev.c
+index 1b0d5707be34..34b60478d237 100644
 --- a/drivers/net/wireless/rockchip_wlan/ssv6xxx/smac/dev.c
 +++ b/drivers/net/wireless/rockchip_wlan/ssv6xxx/smac/dev.c
-@@ -92,8 +92,6 @@
+@@ -92,8 +92,6 @@ unsigned int cal_duration_of_mpdu(struct sk_buff *mpdu_skb)
   unsigned int timeout;
   SKB_info *mpdu_skb_info = (SKB_info *)mpdu_skb->head;
   timeout = (unsigned int)ktime_to_ms(ktime_sub(ktime_get(), mpdu_skb_info->timestamp));
@@ -32,7 +24,7 @@
   return timeout;
  }
  #endif
-@@ -179,7 +177,7 @@
+@@ -179,7 +177,7 @@ u32 ssv6xxx_pbuf_alloc(struct ssv_softc *sc, int size, int type)
                  size, type);
      else
      {
@@ -41,7 +33,7 @@
                   type, size, page_cnt, regval);
      }
      return regval;
-@@ -197,7 +195,6 @@
+@@ -197,7 +195,6 @@ bool ssv6xxx_pbuf_free(struct ssv_softc *sc, u32 pbuf_addr)
      }
      mutex_lock(&sc->mem_mutex);
      regval = ((M_ENG_TRASH_CAN << HW_ID_OFFSET) |(pbuf_addr >> ADDRESS_OFFSET));
@@ -49,7 +41,7 @@
      SMAC_REG_WRITE(sc->sh, ADR_CH0_TRIG_1, regval);
      if (*p_tx_page_cnt)
      {
-@@ -1136,7 +1133,7 @@
+@@ -1136,7 +1133,7 @@ static void _set_aes_tkip_hw_crypto_group_key (struct ssv_softc *sc,
      address = sec_key_tbl
                + ((index-1) * sizeof(struct ssv6xxx_hw_key));
      if (vif_info->vif_priv != NULL)
@@ -58,7 +50,7 @@
                   index, vif_info->vif_priv->vif_idx, address);
      else
          dev_err(sc->dev, "NULL VIF.\n");
-@@ -1189,7 +1186,7 @@
+@@ -1189,7 +1186,7 @@ static int _write_pairwise_key_to_hw (struct ssv_softc *sc,
      #if 0
      sta_info->s_flags |= STA_FLAG_ENCRYPT;
      #endif
@@ -67,7 +59,7 @@
      sramKey = &(sc->vif_info[vif_priv->vif_idx].sramKey);
      sramKey->sta_key[wsid].pair_key_idx = 0;
      sramKey->sta_key[wsid].group_key_idx = vif_priv->group_key_idx;
-@@ -1234,7 +1231,7 @@
+@@ -1234,7 +1231,7 @@ static int _write_group_key_to_hw (struct ssv_softc *sc,
          dev_err(sc->dev, "Setting group key to NULL VIF\n");
          return -EOPNOTSUPP;
      }
@@ -76,7 +68,7 @@
               vif_priv->vif_idx, index, key_len, wsid);
      sramKey = &(sc->vif_info[vif_priv->vif_idx].sramKey);
      vif_priv->group_key_idx = index;
-@@ -1384,7 +1381,7 @@
+@@ -1384,7 +1381,7 @@ int _set_key_wep (struct ssv_softc *sc, struct ssv_vif_priv_data *vif_priv,
          else
          {
              dev_err(sc->dev, "[Local Crypto]: Failed to initialize driver's crypto!\n");
@@ -85,7 +77,7 @@
              vif_priv->need_sw_decrypt = false;
              vif_priv->need_sw_encrypt = false;
              vif_priv->use_mac80211_decrypt = true;
-@@ -1457,7 +1454,7 @@
+@@ -1457,7 +1454,7 @@ static int _set_pairwise_key_tkip_ccmp (struct ssv_softc *sc, struct ssv_vif_pri
          if (((val >>4) & 0xF) != M_ENG_CPU){
              SMAC_REG_WRITE(sc->sh, ADR_RX_FLOW_DATA, ((val & 0xf) | (M_ENG_CPU<<4)
                  | (val & 0xfffffff0) <<4));
@@ -94,7 +86,7 @@
              ((val & 0xf) | (M_ENG_CPU<<4) | (val & 0xfffffff0) <<4));
          }
      }
-@@ -1476,7 +1473,7 @@
+@@ -1476,7 +1473,7 @@ static int _set_pairwise_key_tkip_ccmp (struct ssv_softc *sc, struct ssv_vif_pri
                  (sta_priv->sta_info->sta->ht_cap.ht_supported == false))
                  && (vif_priv->force_sw_encrypt == false)))
          {
@@ -103,7 +95,7 @@
              sta_priv->has_hw_encrypt = true;
              sta_priv->need_sw_encrypt = false;
              sta_priv->use_mac80211_decrypt = false;
-@@ -1601,7 +1598,7 @@
+@@ -1601,7 +1598,7 @@ static int _set_group_key_tkip_ccmp (struct ssv_softc *sc, struct ssv_vif_priv_d
      if (((vif_priv->vif_idx == 0) && (tkip_use_sw_cipher == false))
          || ((cipher == SSV_CIPHER_CCMP) && (sc->sh->cfg.use_wpa2_only == 1)))
      {
@@ -112,7 +104,7 @@
          #ifdef USE_MAC80211_DECRYPT_BROADCAST
          vif_priv->has_hw_decrypt = false;
          ret = -EOPNOTSUPP;
-@@ -1700,7 +1697,7 @@
+@@ -1700,7 +1697,7 @@ static int _set_group_key_tkip_ccmp (struct ssv_softc *sc, struct ssv_vif_priv_d
                  if (((val >>4) & 0xF) != M_ENG_CPU){
                      SMAC_REG_WRITE(sc->sh, ADR_RX_FLOW_DATA, ((val & 0xf) | (M_ENG_CPU<<4)
                          | (val & 0xfffffff0) <<4));
@@ -121,7 +113,7 @@
                      ((val & 0xf) | (M_ENG_CPU<<4) | (val & 0xfffffff0) <<4));
                  } else {
                      printk(" doesn't need to change rx flow\n");
-@@ -1913,7 +1910,7 @@
+@@ -1913,7 +1910,7 @@ static int ssv6200_set_key(struct ieee80211_hw *hw,
                                      SMAC_REG_WRITE(sc->sh, ADR_RX_FLOW_DATA,
                                          ((val & 0xf) | (M_ENG_CPU<<4)
                                           | (val & 0xfffffff0) <<4));
@@ -130,7 +122,7 @@
                                          val, ((val & 0xf) | (M_ENG_CPU<<4) | (val & 0xfffffff0) <<4));
                                  } else {
                                      printk(" doesn't need to change rx flow\n");
-@@ -2997,15 +2994,15 @@
+@@ -2997,15 +2994,15 @@ void _clean_up_crypto_skb (struct ssv_softc *sc, struct ieee80211_sta *sta)
      u32 sta_addr0_3 = *(u32 *)&sta->addr[0];
      u32 sta_addr4_5 = (u32)*(u16 *)&sta->addr[4];
      u32 removed_skb_num;
@@ -149,7 +141,7 @@
      spin_unlock_irqrestore(&sc->crypt_st_lock, flags);
      _resume_crypto_task(sc);
  }
-@@ -4007,7 +4004,7 @@
+@@ -4025,7 +4022,7 @@ static int ssv6200_sta_remove(struct ieee80211_hw *hw,
              && crypto_data->priv)
          {
              crypto_data->ops->deinit(crypto_data->priv);
@@ -158,17 +150,16 @@
          }
          crypto_data->priv = NULL;
          crypto_data->ops = NULL;
-
-diff --git a/drivers/net/wireless/rockchip_wlan/ssv6xxx/Makefile b/drivers/net/wireless/rockchip_wlan/ssv6xxx/Makefile
-index f86faef..e1df615 100644
---- a/drivers/net/wireless/rockchip_wlan/ssv6xxx/Makefile
-+++ b/drivers/net/wireless/rockchip_wlan/ssv6xxx/Makefile
-@@ -19,7 +19,7 @@ include $(KBUILD_TOP)/ssv6051.cfg
- include $(KBUILD_TOP)/platform-config.mak
- 
- 
--EXTRA_CFLAGS := -I$(KBUILD_TOP) -I$(KBUILD_TOP)/include
-+EXTRA_CFLAGS := -I$(KBUILD_TOP) -I$(KBUILD_TOP)/include -Wno-error=missing-attributes
- DEF_PARSER_H = $(KBUILD_TOP)/include/ssv_conf_parser.h
- $(shell env ccflags="$(ccflags-y)" $(KBUILD_TOP)/parser-conf.sh $(DEF_PARSER_H))
- 
+diff --git a/drivers/net/wireless/rockchip_wlan/ssv6xxx/ssvdevice/ssvdevice.c b/drivers/net/wireless/rockchip_wlan/ssv6xxx/ssvdevice/ssvdevice.c
+index d94a5f501ebb..8718d8900644 100644
+--- a/drivers/net/wireless/rockchip_wlan/ssv6xxx/ssvdevice/ssvdevice.c
++++ b/drivers/net/wireless/rockchip_wlan/ssv6xxx/ssvdevice/ssvdevice.c
+@@ -58,7 +58,7 @@ static char *ssv6xxx_cmd_buf;
+ char *ssv6xxx_result_buf;
+ extern struct ssv6xxx_cfg_cmd_table cfg_cmds[];
+ extern struct ssv6xxx_cfg ssv_cfg;
+-char DEFAULT_CFG_PATH[] = "/vendor/etc/firmware/ssv6051-wifi.cfg";
++char DEFAULT_CFG_PATH[] = "/etc/firmware/ssv6051/ssv6051-wifi.cfg";
+ static int ssv6xxx_dbg_open(struct inode *inode, struct file *filp)
+ {
+     filp->private_data = inode->i_private;

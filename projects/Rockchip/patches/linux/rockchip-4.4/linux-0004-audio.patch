@@ -1,51 +1,4 @@
-From 46e3e82a547b78ca5db11a8444f787fd15f8e8ce Mon Sep 17 00:00:00 2001
-From: Sugar Zhang <sugar.zhang@rock-chips.com>
-Date: Wed, 7 Sep 2016 14:30:21 +0800
-Subject: [PATCH] UPSTREAM: ASoC: rockchip: spdif: restore register during
- runtime_suspend/resume cycle
-
-when step into runtime_suspend, spdif pd will be disabled and loss state.
-so need to restore register when runtime_resume.
-
-Signed-off-by: Sugar Zhang <sugar.zhang@rock-chips.com>
-Signed-off-by: Mark Brown <broonie@kernel.org>
-(cherry picked from commit 3628c6987fb45d719cd963805bbba9f15017290e)
----
- sound/soc/rockchip/rockchip_spdif.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
-
-diff --git a/sound/soc/rockchip/rockchip_spdif.c b/sound/soc/rockchip/rockchip_spdif.c
-index 784941ca2408..831e4caf29d3 100644
---- a/sound/soc/rockchip/rockchip_spdif.c
-+++ b/sound/soc/rockchip/rockchip_spdif.c
-@@ -69,6 +69,7 @@ static int __maybe_unused rk_spdif_runtime_suspend(struct device *dev)
- {
- 	struct rk_spdif_dev *spdif = dev_get_drvdata(dev);
- 
-+	regcache_cache_only(spdif->regmap, true);
- 	clk_disable_unprepare(spdif->mclk);
- 	clk_disable_unprepare(spdif->hclk);
- 
-@@ -92,7 +93,16 @@ static int __maybe_unused rk_spdif_runtime_resume(struct device *dev)
- 		return ret;
- 	}
- 
--	return 0;
-+	regcache_cache_only(spdif->regmap, false);
-+	regcache_mark_dirty(spdif->regmap);
-+
-+	ret = regcache_sync(spdif->regmap);
-+	if (ret) {
-+		clk_disable_unprepare(spdif->mclk);
-+		clk_disable_unprepare(spdif->hclk);
-+	}
-+
-+	return ret;
- }
- 
- static int rk_spdif_hw_params(struct snd_pcm_substream *substream,
-
-From d8a8c9964022565ecf7b5ea7249262c3ac381a1b Mon Sep 17 00:00:00 2001
+From 0fa27d987b517239648cec398dfe08f67496886a Mon Sep 17 00:00:00 2001
 From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
 Date: Tue, 3 Jan 2017 16:52:50 +0100
 Subject: [PATCH] UPSTREAM: DRM: add help to get ELD speaker allocation
@@ -62,7 +15,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
  1 file changed, 13 insertions(+)
 
 diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
-index 85861b63e77a..55201e7e2ede 100644
+index aecba3b48d1a..606749de2e79 100644
 --- a/include/drm/drm_edid.h
 +++ b/include/drm/drm_edid.h
 @@ -254,6 +254,7 @@ struct detailed_timing {
@@ -73,7 +26,7 @@ index 85861b63e77a..55201e7e2ede 100644
  # define DRM_ELD_SPEAKER_RLRC		(1 << 6)
  # define DRM_ELD_SPEAKER_FLRC		(1 << 5)
  # define DRM_ELD_SPEAKER_RC		(1 << 4)
-@@ -417,6 +418,18 @@ static inline int drm_eld_size(const uint8_t *eld)
+@@ -422,6 +423,18 @@ static inline int drm_eld_size(const uint8_t *eld)
  	return DRM_ELD_HEADER_BLOCK_SIZE + eld[DRM_ELD_BASELINE_ELD_LEN] * 4;
  }
  
@@ -92,8 +45,11 @@ index 85861b63e77a..55201e7e2ede 100644
  struct edid *drm_do_get_edid(struct drm_connector *connector,
  	int (*get_edid_block)(void *data, u8 *buf, unsigned int block,
  			      size_t len),
+-- 
+2.17.1
 
-From e622344ce58345eda1ce7372bf7e91e4e90ece5f Mon Sep 17 00:00:00 2001
+
+From 89f88c31ee8d3ad5e6736f39b9e8115978b25fe2 Mon Sep 17 00:00:00 2001
 From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
 Date: Tue, 3 Jan 2017 16:52:51 +0100
 Subject: [PATCH] UPSTREAM: ASoC: core: add optional pcm_new callback for DAI
@@ -128,7 +84,7 @@ index 212eaaf172ed..345e4f8ee93f 100644
  	bool bus_control;
  
 diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
-index 3c6713da3ad9..e46e80c0e07d 100644
+index 359037f3d606..1cb3bcdab7df 100644
 --- a/sound/soc/soc-core.c
 +++ b/sound/soc/soc-core.c
 @@ -1289,6 +1289,27 @@ static int soc_probe_dai(struct snd_soc_dai *dai, int order)
@@ -173,8 +129,11 @@ index 3c6713da3ad9..e46e80c0e07d 100644
  		} else {
  			INIT_DELAYED_WORK(&rtd->delayed_work,
  						codec2codec_close_delayed_work);
+-- 
+2.17.1
 
-From 3877e4beac5a5efc2898185fe75555e21cf6b090 Mon Sep 17 00:00:00 2001
+
+From 75dffba327c34892744dc1c011afb0768db4a4f3 Mon Sep 17 00:00:00 2001
 From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
 Date: Tue, 3 Jan 2017 16:52:52 +0100
 Subject: [PATCH] UPSTREAM: ASoC: hdmi-codec: add channel mapping control
@@ -192,7 +151,7 @@ Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
 Signed-off-by: Mark Brown <broonie@kernel.org>
 (cherry picked from commit cd6111b26280a2f38a9fb8e6630c63a96477e4bf)
 ---
- sound/soc/codecs/hdmi-codec.c | 377 +++++++++++++++++++++++++++++++++++++++++-
+ sound/soc/codecs/hdmi-codec.c | 377 +++++++++++++++++++++++++++++++++-
  1 file changed, 376 insertions(+), 1 deletion(-)
 
 diff --git a/sound/soc/codecs/hdmi-codec.c b/sound/soc/codecs/hdmi-codec.c
@@ -659,8 +618,11 @@ index 028d60c196ae..cb78d8971b41 100644
  	hdmi_unregister_notifier(&hcp->nb);
  	snd_soc_unregister_codec(&pdev->dev);
  	return 0;
+-- 
+2.17.1
 
-From 52c48ffd0956821dd3f1315b9ec3fd2a677b2b63 Mon Sep 17 00:00:00 2001
+
+From f6398d13e66393ccfdc88634bb7e556783de7610 Mon Sep 17 00:00:00 2001
 From: Christophe Jaillet <christophe.jaillet@wanadoo.fr>
 Date: Thu, 15 Jun 2017 07:53:11 +0200
 Subject: [PATCH] UPSTREAM: ASoC: rockchip: Fix an error handling in
@@ -679,10 +641,10 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
  1 file changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/sound/soc/rockchip/rockchip_i2s.c b/sound/soc/rockchip/rockchip_i2s.c
-index b359639c1038..02ff642499bf 100644
+index e5e95611f7fb..2442da64b6c0 100644
 --- a/sound/soc/rockchip/rockchip_i2s.c
 +++ b/sound/soc/rockchip/rockchip_i2s.c
-@@ -658,12 +658,13 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
+@@ -689,12 +689,13 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
  			goto err_pm_disable;
  	}
  
@@ -700,8 +662,11 @@ index b359639c1038..02ff642499bf 100644
  	if (!of_property_read_u32(node, "rockchip,playback-channels", &val)) {
  		if (val >= 2 && val <= 8)
  			soc_dai->playback.channels_max = val;
+-- 
+2.17.1
 
-From 7b9368e1f2d50d7ca5b07ea50240fd8f45d884fe Mon Sep 17 00:00:00 2001
+
+From 4df73e7b2fa35559da3739400de669ab8ac8f7bf Mon Sep 17 00:00:00 2001
 From: Markus Elfring <elfring@users.sourceforge.net>
 Date: Thu, 10 Aug 2017 18:38:09 +0200
 Subject: [PATCH] UPSTREAM: ASoC: rockchip: Delete an error message for a
@@ -720,10 +685,10 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
  1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/sound/soc/rockchip/rockchip_i2s.c b/sound/soc/rockchip/rockchip_i2s.c
-index 02ff642499bf..16ff8d5e0033 100644
+index 2442da64b6c0..2f7e953918a4 100644
 --- a/sound/soc/rockchip/rockchip_i2s.c
 +++ b/sound/soc/rockchip/rockchip_i2s.c
-@@ -594,10 +594,8 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
+@@ -622,10 +622,8 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
  	int val;
  
  	i2s = devm_kzalloc(&pdev->dev, sizeof(*i2s), GFP_KERNEL);
@@ -735,8 +700,11 @@ index 02ff642499bf..16ff8d5e0033 100644
  
  	i2s->dev = &pdev->dev;
  
+-- 
+2.17.1
 
-From f217d206adafde4eb886ffbd5ecd7779c37438ef Mon Sep 17 00:00:00 2001
+
+From a8e16571f5c503f83d08a64b6c6cfa8a3e756ec1 Mon Sep 17 00:00:00 2001
 From: John Keeping <john@metanate.com>
 Date: Thu, 14 Sep 2017 16:58:55 +0100
 Subject: [PATCH] UPSTREAM: ASoC: rockchip: i2s: fix unbalanced clk_disable
@@ -753,10 +721,10 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
  1 file changed, 1 deletion(-)
 
 diff --git a/sound/soc/rockchip/rockchip_i2s.c b/sound/soc/rockchip/rockchip_i2s.c
-index 16ff8d5e0033..986ad2efc8e9 100644
+index 2f7e953918a4..f53b63571b17 100644
 --- a/sound/soc/rockchip/rockchip_i2s.c
 +++ b/sound/soc/rockchip/rockchip_i2s.c
-@@ -727,7 +727,6 @@ static int rockchip_i2s_remove(struct platform_device *pdev)
+@@ -763,7 +763,6 @@ static int rockchip_i2s_remove(struct platform_device *pdev)
  	if (!pm_runtime_status_suspended(&pdev->dev))
  		i2s_runtime_suspend(&pdev->dev);
  
@@ -764,8 +732,11 @@ index 16ff8d5e0033..986ad2efc8e9 100644
  	clk_disable_unprepare(i2s->hclk);
  
  	return 0;
+-- 
+2.17.1
 
-From 8b1551df18617eba99d59f89724191954a7213a4 Mon Sep 17 00:00:00 2001
+
+From 15d455884b769f0b842321ca4035bb9faea7643d Mon Sep 17 00:00:00 2001
 From: Romain Perier <romain.perier@collabora.com>
 Date: Thu, 20 Apr 2017 14:34:34 +0530
 Subject: [PATCH] UPSTREAM: drm: dw-hdmi: gate audio clock from the I2S
@@ -789,14 +760,14 @@ Link: http://patchwork.freedesktop.org/patch/msgid/20170414083113.4255-3-romain.
 Signed-off-by: Archit Taneja <architt@codeaurora.org>
 (cherry picked from commit 57fbc05585a9c841c910677228f1e3f8a3a62801)
 ---
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 24 +++++++++++++++++-------
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 24 ++++++++++++++++-------
  1 file changed, 17 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index 8726498e9f73..17c182cb07b5 100644
+index 8b7fcca0017e..7aefd981e2aa 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
 +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -824,6 +824,15 @@ void dw_hdmi_set_sample_rate(struct dw_hdmi *hdmi, unsigned int rate)
+@@ -823,6 +823,15 @@ void dw_hdmi_set_sample_rate(struct dw_hdmi *hdmi, unsigned int rate)
  }
  EXPORT_SYMBOL_GPL(dw_hdmi_set_sample_rate);
  
@@ -812,7 +783,7 @@ index 8726498e9f73..17c182cb07b5 100644
  static void dw_hdmi_ahb_audio_enable(struct dw_hdmi *hdmi)
  {
  	hdmi_set_cts_n(hdmi, hdmi->audio_cts, hdmi->audio_n);
-@@ -837,6 +846,12 @@ static void dw_hdmi_ahb_audio_disable(struct dw_hdmi *hdmi)
+@@ -836,6 +845,12 @@ static void dw_hdmi_ahb_audio_disable(struct dw_hdmi *hdmi)
  static void dw_hdmi_i2s_audio_enable(struct dw_hdmi *hdmi)
  {
  	hdmi_set_cts_n(hdmi, hdmi->audio_cts, hdmi->audio_n);
@@ -825,7 +796,7 @@ index 8726498e9f73..17c182cb07b5 100644
  }
  
  void dw_hdmi_audio_enable(struct dw_hdmi *hdmi)
-@@ -2149,12 +2164,6 @@ static void dw_hdmi_enable_video_path(struct dw_hdmi *hdmi)
+@@ -2193,12 +2208,6 @@ static void dw_hdmi_enable_video_path(struct dw_hdmi *hdmi)
  			    HDMI_MC_FLOWCTRL);
  }
  
@@ -838,7 +809,7 @@ index 8726498e9f73..17c182cb07b5 100644
  /* Workaround to clear the overflow condition */
  static void dw_hdmi_clear_overflow(struct dw_hdmi *hdmi)
  {
-@@ -2306,7 +2315,7 @@ static int dw_hdmi_setup(struct dw_hdmi *hdmi, struct drm_display_mode *mode)
+@@ -2370,7 +2379,7 @@ static int dw_hdmi_setup(struct dw_hdmi *hdmi, struct drm_display_mode *mode)
  
  		/* HDMI Initialization Step E - Configure audio */
  		hdmi_clk_regenerator_update_pixel_clock(hdmi);
@@ -847,7 +818,7 @@ index 8726498e9f73..17c182cb07b5 100644
  	}
  
  	/* not for DVI mode */
-@@ -3742,6 +3751,7 @@ int dw_hdmi_bind(struct device *dev, struct device *master,
+@@ -3830,6 +3839,7 @@ int dw_hdmi_bind(struct device *dev, struct device *master,
  		audio.read	= hdmi_readb;
  		audio.mod	= hdmi_modb;
  		hdmi->enable_audio = dw_hdmi_i2s_audio_enable;
@@ -855,15 +826,18 @@ index 8726498e9f73..17c182cb07b5 100644
  
  		pdevinfo.name = "dw-hdmi-i2s-audio";
  		pdevinfo.data = &audio;
+-- 
+2.17.1
 
-From 442b913082d21de7a8364344feb520946413da5b Mon Sep 17 00:00:00 2001
+
+From 93859dbb6317108c3a80b08fac89f72d93c0c492 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 7 Aug 2017 22:24:15 +0200
 Subject: [PATCH] drm: dw-hdmi-i2s: sync with upstream
 
 ---
- drivers/gpu/drm/bridge/synopsys/dw-hdmi-audio.h     |  1 -
- drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c | 20 +++++++++++++-------
+ .../gpu/drm/bridge/synopsys/dw-hdmi-audio.h   |  1 -
+ .../drm/bridge/synopsys/dw-hdmi-i2s-audio.c   | 20 ++++++++++++-------
  2 files changed, 13 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-audio.h b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-audio.h
@@ -879,7 +853,7 @@ index 3930ba04977b..af7f39c85ba4 100644
  	void (*write)(struct dw_hdmi *hdmi, u8 val, int offset);
  	u8 (*read)(struct dw_hdmi *hdmi, int offset);
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
-index f1f62d8c1d16..5ff993a35ab6 100644
+index 1f33af66f285..4f747183da45 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
 +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
 @@ -16,7 +16,8 @@
@@ -892,7 +866,7 @@ index f1f62d8c1d16..5ff993a35ab6 100644
  {
  	struct dw_hdmi *hdmi = audio->hdmi;
  
-@@ -220,6 +221,7 @@ static int snd_dw_hdmi_probe(struct platform_device *pdev)
+@@ -225,6 +226,7 @@ static int snd_dw_hdmi_probe(struct platform_device *pdev)
  	struct dw_hdmi_i2s_audio_data *audio = pdev->dev.platform_data;
  	struct platform_device_info pdevinfo;
  	struct hdmi_codec_pdata pdata;
@@ -900,7 +874,7 @@ index f1f62d8c1d16..5ff993a35ab6 100644
  
  	pdata.ops		= &dw_hdmi_i2s_ops;
  	pdata.i2s		= 1;
-@@ -234,23 +236,27 @@ static int snd_dw_hdmi_probe(struct platform_device *pdev)
+@@ -239,23 +241,27 @@ static int snd_dw_hdmi_probe(struct platform_device *pdev)
  	pdevinfo.size_data	= sizeof(pdata);
  	pdevinfo.dma_mask	= DMA_BIT_MASK(32);
  
@@ -934,8 +908,11 @@ index f1f62d8c1d16..5ff993a35ab6 100644
  	.driver	= {
  		.name = DRIVER_NAME,
  		.owner = THIS_MODULE,
+-- 
+2.17.1
 
-From 1d3de24bd61e0bfba1a9e042e040fa65346ccd9d Mon Sep 17 00:00:00 2001
+
+From c1bb16091d77aeb4b0d1e5dd85342c003de663f1 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 2 Apr 2017 11:33:39 +0200
 Subject: [PATCH] drm: dw-hdmi-i2s: implement get_eld
@@ -959,7 +936,7 @@ index af7f39c85ba4..c5ace7808fdf 100644
  	void (*write)(struct dw_hdmi *hdmi, u8 val, int offset);
  	u8 (*read)(struct dw_hdmi *hdmi, int offset);
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
-index 5ff993a35ab6..e7312571e2cb 100644
+index 4f747183da45..24ad0d671dd7 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
 +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
 @@ -11,6 +11,8 @@
@@ -971,8 +948,8 @@ index 5ff993a35ab6..e7312571e2cb 100644
  #include "dw-hdmi.h"
  #include "dw-hdmi-audio.h"
  
-@@ -211,9 +213,19 @@ static void dw_hdmi_i2s_audio_shutdown(struct device *dev, void *data)
- 	hdmi_write(audio, HDMI_AUD_CONF0_SW_RESET, HDMI_AUD_CONF0);
+@@ -216,9 +218,19 @@ static void dw_hdmi_i2s_audio_shutdown(struct device *dev, void *data)
+ 			 HDMI_AUD_CONF0);
  }
  
 +static int dw_hdmi_i2s_get_eld(struct device *dev, void *data, u8 *buf, size_t len)
@@ -992,10 +969,10 @@ index 5ff993a35ab6..e7312571e2cb 100644
  
  static int snd_dw_hdmi_probe(struct platform_device *pdev)
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index 17c182cb07b5..df1ea752ac3d 100644
+index 7aefd981e2aa..836cfb14546c 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
 +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -3750,6 +3750,7 @@ int dw_hdmi_bind(struct device *dev, struct device *master,
+@@ -3838,6 +3838,7 @@ int dw_hdmi_bind(struct device *dev, struct device *master,
  		audio.write	= hdmi_writeb;
  		audio.read	= hdmi_readb;
  		audio.mod	= hdmi_modb;
@@ -1003,8 +980,11 @@ index 17c182cb07b5..df1ea752ac3d 100644
  		hdmi->enable_audio = dw_hdmi_i2s_audio_enable;
  		hdmi->disable_audio = dw_hdmi_i2s_audio_disable;
  
+-- 
+2.17.1
 
-From 1e16f2f6b861a7273d922c9251665acec542eed9 Mon Sep 17 00:00:00 2001
+
+From d6a321a97247234b2a0e7f000e9a660690b76b3e Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 17 Apr 2017 13:09:16 +0200
 Subject: [PATCH] drm: dw-hdmi-i2s: configure channel allocation
@@ -1014,7 +994,7 @@ Subject: [PATCH] drm: dw-hdmi-i2s: configure channel allocation
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
-index e7312571e2cb..1d4570e3fbed 100644
+index 24ad0d671dd7..babf7af8a45a 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
 +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
 @@ -188,7 +188,7 @@ static int dw_hdmi_i2s_hw_params(struct device *dev, void *data,
@@ -1026,14 +1006,17 @@ index e7312571e2cb..1d4570e3fbed 100644
  
  	/* Set LFEPBLDOWN-MIX INH and LSV */
  	hdmi_write(audio, 0x00, HDMI_FC_AUDICONF3);
+-- 
+2.17.1
 
-From 747742580e282f4374100909906f6957c997c4a3 Mon Sep 17 00:00:00 2001
+
+From b26266c58c8a5574d2a52b619992de7f87630f67 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Mon, 14 Aug 2017 00:14:05 +0200
 Subject: [PATCH] ASoC: hdmi-codec: reorder channel map
 
 ---
- sound/soc/codecs/hdmi-codec.c | 113 +++++++++++++++++++-----------------------
+ sound/soc/codecs/hdmi-codec.c | 113 ++++++++++++++++------------------
  1 file changed, 52 insertions(+), 61 deletions(-)
 
 diff --git a/sound/soc/codecs/hdmi-codec.c b/sound/soc/codecs/hdmi-codec.c
@@ -1171,18 +1154,40 @@ index cb78d8971b41..b74659bc3bbc 100644
  };
  
  struct hdmi_codec_priv {
+-- 
+2.17.1
 
-From 1cdb1f115b4bc9781c90d01d914dd4bbac6d0977 Mon Sep 17 00:00:00 2001
+
+From 75cb99a85ba8797f0cbc879e4374d5c3f6e195ed Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 27 Aug 2017 23:32:40 +0200
 Subject: [PATCH] ASoC: codecs: rk3328: limit to working rates
 
 ---
+ sound/soc/codecs/rk3228_codec.c | 7 ++++++-
  sound/soc/codecs/rk3328_codec.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ 2 files changed, 12 insertions(+), 2 deletions(-)
 
+diff --git a/sound/soc/codecs/rk3228_codec.c b/sound/soc/codecs/rk3228_codec.c
+index 76de2230ebf9..cdf53982f1ae 100644
+--- a/sound/soc/codecs/rk3228_codec.c
++++ b/sound/soc/codecs/rk3228_codec.c
+@@ -352,7 +352,12 @@ static struct snd_soc_dai_driver rk3228_dai[] = {
+ 			.stream_name = "HIFI Playback",
+ 			.channels_min = 1,
+ 			.channels_max = 2,
+-			.rates = SNDRV_PCM_RATE_8000_96000,
++			.rates = (SNDRV_PCM_RATE_8000 |
++				  SNDRV_PCM_RATE_16000 |
++				  SNDRV_PCM_RATE_32000 |
++				  SNDRV_PCM_RATE_48000 |
++				  SNDRV_PCM_RATE_64000 |
++				  SNDRV_PCM_RATE_96000),
+ 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+ 				    SNDRV_PCM_FMTBIT_S20_3LE |
+ 				    SNDRV_PCM_FMTBIT_S24_LE |
 diff --git a/sound/soc/codecs/rk3328_codec.c b/sound/soc/codecs/rk3328_codec.c
-index af1b7429b6d4..d0b4578ffa0e 100644
+index 5d8784db4dc5..103bb7809884 100644
 --- a/sound/soc/codecs/rk3328_codec.c
 +++ b/sound/soc/codecs/rk3328_codec.c
 @@ -354,7 +354,12 @@ static struct snd_soc_dai_driver rk3328_dai[] = {
@@ -1199,34 +1204,22 @@ index af1b7429b6d4..d0b4578ffa0e 100644
  			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
  				    SNDRV_PCM_FMTBIT_S20_3LE |
  				    SNDRV_PCM_FMTBIT_S24_LE |
---- a/sound/soc/codecs/rk3228_codec.c
-+++ b/sound/soc/codecs/rk3228_codec.c
-@@ -352,7 +352,12 @@
- 			.stream_name = "HIFI Playback",
- 			.channels_min = 1,
- 			.channels_max = 2,
--			.rates = SNDRV_PCM_RATE_8000_96000,
-+			.rates = (SNDRV_PCM_RATE_8000 |
-+				  SNDRV_PCM_RATE_16000 |
-+				  SNDRV_PCM_RATE_32000 |
-+				  SNDRV_PCM_RATE_48000 |
-+				  SNDRV_PCM_RATE_64000 |
-+				  SNDRV_PCM_RATE_96000),
- 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
- 				    SNDRV_PCM_FMTBIT_S20_3LE |
- 				    SNDRV_PCM_FMTBIT_S24_LE |
-From 878d789ff5faa02f0da5e68126e2276124611eeb Mon Sep 17 00:00:00 2001
+-- 
+2.17.1
+
+
+From 9529eeed4ed4c669856133371c7dfe44a6a31e91 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 8 Jul 2018 12:34:43 +0200
 Subject: [PATCH] drm: dw-hdmi: change audio config
 
 ---
- drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c |  9 ++-------
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c           | 15 ++++++++++++---
- 2 files changed, 14 insertions(+), 10 deletions(-)
+ .../gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c   |  8 +-------
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c         | 15 ++++++++++++---
+ 2 files changed, 13 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
-index 1d4570e3fbed..d0904f6b7a82 100644
+index babf7af8a45a..b8ca52da445e 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
 +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
 @@ -110,8 +110,7 @@ static int dw_hdmi_i2s_hw_params(struct device *dev, void *data,
@@ -1252,7 +1245,7 @@ index 1d4570e3fbed..d0904f6b7a82 100644
  
  	return 0;
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index df1ea752ac3d..4bf4ff0fd741 100644
+index 836cfb14546c..f4219b992b71 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
 +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
 @@ -89,6 +89,7 @@ static const struct dw_hdmi_audio_tmds_n common_tmds_n_table[] = {
@@ -1283,7 +1276,7 @@ index df1ea752ac3d..4bf4ff0fd741 100644
  
  	/* End of table */
  	{ .tmds = 0,         .n_32k = 0,    .n_44k1 = 0,    .n_48k = 0, },
-@@ -831,6 +835,11 @@ static void hdmi_enable_audio_clk(struct dw_hdmi *hdmi, bool enable)
+@@ -830,6 +834,11 @@ static void hdmi_enable_audio_clk(struct dw_hdmi *hdmi, bool enable)
  	else
  		hdmi->mc_clkdis |= HDMI_MC_CLKDIS_AUDCLK_DISABLE;
  	hdmi_writeb(hdmi, hdmi->mc_clkdis, HDMI_MC_CLKDIS);
@@ -1295,21 +1288,24 @@ index df1ea752ac3d..4bf4ff0fd741 100644
  }
  
  static void dw_hdmi_ahb_audio_enable(struct dw_hdmi *hdmi)
+-- 
+2.17.1
 
-From 6bf23972f26fde1abad52cd1a65d1223d51d47c2 Mon Sep 17 00:00:00 2001
+
+From b71fd316d8366309813433091e9d1c9df1a2a033 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 8 Jul 2018 12:56:51 +0200
 Subject: [PATCH] WIP: drm: dw-hdmi: use Auto CTS mode
 
 ---
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 52 ++++++++++++++++++-------------
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 52 ++++++++++++++---------
  1 file changed, 31 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index 4bf4ff0fd741..2583320f3289 100644
+index f4219b992b71..6531cb2180c2 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
 +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -643,14 +643,18 @@ static struct i2c_adapter *dw_hdmi_i2c_adapter(struct dw_hdmi *hdmi)
+@@ -642,14 +642,18 @@ static struct i2c_adapter *dw_hdmi_i2c_adapter(struct dw_hdmi *hdmi)
  static void hdmi_set_cts_n(struct dw_hdmi *hdmi, unsigned int cts,
  			   unsigned int n)
  {
@@ -1336,7 +1332,7 @@ index 4bf4ff0fd741..2583320f3289 100644
  	hdmi_writeb(hdmi, (cts >> 8) & 0xff, HDMI_AUD_CTS2);
  	hdmi_writeb(hdmi, cts & 0xff, HDMI_AUD_CTS1);
  
-@@ -777,24 +781,30 @@ static void hdmi_set_clk_regenerator(struct dw_hdmi *hdmi,
+@@ -776,24 +780,30 @@ static void hdmi_set_clk_regenerator(struct dw_hdmi *hdmi,
  {
  	unsigned long ftdms = pixel_clk;
  	unsigned int n, cts;
@@ -1380,4 +1376,6 @@ index 4bf4ff0fd741..2583320f3289 100644
  
  	spin_lock_irq(&hdmi->audio_lock);
  	hdmi->audio_n = n;
+-- 
+2.17.1
 

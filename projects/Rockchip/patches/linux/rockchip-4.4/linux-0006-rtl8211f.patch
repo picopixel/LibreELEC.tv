@@ -1,4 +1,4 @@
-From eec386c5e9f5067dc7fdd3c86adae7de835e090a Mon Sep 17 00:00:00 2001
+From ab31254e143f22661fcf6439388ca48e5ae80698 Mon Sep 17 00:00:00 2001
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Date: Fri, 25 Nov 2016 14:12:01 +0100
 Subject: [PATCH] UPSTREAM: net: phy: realtek: fix enabling of the TX-delay for
@@ -65,8 +65,11 @@ index 43ab691362d4..686f3b259dc0 100644
  
  	return 0;
  }
+-- 
+2.17.1
 
-From e0a1654d1e79bea21f6397b6caa038c2dee25f97 Mon Sep 17 00:00:00 2001
+
+From f1724604b1d343e0acd3479c9c30f99b2b192851 Mon Sep 17 00:00:00 2001
 From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 Date: Tue, 12 Sep 2017 18:54:35 +0900
 Subject: [PATCH] UPSTREAM: net: phy: realtek: rename RTL8211F_PAGE_SELECT to
@@ -131,8 +134,11 @@ index 686f3b259dc0..d58cc8f518ac 100644
  
  	return 0;
  }
+-- 
+2.17.1
 
-From 4ec70bc0ea714cc0129a4631dbda493ba706f40f Mon Sep 17 00:00:00 2001
+
+From 885737072eea62c23f6f8a4da1ab2694e63e5f1a Mon Sep 17 00:00:00 2001
 From: Jassi Brar <jaswinder.singh@linaro.org>
 Date: Tue, 12 Sep 2017 18:54:36 +0900
 Subject: [PATCH] UPSTREAM: net: phy: realtek: add RTL8201F phy-id and
@@ -151,7 +157,7 @@ Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 (cherry picked from commit 513588dd44b09bb5fdd5066a4fbc1e7443b86d1c)
 ---
- drivers/net/phy/realtek.c | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ drivers/net/phy/realtek.c | 44 +++++++++++++++++++++++++++++++++++++++
  1 file changed, 44 insertions(+)
 
 diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
@@ -234,8 +240,11 @@ index d58cc8f518ac..422cf1f6a60c 100644
  	{ 0x001cc912, 0x001fffff },
  	{ 0x001cc914, 0x001fffff },
  	{ 0x001cc915, 0x001fffff },
+-- 
+2.17.1
 
-From cd0c207d7747ac36c446099ff018682373999764 Mon Sep 17 00:00:00 2001
+
+From a63a3a5ae3510c9640edd4d4f88bf582751daec9 Mon Sep 17 00:00:00 2001
 From: Heiner Kallweit <hkallweit1@gmail.com>
 Date: Sun, 12 Nov 2017 16:16:04 +0100
 Subject: [PATCH] UPSTREAM: net: phy: realtek: fix RTL8211F interrupt mode
@@ -279,8 +288,11 @@ index 422cf1f6a60c..a30d0c08c63b 100644
  
  	return err;
  }
+-- 
+2.17.1
 
-From df04368281177832f4dff078f0cc735ce651ded1 Mon Sep 17 00:00:00 2001
+
+From b6ca6734f1b1b8b3a9efb5179465e3f03faaf478 Mon Sep 17 00:00:00 2001
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Date: Sat, 2 Dec 2017 22:51:24 +0100
 Subject: [PATCH] UPSTREAM: net: phy: realtek: use the BIT and GENMASK macros
@@ -328,8 +340,11 @@ index a30d0c08c63b..f8dc29a75828 100644
  
  #define RTL8201F_ISR		0x1e
  #define RTL8201F_IER		0x13
+-- 
+2.17.1
 
-From c6479ba05b0013658491a86171df7e0110a0e85a Mon Sep 17 00:00:00 2001
+
+From ee55e57e1f0c2471475659d81ce54d551beba5da Mon Sep 17 00:00:00 2001
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Date: Sat, 2 Dec 2017 22:51:25 +0100
 Subject: [PATCH] UPSTREAM: net: phy: realtek: rename RTL821x_INER_INIT to
@@ -369,8 +384,11 @@ index f8dc29a75828..89308eac4088 100644
  	else
  		err = phy_write(phydev, RTL821x_INER, 0);
  
+-- 
+2.17.1
 
-From c49b1806174ac4140a3fe90c626ef694992f7db6 Mon Sep 17 00:00:00 2001
+
+From 692d1c776600302e2b588eb33c0421f41972d0ad Mon Sep 17 00:00:00 2001
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Date: Sat, 2 Dec 2017 22:51:26 +0100
 Subject: [PATCH] UPSTREAM: net: phy: realtek: group all register bit #defines
@@ -413,8 +431,11 @@ index 89308eac4088..df97d903d2bf 100644
  #define RTL8211F_INSR		0x1d
  #define RTL8211F_TX_DELAY	BIT(8)
  
+-- 
+2.17.1
 
-From 3cd6e2f5de15c4c071d9ca9f02efcbd23b8435ad Mon Sep 17 00:00:00 2001
+
+From 6e264f7c703413791cf438d445f0c6fb93bcd3bc Mon Sep 17 00:00:00 2001
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Date: Sat, 2 Dec 2017 22:51:27 +0100
 Subject: [PATCH] UPSTREAM: net: phy: realtek: use the same indentation for all
@@ -473,8 +494,11 @@ index df97d903d2bf..701f34ad7d8d 100644
  
  MODULE_DESCRIPTION("Realtek PHY driver");
  MODULE_AUTHOR("Johnson Leung");
+-- 
+2.17.1
 
-From 47e40b66fdafc0ce940090626759fe8418034a0e Mon Sep 17 00:00:00 2001
+
+From 7d877631041c8290bcff321b605b0041eeda58bc Mon Sep 17 00:00:00 2001
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Date: Sat, 2 Dec 2017 22:51:28 +0100
 Subject: [PATCH] UPSTREAM: net: phy: realtek: add utility functions to
@@ -503,7 +527,7 @@ Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 (cherry picked from commit 136819a6e8df374e6b9b424586ff11c9e241a1cb)
 ---
- drivers/net/phy/realtek.c | 83 ++++++++++++++++++++++++++++++-----------------
+ drivers/net/phy/realtek.c | 83 +++++++++++++++++++++++++--------------
  1 file changed, 53 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
@@ -644,8 +668,11 @@ index 701f34ad7d8d..b1d52e61d91c 100644
  
  	return 0;
  }
+-- 
+2.17.1
 
-From b747e5d48f83fd4d3b824578f666ac136bc6de49 Mon Sep 17 00:00:00 2001
+
+From daaf1ecc3c5202f68bb55b82254bc590728642c2 Mon Sep 17 00:00:00 2001
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Date: Sat, 2 Dec 2017 23:06:48 +0100
 Subject: [PATCH] FROMLIST: net: phy: realtek: add support for configuring the
@@ -666,7 +693,7 @@ in a paged register into a new rtl8211x_page_mask_bits helper function.
 
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- drivers/net/phy/realtek.c | 55 ++++++++++++++++++++++++++++++++++++++---------
+ drivers/net/phy/realtek.c | 55 ++++++++++++++++++++++++++++++++-------
  1 file changed, 45 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
@@ -754,8 +781,11 @@ index b1d52e61d91c..890ea9d18d27 100644
  	if (ret)
  		return ret;
  
+-- 
+2.17.1
 
-From 4264d7cd3670514648b2ef632097c80e210e5690 Mon Sep 17 00:00:00 2001
+
+From a00de29cc48bd93068c81471825ddaabbecc212b Mon Sep 17 00:00:00 2001
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Date: Sat, 2 Dec 2017 23:06:49 +0100
 Subject: [PATCH] FROMLIST: net: phy: realtek: configure the INTB pin on
@@ -833,8 +863,11 @@ index 890ea9d18d27..f307d220b49a 100644
  
  	return rtl8211x_page_write(phydev, 0xa42, RTL821x_INER, val);
  }
+-- 
+2.17.1
 
-From 5f21ae02ffa16fafd12f635e7a5965842d7d492a Mon Sep 17 00:00:00 2001
+
+From c78d29002e7bbfc43d73eff26ef59b2b8b7d6775 Mon Sep 17 00:00:00 2001
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Date: Sat, 2 Dec 2017 23:06:50 +0100
 Subject: [PATCH] FROMLIST: net: phy: realtek: add more interrupt bits for
@@ -868,3 +901,6 @@ index f307d220b49a..15d342eefd6d 100644
  
  #define RTL821x_INSR				0x13
  
+-- 
+2.17.1
+

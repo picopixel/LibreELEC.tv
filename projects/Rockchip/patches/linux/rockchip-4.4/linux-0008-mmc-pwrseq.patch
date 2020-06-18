@@ -1,4 +1,4 @@
-From 625c86fa85aa4d18f7711d0314f2ef78a71b79c0 Mon Sep 17 00:00:00 2001
+From 5f6fd5e3e1da0827aa725d6ee0bb8bd52ad116f4 Mon Sep 17 00:00:00 2001
 From: Julia Lawall <Julia.Lawall@lip6.fr>
 Date: Sat, 14 Nov 2015 18:05:20 +0100
 Subject: [PATCH] UPSTREAM: mmc: pwrseq: constify mmc_pwrseq_ops structures
@@ -43,10 +43,10 @@ index ad4f94ec7e8d..4a82bc77fe49 100644
  	.free = mmc_pwrseq_emmc_free,
  };
 diff --git a/drivers/mmc/core/pwrseq_simple.c b/drivers/mmc/core/pwrseq_simple.c
-index d10538bb5e07..2b16263458af 100644
+index 96f45caea109..aba786daebca 100644
 --- a/drivers/mmc/core/pwrseq_simple.c
 +++ b/drivers/mmc/core/pwrseq_simple.c
-@@ -87,7 +87,7 @@ static void mmc_pwrseq_simple_free(struct mmc_host *host)
+@@ -91,7 +91,7 @@ static void mmc_pwrseq_simple_free(struct mmc_host *host)
  	kfree(pwrseq);
  }
  
@@ -55,8 +55,11 @@ index d10538bb5e07..2b16263458af 100644
  	.pre_power_on = mmc_pwrseq_simple_pre_power_on,
  	.post_power_on = mmc_pwrseq_simple_post_power_on,
  	.power_off = mmc_pwrseq_simple_power_off,
+-- 
+2.17.1
 
-From 58975b7a58defa92efd5533cc731fb9a0c1cb780 Mon Sep 17 00:00:00 2001
+
+From 761e91fd2e2444cd5e00c5fcb7de054e96425223 Mon Sep 17 00:00:00 2001
 From: Peter Chen <peter.chen@freescale.com>
 Date: Wed, 6 Jan 2016 11:34:10 +0800
 Subject: [PATCH] UPSTREAM: mmc: core: pwrseq_simple: remove unused header file
@@ -80,8 +83,11 @@ index aba786daebca..bc173e18b71c 100644
  #include <linux/gpio/consumer.h>
  
  #include <linux/mmc/host.h>
+-- 
+2.17.1
 
-From 01946788b015b9d3f7d18f5b4a43e09e6bf66623 Mon Sep 17 00:00:00 2001
+
+From 8344710fce77f5533240041148631bd6e02d6835 Mon Sep 17 00:00:00 2001
 From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 Date: Thu, 14 Apr 2016 14:02:14 +0100
 Subject: [PATCH] UPSTREAM: mmc: pwrseq_simple: add to_pwrseq_simple() macro
@@ -147,8 +153,11 @@ index bc173e18b71c..f94271bb1f6b 100644
  
  	if (!IS_ERR(pwrseq->reset_gpios))
  		gpiod_put_array(pwrseq->reset_gpios);
+-- 
+2.17.1
 
-From b76637491013b2298cf46729767ba76544d4023b Mon Sep 17 00:00:00 2001
+
+From 12a4e3209980b8f1e2913e9b52d687372d912894 Mon Sep 17 00:00:00 2001
 From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 Date: Thu, 14 Apr 2016 14:02:15 +0100
 Subject: [PATCH] UPSTREAM: mmc: pwrseq_emmc: add to_pwrseq_emmc() macro
@@ -194,8 +203,11 @@ index 4a82bc77fe49..c2d732aa464c 100644
  
  	unregister_restart_handler(&pwrseq->reset_nb);
  	gpiod_put(pwrseq->reset_gpio);
+-- 
+2.17.1
 
-From c1631d2cea4e5956e368c4652859a9090a509af2 Mon Sep 17 00:00:00 2001
+
+From ee77fc7aec54187376febeba6973e1006463a865 Mon Sep 17 00:00:00 2001
 From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 Date: Thu, 14 Apr 2016 14:02:16 +0100
 Subject: [PATCH] UPSTREAM: mmc: pwrseq: convert to proper platform device
@@ -218,12 +230,12 @@ Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 (cherry picked from commit d97a1e5d7cd2b5b0edc02a40fe6897b710c9e10f)
 ---
- drivers/mmc/core/Kconfig         |  22 ++++++++
+ drivers/mmc/core/Kconfig         |  22 +++++++
  drivers/mmc/core/Makefile        |   4 +-
- drivers/mmc/core/pwrseq.c        | 108 ++++++++++++++++++---------------------
- drivers/mmc/core/pwrseq.h        |  19 ++++---
- drivers/mmc/core/pwrseq_emmc.c   |  75 +++++++++++++++++----------
- drivers/mmc/core/pwrseq_simple.c |  79 +++++++++++++++-------------
+ drivers/mmc/core/pwrseq.c        | 108 ++++++++++++++-----------------
+ drivers/mmc/core/pwrseq.h        |  19 ++++--
+ drivers/mmc/core/pwrseq_emmc.c   |  75 +++++++++++++--------
+ drivers/mmc/core/pwrseq_simple.c |  79 ++++++++++++----------
  6 files changed, 178 insertions(+), 129 deletions(-)
 
 diff --git a/drivers/mmc/core/Kconfig b/drivers/mmc/core/Kconfig
@@ -712,8 +724,11 @@ index f94271bb1f6b..450d907c6e6c 100644
 +
 +module_platform_driver(mmc_pwrseq_simple_driver);
 +MODULE_LICENSE("GPL v2");
+-- 
+2.17.1
 
-From 2abada2ff3999a38dc87d5803f98141a0971c06c Mon Sep 17 00:00:00 2001
+
+From 345667931c3e7801f5d12ccf3ad8a027cbb5001e Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Sun, 7 Aug 2016 21:02:38 +0200
 Subject: [PATCH] UPSTREAM: mmc: pwrseq-simple: Add an optional
@@ -730,8 +745,8 @@ Acked-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 (cherry picked from commit 721e0497172f0fa661eed2d63367cddf479f35e8)
 ---
- Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.txt | 2 ++
- drivers/mmc/core/pwrseq_simple.c                            | 9 +++++++++
+ .../devicetree/bindings/mmc/mmc-pwrseq-simple.txt        | 2 ++
+ drivers/mmc/core/pwrseq_simple.c                         | 9 +++++++++
  2 files changed, 11 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.txt b/Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.txt
@@ -788,8 +803,11 @@ index 450d907c6e6c..1304160de168 100644
  	pwrseq->pwrseq.dev = dev;
  	pwrseq->pwrseq.ops = &mmc_pwrseq_simple_ops;
  	pwrseq->pwrseq.owner = THIS_MODULE;
+-- 
+2.17.1
 
-From 4d0a703460821fc7541ae96916eca948e326b16c Mon Sep 17 00:00:00 2001
+
+From 8b82cc5b2bb4ba2dc499f87c17b1da72d45e23c3 Mon Sep 17 00:00:00 2001
 From: Ulf Hansson <ulf.hansson@linaro.org>
 Date: Sat, 6 May 2017 11:41:30 +0200
 Subject: [PATCH] UPSTREAM: mmc: dt: pwrseq-simple: Invent power-off-delay-us
@@ -824,8 +842,11 @@ index e25436861867..9029b45b8a22 100644
  
  Example:
  
+-- 
+2.17.1
 
-From e85294cdf12c6a6e6fb3c24cae1ad0994ae6aca2 Mon Sep 17 00:00:00 2001
+
+From 03c1514e0dadf20a76c5c57942185811f2c06043 Mon Sep 17 00:00:00 2001
 From: Ulf Hansson <ulf.hansson@linaro.org>
 Date: Sat, 6 May 2017 11:43:05 +0200
 Subject: [PATCH] UPSTREAM: mmc: pwrseq_simple: Parse DTS for the
@@ -875,3 +896,6 @@ index 1304160de168..13ef162cf066 100644
  
  	pwrseq->pwrseq.dev = dev;
  	pwrseq->pwrseq.ops = &mmc_pwrseq_simple_ops;
+-- 
+2.17.1
+

@@ -1,4 +1,4 @@
-From 77d2716cf5579c4ad74df978ad58d983419cc44b Mon Sep 17 00:00:00 2001
+From 2343f3680ecb252ceb37f6ac23c94342735ca8ee Mon Sep 17 00:00:00 2001
 From: Jakub Kicinski <jakub.kicinski@netronome.com>
 Date: Wed, 31 Aug 2016 12:46:44 +0100
 Subject: [PATCH] UPSTREAM: add basic register-field manipulation macros
@@ -41,7 +41,7 @@ Reviewed-by: Dinan Gunawardena <dinan.gunawardena@netronome.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 (cherry picked from commit 3e9b3112ec74f192eaab976c3889e34255cae940)
 ---
- include/linux/bitfield.h | 93 ++++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/bitfield.h | 93 ++++++++++++++++++++++++++++++++++++++++
  include/linux/bug.h      |  3 ++
  2 files changed, 96 insertions(+)
  create mode 100644 include/linux/bitfield.h
@@ -146,7 +146,7 @@ index 000000000000..f6505d83069d
 +
 +#endif
 diff --git a/include/linux/bug.h b/include/linux/bug.h
-index 7f4818673c41..edd3d8d3cd90 100644
+index 833746d361cf..90b0ab758360 100644
 --- a/include/linux/bug.h
 +++ b/include/linux/bug.h
 @@ -13,6 +13,7 @@ enum bug_trap_type {
@@ -166,8 +166,11 @@ index 7f4818673c41..edd3d8d3cd90 100644
  #define BUILD_BUG_ON_NOT_POWER_OF_2(n)			\
  	BUILD_BUG_ON((n) == 0 || (((n) & ((n) - 1)) != 0))
  
+-- 
+2.17.1
 
-From 3841d053b087e87d8d3d77738452c3b14d724049 Mon Sep 17 00:00:00 2001
+
+From dc9ac5a3a6faff814db5fa920edc089451ff862e Mon Sep 17 00:00:00 2001
 From: Jakub Kicinski <jakub.kicinski@netronome.com>
 Date: Thu, 9 Feb 2017 09:17:27 -0800
 Subject: [PATCH] UPSTREAM: bitfield.h: add FIELD_FIT() helper
@@ -206,8 +209,11 @@ index f6505d83069d..8b9d6fff002d 100644
  /**
   * FIELD_PREP() - prepare a bitfield element
   * @_mask: shifted mask defining the field's length and position
+-- 
+2.17.1
 
-From b0dcc7c8cc60ef7877baf3639a46344d8b184fc7 Mon Sep 17 00:00:00 2001
+
+From 927673e0481e030ff0eb49b7b808963a717cc020 Mon Sep 17 00:00:00 2001
 From: Laurent Defert <laurent.defert@smartjog.com>
 Date: Wed, 11 Oct 2017 08:46:52 +0200
 Subject: [PATCH] FROMLIST: compat_ioctl: add compat handler for
@@ -215,14 +221,14 @@ Subject: [PATCH] FROMLIST: compat_ioctl: add compat handler for
 
 https://patchwork.linuxtv.org/patch/8209/
 ---
- fs/compat_ioctl.c | 138 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ fs/compat_ioctl.c | 138 ++++++++++++++++++++++++++++++++++++++++++++++
  1 file changed, 138 insertions(+)
 
 diff --git a/fs/compat_ioctl.c b/fs/compat_ioctl.c
-index a52ca5cba015..438ce0c6851e 100644
+index e39ca3c305b1..c5b98cd03624 100644
 --- a/fs/compat_ioctl.c
 +++ b/fs/compat_ioctl.c
-@@ -223,6 +223,140 @@ static int do_video_set_spu_palette(unsigned int fd, unsigned int cmd,
+@@ -224,6 +224,140 @@ static int do_video_set_spu_palette(unsigned int fd, unsigned int cmd,
  	return err;
  }
  
@@ -363,7 +369,7 @@ index a52ca5cba015..438ce0c6851e 100644
  #ifdef CONFIG_BLOCK
  typedef struct sg_io_hdr32 {
  	compat_int_t interface_id;	/* [i] 'S' for SCSI generic (required) */
-@@ -1483,6 +1617,10 @@ static long do_ioctl_trans(int fd, unsigned int cmd,
+@@ -1492,6 +1626,10 @@ static long do_ioctl_trans(int fd, unsigned int cmd,
  		return do_video_stillpicture(fd, cmd, argp);
  	case VIDEO_SET_SPU_PALETTE:
  		return do_video_set_spu_palette(fd, cmd, argp);
@@ -374,3 +380,6 @@ index a52ca5cba015..438ce0c6851e 100644
  	}
  
  	/*
+-- 
+2.17.1
+
