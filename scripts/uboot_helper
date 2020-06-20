@@ -36,6 +36,7 @@ devices = {
     'MiQi' : { 'rk3288' : { 'dtb' : 'rk3288-miqi.dtb', 'config' : 'miqi-rk3288_config' }, },
     'RK3328' : {
       'box' : { 'dtb' : 'rk3328-box.dtb', 'config' : 'evb-rk3328_defconfig' },
+      'box-mx10' : { 'dtb' : 'rk3328-box-mx10.dtb', 'config' : 'evb-rk3328_defconfig' },
       'box-trn9' : { 'dtb' : 'rk3328-box-trn9.dtb', 'config' : 'evb-rk3328_defconfig' },
       'box-v88miniIII' : { 'dtb' : 'rk3328-box-v88-miniIII.dtb', 'config' : 'evb-rk3328_defconfig' },
       'box-z28' : { 'dtb' : 'rk3328-box-z28.dtb', 'config' : 'evb-rk3328_defconfig' },
