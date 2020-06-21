@@ -2,12 +2,12 @@
 # Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libmali"
-PKG_VERSION="d4000def121b818ae0f583d8372d57643f723fdc"
-PKG_SHA256="4f2103fc927cc006ee5c9b647e899f50b0dcaeee127fec713387d06a333eb404"
+PKG_VERSION="e9cd74e9754c4e298311273da9e9e741d9edc6d2"
+PKG_SHA256="59516442202caed63d5368be604c8ffbede4846fdf5495ff66c96a9c474e9dc3"
 PKG_ARCH="arm aarch64"
 PKG_LICENSE="nonfree"
 PKG_SITE="https://github.com/LibreELEC/libmali"
-PKG_URL="https://github.com/LibreELEC/libmali/archive/$PKG_VERSION.tar.gz"
+PKG_URL="https://github.com/knaerzche/libmali/archive/$PKG_VERSION.tar.gz"
 PKG_LONGDESC="OpenGL ES user-space binary for the ARM Mali GPU family"
 PKG_STAMP="$MALI_FAMILY"
 
