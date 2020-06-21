@@ -4,14 +4,17 @@ This is a SoC device for RK3328
 
 **Build**
 
-* `PROJECT=Rockchip DEVICE=RK3328 ARCH=arm UBOOT_SYSTEM=box make image`
-* `PROJECT=Rockchip DEVICE=RK3328 ARCH=arm UBOOT_SYSTEM=box-mx10 make image`
-* `PROJECT=Rockchip DEVICE=RK3328 ARCH=arm UBOOT_SYSTEM=box-trn9 make image`
-* `PROJECT=Rockchip DEVICE=RK3328 ARCH=arm UBOOT_SYSTEM=box-v88miniIII make image`
-* `PROJECT=Rockchip DEVICE=RK3328 ARCH=arm UBOOT_SYSTEM=box-z28 make image`
-* `PROJECT=Rockchip DEVICE=RK3328 ARCH=arm UBOOT_SYSTEM=roc-cc make image`
-* `PROJECT=Rockchip DEVICE=RK3328 ARCH=arm UBOOT_SYSTEM=rock64 make image`
-* `PROJECT=Rockchip DEVICE=RK3328 ARCH=arm UBOOT_SYSTEM=rockbox make image`
+* `PROJECT=Rockchip DEVICE=RK3328 SOC=RK3318 ARCH=arm UBOOT_SYSTEM=box-h96max make image`
+* `PROJECT=Rockchip DEVICE=RK3328 SOC=RK3318 ARCH=arm UBOOT_SYSTEM=box-x88pro make image`
+
+* `PROJECT=Rockchip DEVICE=RK3328 SOC=RK3328 ARCH=arm UBOOT_SYSTEM=box make image`
+* `PROJECT=Rockchip DEVICE=RK3328 SOC=RK3328 ARCH=arm UBOOT_SYSTEM=box-mx10 make image`
+* `PROJECT=Rockchip DEVICE=RK3328 SOC=RK3328 ARCH=arm UBOOT_SYSTEM=box-trn9 make image`
+* `PROJECT=Rockchip DEVICE=RK3328 SOC=RK3328 ARCH=arm UBOOT_SYSTEM=box-v88miniIII make image`
+* `PROJECT=Rockchip DEVICE=RK3328 SOC=RK3328 ARCH=arm UBOOT_SYSTEM=box-z28 make image`
+* `PROJECT=Rockchip DEVICE=RK3328 SOC=RK3328 ARCH=arm UBOOT_SYSTEM=roc-cc make image`
+* `PROJECT=Rockchip DEVICE=RK3328 SOC=RK3328 ARCH=arm UBOOT_SYSTEM=rock64 make image`
+* `PROJECT=Rockchip DEVICE=RK3328 SOC=RK3328 ARCH=arm UBOOT_SYSTEM=rockbox make image`
 
 **How to use on an Android device**
 - Flash image to a sd-card

@@ -1675,3 +1675,1697 @@ index 0000000000..f68c03a16a
 +&sdmmc_ext {
 +	status = "okay";
 +};
+diff --git a/arch/arm64/boot/dts/rockchip/rk3318-box.dtsi b/arch/arm64/boot/dts/rockchip/rk3318-box.dtsi
+new file mode 100644
+index 0000000000..44f8e15748
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3318-box.dtsi
+@@ -0,0 +1,1312 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2017 Fuzhou Rockchip Electronics Co., Ltd
++ *
++ */
++
++#include "rk3328.dtsi"
++#include <dt-bindings/input/input.h>
++
++/ {
++
++	chosen: chosen {
++		bootargs = "earlycon=uart8250,mmio32,0xff130000 swiotlb=1 kpti=0 coherent_pool=1m";
++	};
++
++	gmac_clkin: external-gmac-clock {
++		compatible = "fixed-clock";
++		clock-frequency = <125000000>;
++		clock-output-names = "gmac_clkin";
++		#clock-cells = <0>;
++	};
++
++	sdio_pwrseq: sdio-pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		pinctrl-names = "default";
++		pinctrl-0 = <&wifi_enable_h>;
++		reset-gpios = <&gpio1 RK_PC2 GPIO_ACTIVE_LOW>;
++	};
++
++	sound {
++		compatible = "simple-audio-card";
++		simple-audio-card,format = "i2s";
++		simple-audio-card,mclk-fs = <256>;
++		simple-audio-card,name = "rockchip-rk3328";
++		simple-audio-card,cpu {
++			sound-dai = <&i2s1>;
++		};
++		simple-audio-card,codec {
++			sound-dai = <&codec>;
++		};
++	};
++
++	hdmi-sound {
++		compatible = "simple-audio-card";
++		simple-audio-card,format = "i2s";
++		simple-audio-card,mclk-fs = <128>;
++		simple-audio-card,name = "HDMI";
++		simple-audio-card,cpu {
++			sound-dai = <&i2s0>;
++		};
++		simple-audio-card,codec {
++			sound-dai = <&hdmi>;
++		};
++	};
++
++	regulators {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		vccio_1v8_reg: regulator@0 {
++			compatible = "regulator-fixed";
++			regulator-name = "vccio_1v8";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-always-on;
++		};
++
++		vccio_3v3_reg: regulator@1 {
++			compatible = "regulator-fixed";
++			regulator-name = "vccio_3v3";
++			regulator-min-microvolt = <3300000>;
++			regulator-max-microvolt = <3300000>;
++			regulator-always-on;
++		};
++	};
++
++	rtc-fake {
++		compatible = "rtc-fake";
++		status = "okay";
++	};
++
++	spdif-sound {
++		compatible = "simple-audio-card";
++		simple-audio-card,name = "SPIDF";
++		simple-audio-card,cpu {
++			sound-dai = <&spdif>;
++		};
++		simple-audio-card,codec {
++			sound-dai = <&spdif_out>;
++		};
++	};
++
++	spdif_out: spdif-out {
++		compatible = "linux,spdif-dit";
++		#sound-dai-cells = <0>;
++	};
++
++	vcc_host_vbus: host-vbus-regulator {
++		compatible = "regulator-fixed";
++		gpio = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&host_vbus_drv>;
++		regulator-name = "vcc_host_vbus";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		enable-active-high;
++	};
++
++	vcc_otg_vbus: otg-vbus-regulator {
++		compatible = "regulator-fixed";
++		gpio = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&otg_vbus_drv>;
++		regulator-name = "vcc_otg_vbus";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		enable-active-high;
++	};
++
++	vcc_phy: vcc-phy-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc_phy";
++		regulator-always-on;
++		regulator-boot-on;
++	};
++
++	vcc_sd: sdmmc-regulator {
++		compatible = "regulator-fixed";
++		gpio = <&gpio0 RK_PD6 GPIO_ACTIVE_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&sdmmc0m1_gpio>;
++		regulator-name = "vcc_sd";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		vin-supply = <&vccio_3v3_reg>;
++	};
++
++	vdd_arm: vdd-center {
++		compatible = "pwm-regulator";
++		rockchip,pwm_id = <0>;
++		rockchip,pwm_voltage = <1250000>;
++		pwms = <&pwm0 0 5000 1>;
++		regulator-name = "vcc_arm";
++		regulator-min-microvolt = <950000>;
++		regulator-max-microvolt = <1400000>;
++		regulator-settling-time-up-us = <250>;
++		regulator-ramp-delay = <12500>;
++		regulator-always-on;
++		regulator-boot-on;
++	};
++
++	vdd_logic: vdd-log {
++		compatible = "pwm-regulator";
++		rockchip,pwm_id = <1>;
++		rockchip,pwm_voltage = <1100000>;
++		pwms = <&pwm1 0 5000 1>;
++		regulator-name = "vcc_log";
++		regulator-min-microvolt = <900000>;
++		regulator-max-microvolt = <1300000>;
++		regulator-settling-time-up-us = <250>;
++		regulator-ramp-delay = <12500>;
++		regulator-always-on;
++		regulator-boot-on;
++	};
++
++	xin32k {
++		compatible = "fixed-clock";
++		clock-frequency = <0x8000>;
++		clock-output-names = "xin32k";
++		#clock-cells = <0x0>;
++	};
++};
++
++&codec {
++	#sound-dai-cells = <0>;
++	status = "okay";
++};
++
++&cpu0 {
++	cpu-supply = <&vdd_arm>;
++};
++
++&cpu0_opp_table {
++
++	opp-1104000000 {
++		clock-latency-ns = <40000>;
++		opp-hz = /bits/ 64 <1104000000>;
++		opp-microvolt = <1275000 1275000 1350000>;
++		opp-microvolt-L0 = <1275000 1275000 1350000>;
++		opp-microvolt-L1 = <1225000 1225000 1350000>;
++	};
++
++	opp-1200000000 {
++		status = "disabled";
++	};
++
++	opp-1296000000 {
++		status = "disabled";
++	};
++};
++
++&display_subsystem {
++	status = "okay";
++	route {
++		route_hdmi: route-hdmi {
++			status = "okay";
++			connect = <&vop_out_hdmi>;
++		};
++		route_tve: route-tve {
++			status = "disabled";
++			connect = <&vop_out_tve>;
++		};
++	};
++};
++
++&dfi {
++	status = "okay";
++};
++
++&dmc {
++	center-supply = <&vdd_logic>;
++	status = "okay";
++};
++
++&emmc {
++	bus-width = <8>;
++	cap-mmc-highspeed;
++	supports-emmc;
++	disable-wp;
++	non-removable;
++	num-slots = <1>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&emmc_clk &emmc_cmd &emmc_bus8>;
++	status = "okay";
++};
++
++&gmac2io {
++	phy-supply = <&vcc_phy>;
++	phy-mode = "rgmii";
++	clock_in_out = "input";
++	snps,reset-gpio = <&gpio1 RK_PC2 GPIO_ACTIVE_LOW>;
++	snps,reset-active-low;
++	snps,reset-delays-us = <0 10000 50000>;
++	assigned-clocks = <&cru SCLK_MAC2IO>, <&cru SCLK_MAC2IO_EXT>;
++	assigned-clock-parents = <&gmac_clkin>, <&gmac_clkin>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&rgmiim1_pins>;
++	tx_delay = <0x26>;
++	rx_delay = <0x11>;
++	status = "disabled";
++};
++
++&gmac2phy {
++	phy-supply = <&vcc_phy>;
++	clock_in_out = "output";
++	assigned-clocks = <&cru SCLK_MAC2PHY_SRC>;
++	assigned-clock-rate = <50000000>;
++	assigned-clocks = <&cru SCLK_MAC2PHY>;
++	assigned-clock-parents = <&cru SCLK_MAC2PHY_SRC>;
++	status = "okay";
++};
++
++&gpu {
++	status = "okay";
++	mali-supply = <&vdd_logic>;
++};
++
++&gpu_opp_table {
++	opp-500000000 {
++		status = "disabled";
++	};
++};
++
++&hdmi {
++	#sound-dai-cells = <0>;
++	ddc-i2c-scl-high-time-ns = <9625>;
++	ddc-i2c-scl-low-time-ns = <10000>;
++	status = "okay";
++};
++
++&hdmiphy {
++	rockchip,phy-table =
++		<165000000 0x07 0x0a 0x0a 0x0a 0x00 0x00 0x08
++			   0x08 0x08 0x00 0xac 0xcc 0xcc 0xcc>,
++		<340000000 0x0b 0x0d 0x0d 0x0d 0x07 0x15 0x08
++			   0x08 0x08 0x3f 0xac 0xcc 0xcd 0xdd>,
++		<594000000 0x10 0x1a 0x1a 0x1a 0x07 0x15 0x08
++			   0x08 0x08 0x00 0xac 0xcc 0xcc 0xcc>;
++	status = "okay";
++};
++
++&i2s0 {
++	#sound-dai-cells = <0>;
++	rockchip,bclk-fs = <128>;
++	status = "okay";
++};
++
++&i2s1 {
++	#sound-dai-cells = <0>;
++	status = "okay";
++};
++
++&iep {
++	status = "okay";
++};
++
++&iep_mmu {
++	status = "okay";
++};
++
++&io_domains {
++	status = "okay";
++
++	vccio1-supply = <&vccio_3v3_reg>;
++	vccio2-supply = <&vccio_1v8_reg>;
++	vccio3-supply = <&vccio_3v3_reg>;
++	vccio4-supply = <&vccio_1v8_reg>;
++	vccio5-supply = <&vccio_3v3_reg>;
++	vccio6-supply = <&vccio_3v3_reg>;
++	pmuio-supply = <&vccio_3v3_reg>;
++};
++
++&pinctrl {
++
++	pinctrl-names = "default";
++	pinctrl-0 = <&clk_32k_out>;
++
++	sdio-pwrseq {
++		wifi_enable_h: wifi-enable-h {
++		rockchip,pins =
++			<1 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++	usb {
++		host_vbus_drv: host-vbus-drv {
++			rockchip,pins =
++				<0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		otg_vbus_drv: otg-vbus-drv {
++			rockchip,pins =
++				<0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++	wireless-bluetooth {
++		uart0_gpios: uart0-gpios {
++		rockchip,pins =
++			<1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++	clk_32k {
++
++		clk_32k_out: clk-32k-out {
++			rockchip,pins = <1 RK_PD4 RK_FUNC_1 &pcfg_pull_none>;
++		};
++	};
++};
++
++&pwm0 {
++	status = "okay";
++	pinctrl-names = "active";
++	pinctrl-0 = <&pwm0_pin_pull_up>;
++};
++
++&pwm1 {
++	status = "okay";
++	pinctrl-names = "active";
++	pinctrl-0 = <&pwm1_pin_pull_up>;
++};
++
++&pwm3 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&pwmir_pin>;
++	compatible = "rockchip,remotectl-pwm";
++	remote_pwm_id = <3>;
++	handle_cpu_id = <1>;
++	remote_support_psci = <1>;
++
++	ir_key1 {
++		rockchip,usercode = <0xef10>;
++		rockchip,key_table =
++			<0xa2 KEY_POWER>,
++			<0xe8 KEY_VOLUMEUP>,
++			<0xec KEY_VOLUMEDOWN>,
++			<0xa6 KEY_F13>,
++			<0xa5 KEY_TEXT>,
++			<0xff KEY_BACK>,
++			<0xba KEY_UP>,
++			<0xf8 KEY_LEFT>,
++			<0xbe KEY_ENTER>,
++			<0xfe KEY_RIGHT>,
++			<0xaa KEY_DOWN>,
++			<0xb9 KEY_HOME>,
++			<0xfa KEY_MENU>,
++			<0xe5 KEY_REWIND>,
++			<0xa7 KEY_PLAYPAUSE>,
++			<0xe2 KEY_FASTFORWARD>,
++			<0xa0 KEY_KP6>,
++			<0xb0 KEY_0>,
++			<0xa1 KEY_BACKSPACE>,
++			<0xaf KEY_1>,
++			<0xad KEY_2>,
++			<0xef KEY_3>,
++			<0xb3 KEY_4>,
++			<0xb5 KEY_5>,
++			<0xee KEY_6>,
++			<0xf0 KEY_7>,
++			<0xb1 KEY_8>,
++			<0xf2 KEY_9>;
++
++	};
++
++	ir_key2 {
++		rockchip,usercode = <0xff00>;
++		rockchip,key_table =
++			<0xe5 KEY_HOME>,
++			<0xaf KEY_BACK>,
++			<0xb1 KEY_MENU>,
++			<0xfd KEY_ENTER>,
++			<0xbc KEY_MUTE>,
++			<0xf5 KEY_DOWN>,
++			<0xf9 KEY_LEFT>,
++			<0xf1 KEY_RIGHT>,
++			<0xa7 KEY_VOLUMEDOWN>,
++			<0xe4 KEY_VOLUMEUP>,
++			<0xa8 KEY_F15>,
++			<0xb2 KEY_TEXT>,
++			<0xb0 KEY_F13>,
++			<0xa4 KEY_F14>,
++			<0xab KEY_F16>,
++			<0xb3 KEY_HANJA>,
++			<0xf0 KEY_SPACE>,
++			<0xef KEY_1>,
++			<0xee KEY_2>,
++			<0xed KEY_3>,
++			<0xec KEY_4>,
++			<0xeb KEY_POWER>,
++			<0xea KEY_6>,
++			<0xe8 KEY_7>,
++			<0xe7 KEY_8>,
++			<0xe6 KEY_9>,
++			<0xe2 KEY_0>,
++			<0xe1 KEY_BACKSPACE>;
++
++	};
++
++	ir_key3 {
++		rockchip,usercode = <0x7f80>;
++		rockchip,key_table =
++			<0xec KEY_ENTER>,
++			<0xd8 KEY_BACK>,
++			<0xc7 KEY_UP>,
++			<0xbf KEY_DOWN>,
++			<0xc8 KEY_LEFT>,
++			<0xc6 KEY_RIGHT>,
++			<0x8c KEY_HOME>,
++			<0x78 KEY_VOLUMEUP>,
++			<0x76 KEY_VOLUMEDOWN>,
++			<0x7e KEY_POWER>,
++			<0xed KEY_POWER>,
++			<0x7c KEY_MENU>,
++			<0xb7 KEY_TEXT>;
++
++	};
++
++	ir_key4 {
++		rockchip,usercode = <0xfe01>;
++		rockchip,key_table =
++			<0xec KEY_ENTER>,
++			<0xe6 KEY_BACK>,
++			<0xe9 KEY_UP>,
++			<0xe5 KEY_DOWN>,
++			<0xae KEY_LEFT>,
++			<0xaf KEY_RIGHT>,
++			<0xee KEY_HOME>,
++			<0xe7 KEY_VOLUMEUP>,
++			<0xef KEY_VOLUMEDOWN>,
++			<0xbf KEY_POWER>,
++			<0xbe KEY_MUTE>,
++			<0xb3 KEY_MENU>,
++			<0xff KEY_TEXT>,
++			<0xb1 KEY_1>,
++			<0xf2 KEY_2>,
++			<0xf3 KEY_3>,
++			<0xb5 KEY_4>,
++			<0xf6 KEY_5>,
++			<0xf7 KEY_6>,
++			<0xb9 KEY_7>,
++			<0xfa KEY_8>,
++			<0xfb KEY_9>,
++			<0xfe KEY_0>,
++			<0xbd KEY_BACKSPACE>,
++			<0xbc KEY_F13>,
++			<0xf0 KEY_F14>;
++
++	};
++
++	ir_key5 {
++		rockchip,usercode = <0x1dcc>;
++		rockchip,key_table =
++			<0xee KEY_ENTER>,
++			<0xf0 KEY_BACK>,
++			<0xf8 KEY_UP>,
++			<0xbb KEY_DOWN>,
++			<0xef KEY_LEFT>,
++			<0xed KEY_RIGHT>,
++			<0xf1 KEY_VOLUMEUP>,
++			<0xfd KEY_VOLUMEDOWN>,
++			<0xff KEY_POWER>,
++			<0xf3 KEY_MUTE>,
++			<0xbf KEY_MENU>,
++			<0xbe KEY_1>,
++			<0xba KEY_2>,
++			<0xb2 KEY_3>,
++			<0xbd KEY_4>,
++			<0xb9 KEY_5>,
++			<0xb1 KEY_6>,
++			<0xbc KEY_7>,
++			<0xb8 KEY_8>,
++			<0xb0 KEY_9>,
++			<0xb6 KEY_0>,
++			<0xb5 KEY_BACKSPACE>;
++	};
++
++	ir_key6 {
++		rockchip,usercode = <0x4040>;
++		rockchip,key_table =
++			<0xf2 KEY_ENTER>,
++			<0xbd KEY_BACK>,
++			<0xf4 KEY_UP>,
++			<0xf1 KEY_DOWN>,
++			<0xef KEY_LEFT>,
++			<0xee KEY_RIGHT>,
++			<0xea KEY_VOLUMEUP>,
++			<0xe3 KEY_VOLUMEDOWN>,
++			<0xb2 KEY_POWER>,
++			<0xbc KEY_MUTE>,
++			<0xba KEY_MENU>,
++			<0xfe KEY_1>,
++			<0xfd KEY_2>,
++			<0xfc KEY_3>,
++			<0xfb KEY_4>,
++			<0xfa KEY_5>,
++			<0xf9 KEY_6>,
++			<0xf8 KEY_7>,
++			<0xf7 KEY_8>,
++			<0xf6 KEY_9>,
++			<0xff KEY_0>,
++			<0xf3 KEY_BACKSPACE>;
++	};
++
++	ir_key7 {
++		rockchip,usercode = <0xfd01>;
++		rockchip,key_table =
++			<0x31 KEY_ENTER>,
++			<0x29 KEY_BACK>,
++			<0x2e KEY_BACK>,
++			<0x35 KEY_UP>,
++			<0x2d KEY_DOWN>,
++			<0x66 KEY_LEFT>,
++			<0x3e KEY_RIGHT>,
++			<0x6a KEY_HOME>,
++			<0x7a KEY_VOLUMEUP>,
++			<0x79 KEY_VOLUMEDOWN>,
++			<0x23 KEY_POWER>,
++			<0x76 KEY_MUTE>,
++			<0x3a KEY_MENU>,
++			<0x72 KEY_TEXT>,
++			<0x6d KEY_1>,
++			<0x6c KEY_2>,
++			<0x33 KEY_3>,
++			<0x71 KEY_4>,
++			<0x70 KEY_5>,
++			<0x37 KEY_6>,
++			<0x75 KEY_7>,
++			<0x74 KEY_8>,
++			<0x3b KEY_9>,
++			<0x78 KEY_0>,
++			<0x2c KEY_BACKSPACE>,
++			<0x65 KEY_SETUP>,
++			<0x22 KEY_UP>,
++			<0x73 KEY_DOWN>;
++
++	};
++
++	ir_key8 {
++		rockchip,usercode = <0xfd02>;
++		rockchip,key_table =
++			<0xf2 KEY_ENTER>,
++			<0xec KEY_BACK>,
++			<0xfb KEY_VIDEO_PREV>,
++			<0xee KEY_DOWN>,
++			<0xf5 KEY_LEFT>,
++			<0xf1 KEY_RIGHT>,
++			<0xef KEY_HOME>,
++			<0xf8 KEY_VOLUMEUP>,
++			<0xf9 KEY_VOLUMEDOWN>,
++			<0xf7 KEY_POWER>,
++			<0xf4 KEY_MUTE>,
++			<0xf3 KEY_MENU>,
++			<0xbf KEY_TEXT>,
++			<0xeb KEY_1>,
++			<0xea KEY_2>,
++			<0xe9 KEY_3>,
++			<0xe7 KEY_4>,
++			<0xe6 KEY_5>,
++			<0xe5 KEY_6>,
++			<0xe3 KEY_7>,
++			<0xe2 KEY_8>,
++			<0xe1 KEY_9>,
++			<0xbe KEY_0>,
++			<0xbd KEY_BACKSPACE>,
++			<0xf0 KEY_SETUP>,
++			<0xfa KEY_VIDEO_NEXT>,
++			<0xe4 KEY_F4>,
++			<0xd4 KEY_F5>;
++
++	};
++
++	ir_key9 {
++		rockchip,usercode = <0xf709>;
++		rockchip,key_table =
++			<0xe0 KEY_ENTER>,
++			<0xe3 KEY_BACK>,
++			<0xff KEY_UP>,
++			<0xfe KEY_DOWN>,
++			<0xfc KEY_LEFT>,
++			<0xfd KEY_RIGHT>,
++			<0xf3 KEY_HOME>,
++			<0xa7 KEY_VOLUMEUP>,
++			<0xa2 KEY_VOLUMEDOWN>,
++			<0xea KEY_5>,
++			<0xf5 KEY_POWER>,
++			<0xf2 KEY_MUTE>,
++			<0xe5 KEY_MENU>,
++			<0xb5 KEY_TEXT>,
++			<0xee KEY_1>,
++			<0xed KEY_2>,
++			<0xec KEY_3>,
++			<0xeb KEY_4>,
++			<0xe9 KEY_6>,
++			<0xe8 KEY_7>,
++			<0xe7 KEY_8>,
++			<0xe6 KEY_9>,
++			<0xef KEY_0>,
++			<0xcf KEY_BACKSPACE>,
++			<0xae KEY_PAGEUP>,
++			<0xad KEY_PAGEDOWN>,
++			<0xf0 KEY_F1>,
++			<0xbb KEY_REWIND>,
++			<0xba KEY_FORWARD>,
++			<0xf8 KEY_PLAYPAUSE>,
++			<0xf1 KEY_F5>,
++			<0xe1 KEY_F3>,
++			<0xbf KEY_F4>,
++			<0xf4 KEY_STOP>;
++
++	};
++
++	ir_key10 {
++		rockchip,usercode = <0x7984>;
++		rockchip,key_table =
++			<0xf7 KEY_ENTER>,
++			<0xe5 KEY_BACK>,
++			<0xfa KEY_UP>,
++			<0xff KEY_DOWN>,
++			<0xf8 KEY_LEFT>,
++			<0xf6 KEY_RIGHT>,
++			<0xdf KEY_HOME>,
++			<0xef KEY_VOLUMEUP>,
++			<0xf0 KEY_VOLUMEDOWN>,
++			<0xed KEY_POWER>,
++			<0xe2 KEY_MUTE>,
++			<0xd7 KEY_MENU>,
++			<0xe6 KEY_TEXT>,
++			<0xf4 KEY_1>,
++			<0xf3 KEY_2>,
++			<0xf2 KEY_3>,
++			<0xf1 KEY_4>,
++			<0xee KEY_5>,
++			<0xd8 KEY_6>,
++			<0xec KEY_7>,
++			<0xeb KEY_8>,
++			<0xea KEY_9>,
++			<0xe8 KEY_0>,
++			<0xe7 KEY_BACKSPACE>;
++
++	};
++
++	ir_key11 {
++		rockchip,usercode = <0x0>;
++		rockchip,key_table =
++			<0xf2 KEY_ENTER>,
++			<0xba KEY_BACK>,
++			<0xf4 KEY_UP>,
++			<0xf1 KEY_DOWN>,
++			<0xef KEY_LEFT>,
++			<0xee KEY_RIGHT>,
++			<0xbd KEY_HOME>,
++			<0xea KEY_VOLUMEUP>,
++			<0xe3 KEY_VOLUMEDOWN>,
++			<0xe2 KEY_SEARCH>,
++			<0xb2 KEY_POWER>,
++			<0xbc KEY_MUTE>,
++			<0xec KEY_MENU>,
++			<0xbf KEY_YELLOW>,
++			<0xe0 KEY_BLUE>,
++			<0xe1 KEY_CHANNELUP>,
++			<0xe9 KEY_F13>,
++			<0xe6 KEY_MICMUTE>,
++			<0xe8 KEY_F15>,
++			<0xe7 KEY_F16>,
++			<0xf0 KEY_TEXT>,
++			<0xbe KEY_MODE>;
++
++	};
++
++	ir_key12 {
++		rockchip,usercode = <0xff10>;
++		rockchip,key_table =
++			<0xf6 KEY_1>,
++			<0xe2 KEY_2>,
++			<0xe0 KEY_3>,
++			<0xf2 KEY_4>,
++			<0xe6 KEY_5>,
++			<0xe4 KEY_6>,
++			<0xee KEY_7>,
++			<0xea KEY_8>,
++			<0xe8 KEY_9>,
++			<0xed KEY_0>,
++			<0xeb KEY_POWER>,
++			<0xfe KEY_MENU>,
++			<0xb7 KEY_HOME>,
++			<0xa3 KEY_BACK>,
++			<0xa7 KEY_VOLUMEDOWN>,
++			<0xf4 KEY_VOLUMEUP>,
++			<0xe3 KEY_MUTE>,
++			<0xf8 KEY_ENTER>,
++			<0xfc KEY_UP>,
++			<0xfd KEY_DOWN>,
++			<0xf1 KEY_LEFT>,
++			<0xe5 KEY_RIGHT>,
++			<0xe9 KEY_F7>,
++			<0xb3 KEY_ENTER>,
++			<0xbf KEY_YELLOW>,
++			<0xbb KEY_BLUE>,
++			<0xec KEY_TEXT>,
++			<0xf3 KEY_SEARCH>;
++
++	};
++
++	ir_key13 {
++		rockchip,usercode = <0x1980>;
++		rockchip,key_table =
++			<0xab KEY_1>,
++			<0xe4 KEY_2>,
++			<0xea KEY_3>,
++			<0xad KEY_4>,
++			<0xed KEY_5>,
++			<0xee KEY_6>,
++			<0xb3 KEY_7>,
++			<0xf1 KEY_8>,
++			<0xf2 KEY_9>,
++			<0xf3 KEY_0>,
++			<0xef KEY_POWER>,
++			<0xbd KEY_MENU>,
++			<0xe0 KEY_HOME>,
++			<0xe7 KEY_BACK>,
++			<0xe3 KEY_VOLUMEDOWN>,
++			<0xe2 KEY_VOLUMEUP>,
++			<0xf7 KEY_MUTE>,
++			<0xaf KEY_ENTER>,
++			<0xe8 KEY_UP>,
++			<0xe9 KEY_DOWN>,
++			<0xb0 KEY_LEFT>,
++			<0xae KEY_RIGHT>,
++			<0xf4 KEY_F7>,
++			<0xe1 KEY_ENTER>,
++			<0xb5 KEY_YELLOW>,
++			<0xb4 KEY_BLUE>,
++			<0xb7 KEY_TEXT>,
++			<0xbe KEY_SEARCH>,
++			<0xe5 KEY_CONNECT>;
++
++	};
++
++	ir_key14 {
++		rockchip,usercode = <0xdf00>;
++		rockchip,key_table =
++			<0xab KEY_1>,
++			<0xe9 KEY_2>,
++			<0xea KEY_3>,
++			<0xaf KEY_4>,
++			<0xed KEY_5>,
++			<0xee KEY_6>,
++			<0xb3 KEY_7>,
++			<0xf1 KEY_8>,
++			<0xf2 KEY_9>,
++			<0xf3 KEY_0>,
++			<0xe3 KEY_POWER>,
++			<0xe7 KEY_MENU>,
++			<0xfc KEY_HOME>,
++			<0xf5 KEY_BACK>,
++			<0xb0 KEY_VOLUMEDOWN>,
++			<0xb4 KEY_VOLUMEUP>,
++			<0xf7 KEY_MUTE>,
++			<0xf9 KEY_ENTER>,
++			<0xe5 KEY_UP>,
++			<0xb7 KEY_DOWN>,
++			<0xb8 KEY_LEFT>,
++			<0xf8 KEY_RIGHT>,
++			<0xef KEY_BACKSPACE>,
++			<0xbe KEY_ENTER>,
++			<0xe6 KEY_CHANNELUP>,
++			<0xa2 KEY_F11>,
++			<0xa3 KEY_F12>,
++			<0xbd KEY_TEXT>,
++			<0xfe KEY_HELP>,
++			<0xa4 KEY_FIND>,
++			<0xa0 KEY_CUT>,
++			<0xa7 KEY_F8>;
++
++	};
++
++	ir_key15 {
++		rockchip,usercode = <0xc43b>;
++		rockchip,key_table =
++			<0x7e KEY_ENTER>,
++			<0x7f KEY_BACK>,
++			<0x7a KEY_UP>,
++			<0x78 KEY_DOWN>,
++			<0x7b KEY_LEFT>,
++			<0x79 KEY_RIGHT>,
++			<0x66 KEY_VOLUMEUP>,
++			<0x65 KEY_VOLUMEDOWN>,
++			<0x69 KEY_POWER>,
++			<0x64 KEY_MUTE>,
++			<0x76 KEY_1>,
++			<0x75 KEY_2>,
++			<0x74 KEY_3>,
++			<0x73 KEY_4>,
++			<0x72 KEY_5>,
++			<0x71 KEY_6>,
++			<0x70 KEY_7>,
++			<0x6f KEY_8>,
++			<0x6e KEY_9>,
++			<0x77 KEY_0>,
++			<0x7c KEY_PAGEDOWN>,
++			<0x7d KEY_PAGEUP>,
++			<0x6a KEY_SETUP>,
++			<0x68 0xf9>,
++			<0x67 0xfa>,
++			<0x39 0x10f>,
++			<0x29 0xfb>,
++			<0x33 0xfc>,
++			<0x2d 0xfe>,
++			<0x2c 0xff>,
++			<0x2b 0x100>,
++			<0x2e 0xfd>,
++			<0x63 0x101>,
++			<0x6c 0x102>,
++			<0x6d 0x103>,
++			<0x62 KEY_PLAYPAUSE>,
++			<0x6b KEY_EQUAL>,
++			<0x61 KEY_FASTFORWARD>,
++			<0x60 KEY_REWIND>,
++			<0x3b KEY_STOP>;
++
++	};
++
++	ir_key16 {
++		rockchip,usercode = <0xee11>;
++		rockchip,key_table =
++			<0xea KEY_ENTER>,
++			<0xed KEY_BACK>,
++			<0xeb KEY_UP>,
++			<0xe9 KEY_DOWN>,
++			<0xe2 KEY_LEFT>,
++			<0xee KEY_RIGHT>,
++			<0xb4 KEY_VOLUMEUP>,
++			<0xe3 KEY_VOLUMEDOWN>,
++			<0xbc KEY_POWER>,
++			<0xb8 KEY_MUTE>,
++			<0xa2 KEY_MENU>,
++			<0xab 0x106>,
++			<0xbd KEY_1>,
++			<0xbe KEY_2>,
++			<0xbf KEY_3>,
++			<0xb9 KEY_4>,
++			<0xba KEY_5>,
++			<0xbb KEY_6>,
++			<0xb5 KEY_7>,
++			<0xb6 KEY_8>,
++			<0xb7 KEY_9>,
++			<0xb2 KEY_0>,
++			<0xef KEY_PAGEDOWN>,
++			<0xe7 KEY_PAGEUP>,
++			<0xaa KEY_SETUP>,
++			<0xae 0xf9>,
++			<0xaf 0xfa>,
++			<0xe1 0xfb>,
++			<0xa0 0xfd>,
++			<0xa4 0xfe>,
++			<0xa8 0xff>,
++			<0xac 0x100>,
++			<0xd5 0x101>,
++			<0xa6 KEY_EQUAL>,
++			<0xe4 KEY_PLAYPAUSE>,
++			<0xe5 0x103>,
++			<0xe6 0x102>;
++
++	};
++
++	ir_key17 {
++		rockchip,usercode = <0x3bc4>;
++		rockchip,key_table =
++			<0x81 KEY_ENTER>,
++			<0x80 KEY_BACK>,
++			<0x85 KEY_UP>,
++			<0x87 KEY_DOWN>,
++			<0x84 KEY_LEFT>,
++			<0x86 KEY_RIGHT>,
++			<0x99 KEY_VOLUMEUP>,
++			<0x9a KEY_VOLUMEDOWN>,
++			<0x96 KEY_POWER>,
++			<0x9b KEY_MUTE>,
++			<0x89 KEY_1>,
++			<0x8a KEY_2>,
++			<0x8b KEY_3>,
++			<0x8c KEY_4>,
++			<0x8d KEY_5>,
++			<0x8e KEY_6>,
++			<0x8f KEY_7>,
++			<0x90 KEY_8>,
++			<0x91 KEY_9>,
++			<0x88 KEY_0>,
++			<0x83 KEY_PAGEDOWN>,
++			<0x82 KEY_PAGEUP>,
++			<0x95 KEY_SETUP>,
++			<0x97 0xf9>,
++			<0x98 0xfa>,
++			<0xc6 0x104>,
++			<0xd6 0xfb>,
++			<0xd7 0x10e>,
++			<0xcc 0xfc>,
++			<0xc3 0x108>,
++			<0xd1 0xfd>,
++			<0xd2 0xfe>,
++			<0xd3 0xff>,
++			<0xd4 0x100>,
++			<0xc7 0xfd>,
++			<0xc8 0xfe>,
++			<0xc9 0xff>,
++			<0xca 0x100>,
++			<0xcd 0x109>,
++			<0xce 0x10a>,
++			<0xcf KEY_HELP>,
++			<0xd0 0x10b>,
++			<0x9c 0x101>,
++			<0x93 0x102>,
++			<0x92 0x103>,
++			<0xc0 KEY_END>,
++			<0xc1 0x107>,
++			<0x9d KEY_PLAYPAUSE>,
++			<0xc4 KEY_STOP>,
++			<0x94 KEY_EQUAL>,
++			<0x9e KEY_YELLOW>,
++			<0x9f KEY_BLUE>,
++			<0xcb 0x105>,
++			<0xc5 0x106>;
++
++	};
++
++	ir_key18 {
++		rockchip,usercode = <0xdd22>;
++		rockchip,key_table =
++			<0x31 KEY_ENTER>,
++			<0x6a KEY_BACK>,
++			<0x35 KEY_UP>,
++			<0x2d KEY_DOWN>,
++			<0x66 KEY_LEFT>,
++			<0x3e KEY_RIGHT>,
++			<0x7f KEY_VOLUMEUP>,
++			<0x7e KEY_VOLUMEDOWN>,
++			<0x23 KEY_POWER>,
++			<0x63 KEY_MUTE>,
++			<0x6d KEY_1>,
++			<0x6c KEY_2>,
++			<0x33 KEY_3>,
++			<0x71 KEY_4>,
++			<0x70 KEY_5>,
++			<0x37 KEY_6>,
++			<0x75 KEY_7>,
++			<0x74 KEY_8>,
++			<0x3b KEY_9>,
++			<0x78 KEY_0>,
++			<0x73 KEY_PAGEDOWN>,
++			<0x22 KEY_PAGEUP>,
++			<0x72 KEY_SETUP>,
++			<0x7a 0xf9>,
++			<0x79 0xfa>,
++			<0x77 0xfb>,
++			<0x2f 0xfc>,
++			<0x32 0xfd>,
++			<0x6e 0xfe>,
++			<0x7c 0xff>,
++			<0x3c 0x100>,
++			<0x3a KEY_HELP>,
++			<0x67 0x101>,
++			<0x25 0x103>,
++			<0x7d KEY_MENU>,
++			<0x3f KEY_EQUAL>,
++			<0x29 KEY_TEXT>,
++			<0x26 KEY_PLAYPAUSE>,
++			<0x76 KEY_BLUE>,
++			<0x7b KEY_YELLOW>,
++			<0x69 KEY_F8>;
++
++	};
++
++	ir_key19 {
++		rockchip,usercode = <0x4cb3>;
++		rockchip,key_table =
++			<0x31 KEY_ENTER>,
++			<0x3a KEY_BACK>,
++			<0x35 KEY_UP>,
++			<0x2d KEY_DOWN>,
++			<0x66 KEY_LEFT>,
++			<0x3e KEY_RIGHT>,
++			<0x7f KEY_VOLUMEUP>,
++			<0x7e KEY_VOLUMEDOWN>,
++			<0x23 KEY_POWER>,
++			<0x63 KEY_MUTE>,
++			<0x6d KEY_1>,
++			<0x6c KEY_2>,
++			<0x33 KEY_3>,
++			<0x71 KEY_4>,
++			<0x70 KEY_5>,
++			<0x37 KEY_6>,
++			<0x75 KEY_7>,
++			<0x74 KEY_8>,
++			<0x3b KEY_9>,
++			<0x78 KEY_0>,
++			<0x73 KEY_PAGEDOWN>,
++			<0x22 KEY_PAGEUP>,
++			<0x72 KEY_SETUP>,
++			<0x7a 0xf9>,
++			<0x79 0xfa>,
++			<0x77 0xfb>,
++			<0x29 0xfc>,
++			<0x32 0xfd>,
++			<0x6e 0xfe>,
++			<0x7c 0xff>,
++			<0x3c 0x100>,
++			<0x67 0x101>,
++			<0x25 0x102>,
++			<0x2f 0x103>,
++			<0x7d 0x104>,
++			<0x6a KEY_PLAYPAUSE>,
++			<0xb KEY_EQUAL>;
++
++	};
++
++	ir_key20 {
++		rockchip,usercode = <0x1608>;
++		rockchip,key_table =
++			<0x4c KEY_ENTER>,
++			<0x4d KEY_BACK>,
++			<0x4b KEY_UP>,
++			<0x4a KEY_DOWN>,
++			<0x49 KEY_LEFT>,
++			<0x48 KEY_RIGHT>,
++			<0x4e KEY_HOME>,
++			<0xb KEY_VOLUMEUP>,
++			<0xc KEY_VOLUMEDOWN>,
++			<0x23 KEY_POWER>,
++			<0x45 KEY_MUTE>,
++			<0x44 KEY_MENU>,
++			<0x78 KEY_1>,
++			<0x77 KEY_2>,
++			<0x76 KEY_3>,
++			<0x75 KEY_4>,
++			<0x74 KEY_5>,
++			<0x73 KEY_6>,
++			<0x72 0x102>,
++			<0x71 KEY_8>,
++			<0x70 KEY_9>,
++			<0x79 KEY_0>,
++			<0x43 KEY_EQUAL>,
++			<0x5f KEY_SETUP>,
++			<0x25 0xfd>,
++			<0x24 0xfe>,
++			<0x21 0xff>,
++			<0x20 0x100>;
++
++	};
++
++	ir_key21 {
++		rockchip,usercode = <0x4db2>;
++		rockchip,key_table =
++			<0x31 KEY_ENTER>,
++			<0x3a KEY_BACK>,
++			<0x35 KEY_UP>,
++			<0x2d KEY_DOWN>,
++			<0x66 KEY_LEFT>,
++			<0x3e KEY_RIGHT>,
++			<0x7f KEY_VOLUMEUP>,
++			<0xfe KEY_VOLUMEDOWN>,
++			<0x23 KEY_POWER>,
++			<0x63 KEY_MUTE>,
++			<0x6d KEY_1>,
++			<0x6c KEY_2>,
++			<0x33 KEY_3>,
++			<0x71 KEY_4>,
++			<0x70 KEY_5>,
++			<0x37 KEY_6>,
++			<0x75 KEY_7>,
++			<0x74 KEY_8>,
++			<0x3b KEY_9>,
++			<0x78 KEY_0>,
++			<0x73 KEY_PAGEDOWN>,
++			<0x22 KEY_PAGEUP>,
++			<0x72 KEY_SETUP>,
++			<0x7a 0xf9>,
++			<0x79 0xfa>,
++			<0x77 0xfb>,
++			<0x29 0xfc>,
++			<0x32 0xfd>,
++			<0x6e 0xfe>,
++			<0x7c 0xff>,
++			<0x3c 0x100>,
++			<0x67 0x101>,
++			<0x25 0x102>,
++			<0x2f 0x103>,
++			<0x7d 0x104>,
++			<0x6a KEY_PLAYPAUSE>,
++			<0xb KEY_EQUAL>;
++
++	};
++
++	ir_key22 {
++		rockchip,usercode = <0x807f>;
++		rockchip,key_table =
++			<0x7e KEY_POWER>;
++
++	};
++};
++
++&rga {
++	status = "okay";
++};
++
++&rkvdec {
++	status = "okay";
++	vcodec-supply = <&vdd_logic>;
++};
++
++&rockchip_suspend {
++	status = "okay";
++	rockchip,virtual-poweroff = <1>;
++};
++
++&uart0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart0_xfer &uart0_cts>;
++	status = "okay";
++};
++
++&uart2 {
++	status = "okay";
++};
++
++&sdio {
++	bus-width = <4>;
++	cap-sd-highspeed;
++	cap-sdio-irq;
++	disable-wp;
++	keep-power-in-suspend;
++	max-frequency = <125000000>;
++	mmc-pwrseq = <&sdio_pwrseq>;
++	non-removable;
++	num-slots = <1>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdmmc1_bus4 &sdmmc1_cmd &sdmmc1_clk>;
++	supports-sdio;
++	sd-uhs-sdr104;
++	status = "disabled";
++};
++
++&sdmmc_ext {
++	bus-width = <4>;
++	cap-sd-highspeed;
++	max-frequency = <150000000>;
++	num-slots = <1>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdmmc0ext_bus4 &sdmmc0ext_cmd &sdmmc0ext_clk>;
++	mmc-pwrseq = <&sdio_pwrseq>;
++	supports-sdio;
++	sd-uhs-sdr104;
++	cap-sdio-irq;
++	disable-wp;
++	non-removable;
++	keep-power-in-suspend;
++	status = "disabled";
++};
++
++&sdmmc {
++	bus-width = <4>;
++	cap-mmc-highspeed;
++	cap-sd-highspeed;
++	disable-wp;
++	max-frequency = <150000000>;
++	num-slots = <1>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdmmc0_clk &sdmmc0_cmd &sdmmc0_dectn &sdmmc0_bus4>;
++	supports-sd;
++	status = "okay";
++	vmmc-supply = <&vcc_sd>;
++};
++
++&spdif {
++	#sound-dai-cells = <0>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&spdifm0_tx>;
++	status = "okay";
++};
++
++&threshold {
++	temperature = <90000>; /* millicelsius */
++};
++
++&target {
++	temperature = <105000>; /* millicelsius */
++};
++
++&soc_crit {
++	temperature = <115000>; /* millicelsius */
++};
++
++&tsadc {
++	rockchip,hw-tshut-temp = <120000>;
++	status = "okay";
++};
++
++
++&u2phy {
++	status = "okay";
++
++	u2phy_host: host-port {
++		status = "okay";
++	};
++
++	u2phy_otg: otg-port {
++		vbus-supply = <&vcc_otg_vbus>;
++		status = "okay";
++	};
++};
++
++&u3phy {
++	vbus-supply = <&vcc_host_vbus>;
++	status = "okay";
++};
++
++&u3phy_utmi {
++	status = "okay";
++};
++
++&u3phy_pipe {
++	status = "okay";
++};
++
++&usb20_otg {
++	dr_mode = "host";
++	status = "okay";
++};
++
++&usb_host0_ehci {
++	status = "okay";
++};
++
++&usb_host0_ohci {
++	status = "okay";
++};
++
++&usbdrd3 {
++	status = "okay";
++};
++
++&usbdrd_dwc3 {
++	status = "okay";
++};
++
++&vepu {
++	status = "okay";
++};
++
++&vop {
++	status = "okay";
++};
++
++&vop_mmu {
++	status = "okay";
++};
++
++&vpu_service {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/rockchip/rk3318-box-x88pro.dts b/arch/arm64/boot/dts/rockchip/rk3318-box-x88pro.dts
+new file mode 100644
+index 0000000000..1306e0aa60
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3318-box-x88pro.dts
+@@ -0,0 +1,189 @@
++/*
++ * Copyright (c) 2017 Fuzhou Rockchip Electronics Co., Ltd
++ *
++ * This file is dual-licensed: you can use it either under the terms
++ * of the GPL or the X11 license, at your option. Note that this dual
++ * licensing only applies to this file, and not this project as a
++ * whole.
++ *
++ *  a) This library is free software; you can redistribute it and/or
++ *     modify it under the terms of the GNU General Public License as
++ *     published by the Free Software Foundation; either version 2 of the
++ *     License, or (at your option) any later version.
++ *
++ *     This library is distributed in the hope that it will be useful,
++ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *     GNU General Public License for more details.
++ *
++ * Or, alternatively,
++ *
++ *  b) Permission is hereby granted, free of charge, to any person
++ *     obtaining a copy of this software and associated documentation
++ *     files (the "Software"), to deal in the Software without
++ *     restriction, including without limitation the rights to use,
++ *     copy, modify, merge, publish, distribute, sublicense, and/or
++ *     sell copies of the Software, and to permit persons to whom the
++ *     Software is furnished to do so, subject to the following
++ *     conditions:
++ *
++ *     The above copyright notice and this permission notice shall be
++ *     included in all copies or substantial portions of the Software.
++ *
++ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
++ *     OTHER DEALINGS IN THE SOFTWARE.
++ */
++
++/dts-v1/;
++#include "rk3318-box.dtsi"
++
++/ {
++	model = "RK3318 X88pro";
++
++	wireless-bluetooth {
++		compatible = "bluetooth-platdata";
++		clocks = <&cru SCLK_RTC32K>;
++		clock-names = "ext_clock";
++		uart_rts_gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_LOW>;
++		pinctrl-names = "default", "rts_gpio";
++		pinctrl-0 = <&uart0_rts>;
++		pinctrl-1 = <&uart0_gpios>;
++		BT,reset_gpio = <&gpio1 RK_PC5 GPIO_ACTIVE_HIGH>;
++		BT,wake_gpio = <&gpio1 RK_PC7 GPIO_ACTIVE_HIGH>;
++		BT,wake_host_irq = <&gpio1 RK_PD2 GPIO_ACTIVE_HIGH>;
++		status = "okay";
++	};
++
++	wireless-wlan {
++		compatible = "wlan-platdata";
++		clocks = <&cru SCLK_RTC32K>;
++		clock-names = "ext_clock";
++		rockchip,grf = <&grf>;
++		sdio_vref = <1800>;
++		WIFI,host_wake_irq = <&gpio3 RK_PA1 GPIO_ACTIVE_HIGH>;
++		status = "okay";
++	};
++
++	leds {
++		compatible = "gpio-leds";
++
++		power-blue {
++			gpios = <&gpio2 RK_PA6 GPIO_ACTIVE_LOW>;
++			linux,default-trigger = "none";
++			default-state = "on";
++		};
++	};
++};
++
++&ddr_timing {
++	phy_ddr3_ca_drv = <PHY_DDR3_RON_RTT_23ohm>;
++	phy_ddr3_ck_drv = <PHY_DDR3_RON_RTT_34ohm>;
++	phy_ddr3_odt = <PHY_DDR3_RON_RTT_150ohm>;
++	ddr3a1_ddr4a9_de-skew = <2>;
++	ddr3a0_ddr4a10_de-skew = <3>;
++	ddr3a3_ddr4a6_de-skew = <3>;
++	ddr3a2_ddr4a4_de-skew = <2>;
++	ddr3a5_ddr4a8_de-skew = <3>;
++	ddr3a4_ddr4a5_de-skew = <2>;
++	ddr3a7_ddr4a11_de-skew = <3>;
++	ddr3a6_ddr4a7_de-skew = <2>;
++	ddr3a9_ddr4a0_de-skew = <2>;
++	ddr3a8_ddr4a13_de-skew = <1>;
++	ddr3a11_ddr4a3_de-skew = <2>;
++	ddr3a10_ddr4cs0_de-skew = <2>;
++	ddr3a13_ddr4a2_de-skew = <1>;
++	ddr3a12_ddr4ba1_de-skew = <2>;
++	ddr3a15_ddr4odt0_de-skew = <3>;
++	ddr3a14_ddr4a1_de-skew = <2>;
++	ddr3ba1_ddr4a15_de-skew = <2>;
++	ddr3ba0_ddr4bg0_de-skew = <4>;
++	ddr3ras_ddr4cke_de-skew = <4>;
++	ddr3ba2_ddr4ba0_de-skew = <3>;
++	ddr3we_ddr4bg1_de-skew = <2>;
++	ddr3cas_ddr4a12_de-skew = <2>;
++	ddr3ckn_ddr4ckn_de-skew = <11>;
++	ddr3ckp_ddr4ckp_de-skew = <11>;
++	ddr3cke_ddr4a16_de-skew = <2>;
++	ddr3odt0_ddr4a14_de-skew = <4>;
++	ddr3cs0_ddr4act_de-skew = <4>;
++	cs0_dm0_rx_de-skew = <12>;
++	cs0_dm0_tx_de-skew = <10>;
++	cs0_dq0_rx_de-skew = <12>;
++	cs0_dq0_tx_de-skew = <10>;
++	cs0_dq1_rx_de-skew = <12>;
++	cs0_dq1_tx_de-skew = <10>;
++	cs0_dq2_rx_de-skew = <12>;
++	cs0_dq2_tx_de-skew = <10>;
++	cs0_dq3_rx_de-skew = <12>;
++	cs0_dq3_tx_de-skew = <10>;
++	cs0_dq4_rx_de-skew = <12>;
++	cs0_dq4_tx_de-skew = <10>;
++	cs0_dq5_rx_de-skew = <12>;
++	cs0_dq5_tx_de-skew = <10>;
++	cs0_dq6_rx_de-skew = <12>;
++	cs0_dq6_tx_de-skew = <10>;
++	cs0_dq7_rx_de-skew = <12>;
++	cs0_dq7_tx_de-skew = <10>;
++	cs0_dqs0_rx_de-skew = <10>;
++	cs0_dqs0p_tx_de-skew = <12>;
++	cs0_dqs0n_tx_de-skew = <12>;
++	cs0_dm1_rx_de-skew = <10>;
++	cs0_dm1_tx_de-skew = <8>;
++	cs0_dq8_rx_de-skew = <10>;
++	cs0_dq9_rx_de-skew = <10>;
++	cs0_dq9_tx_de-skew = <8>;
++	cs0_dq10_rx_de-skew = <10>;
++	cs0_dq11_rx_de-skew = <10>;
++	cs0_dq11_tx_de-skew = <8>;
++	cs0_dq12_rx_de-skew = <10>;
++	cs0_dq13_rx_de-skew = <10>;
++	cs0_dq13_tx_de-skew = <8>;
++	cs0_dq14_rx_de-skew = <10>;
++	cs0_dq15_rx_de-skew = <10>;
++	cs0_dq15_tx_de-skew = <8>;
++	cs0_dqs1_rx_de-skew = <9>;
++	cs0_dqs1p_tx_de-skew = <10>;
++	cs0_dqs1n_tx_de-skew = <10>;
++	cs0_dm2_rx_de-skew = <10>;
++	cs0_dm2_tx_de-skew = <9>;
++	cs0_dq16_rx_de-skew = <10>;
++	cs0_dq16_tx_de-skew = <9>;
++	cs0_dq17_rx_de-skew = <10>;
++	cs0_dq17_tx_de-skew = <9>;
++	cs0_dq18_rx_de-skew = <10>;
++	cs0_dq18_tx_de-skew = <9>;
++	cs0_dq19_rx_de-skew = <10>;
++	cs0_dq19_tx_de-skew = <9>;
++	cs0_dq20_rx_de-skew = <10>;
++	cs0_dq20_tx_de-skew = <9>;
++	cs0_dq21_rx_de-skew = <10>;
++	cs0_dq21_tx_de-skew = <9>;
++	cs0_dq22_rx_de-skew = <10>;
++	cs0_dq22_tx_de-skew = <9>;
++	cs0_dq23_rx_de-skew = <10>;
++	cs0_dq23_tx_de-skew = <9>;
++	cs0_dqs2_rx_de-skew = <9>;
++	cs0_dqs2p_tx_de-skew = <11>;
++	cs0_dqs2n_tx_de-skew = <11>;
++	cs0_dq24_tx_de-skew = <7>;
++	cs0_dqs3p_tx_de-skew = <10>;
++	cs0_dqs3n_tx_de-skew = <10>;
++};
++
++&emmc {
++	mmc-hs200-1_8v;
++};
++
++&io_domains {
++	vccio6-supply = <&vccio_1v8_reg>;
++};
++
++&sdmmc_ext {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/rockchip/rk3318-box-h96max.dts b/arch/arm64/boot/dts/rockchip/rk3318-box-h96max.dts
+new file mode 100644
+index 0000000000..3dba0c0cb2
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3318-box-h96max.dts
+@@ -0,0 +1,175 @@
++/*
++ * Copyright (c) 2017 Fuzhou Rockchip Electronics Co., Ltd
++ *
++ * This file is dual-licensed: you can use it either under the terms
++ * of the GPL or the X11 license, at your option. Note that this dual
++ * licensing only applies to this file, and not this project as a
++ * whole.
++ *
++ *  a) This library is free software; you can redistribute it and/or
++ *     modify it under the terms of the GNU General Public License as
++ *     published by the Free Software Foundation; either version 2 of the
++ *     License, or (at your option) any later version.
++ *
++ *     This library is distributed in the hope that it will be useful,
++ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *     GNU General Public License for more details.
++ *
++ * Or, alternatively,
++ *
++ *  b) Permission is hereby granted, free of charge, to any person
++ *     obtaining a copy of this software and associated documentation
++ *     files (the "Software"), to deal in the Software without
++ *     restriction, including without limitation the rights to use,
++ *     copy, modify, merge, publish, distribute, sublicense, and/or
++ *     sell copies of the Software, and to permit persons to whom the
++ *     Software is furnished to do so, subject to the following
++ *     conditions:
++ *
++ *     The above copyright notice and this permission notice shall be
++ *     included in all copies or substantial portions of the Software.
++ *
++ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
++ *     OTHER DEALINGS IN THE SOFTWARE.
++ */
++
++/dts-v1/;
++#include "rk3318-box.dtsi"
++
++/ {
++	model = "RK3318 H96max";
++
++	wireless-bluetooth {
++		compatible = "bluetooth-platdata";
++		clocks = <&cru SCLK_RTC32K>;
++		clock-names = "ext_clock";
++		uart_rts_gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_LOW>;
++		pinctrl-names = "default", "rts_gpio";
++		pinctrl-0 = <&uart0_rts>;
++		pinctrl-1 = <&uart0_gpios>;
++		BT,reset_gpio = <&gpio1 RK_PC5 GPIO_ACTIVE_HIGH>;
++		BT,wake_host_irq = <&gpio1 RK_PD2 GPIO_ACTIVE_HIGH>;
++		status = "okay";
++	};
++
++	wireless-wlan {
++		compatible = "wlan-platdata";
++		clocks = <&cru SCLK_RTC32K>;
++		clock-names = "ext_clock";
++		rockchip,grf = <&grf>;
++		sdio_vref = <1800>;
++		wifi_chip_type = "ap6330";
++		WIFI,host_wake_irq = <&gpio1 RK_PC3 GPIO_ACTIVE_HIGH>;
++		status = "okay";
++	};
++
++};
++
++&ddr_timing {
++	phy_ddr3_ca_drv = <PHY_DDR3_RON_RTT_23ohm>;
++	phy_ddr3_ck_drv = <PHY_DDR3_RON_RTT_34ohm>;
++	ddr3a1_ddr4a9_de-skew = <3>;
++	ddr3a0_ddr4a10_de-skew = <4>;
++	ddr3a3_ddr4a6_de-skew = <3>;
++	ddr3a2_ddr4a4_de-skew = <2>;
++	ddr3a5_ddr4a8_de-skew = <3>;
++	ddr3a4_ddr4a5_de-skew = <3>;
++	ddr3a7_ddr4a11_de-skew = <4>;
++	ddr3a6_ddr4a7_de-skew = <4>;
++	ddr3a9_ddr4a0_de-skew = <3>;
++	ddr3a8_ddr4a13_de-skew = <2>;
++	ddr3a11_ddr4a3_de-skew = <3>;
++	ddr3a10_ddr4cs0_de-skew = <4>;
++	ddr3a13_ddr4a2_de-skew = <2>;
++	ddr3a12_ddr4ba1_de-skew = <2>;
++	ddr3a15_ddr4odt0_de-skew = <2>;
++	ddr3a14_ddr4a1_de-skew = <3>;
++	ddr3ba1_ddr4a15_de-skew = <2>;
++	ddr3ba0_ddr4bg0_de-skew = <2>;
++	ddr3ras_ddr4cke_de-skew = <5>;
++	ddr3ba2_ddr4ba0_de-skew = <3>;
++	ddr3we_ddr4bg1_de-skew = <4>;
++	ddr3cas_ddr4a12_de-skew = <4>;
++	ddr3ckn_ddr4ckn_de-skew = <11>;
++	ddr3ckp_ddr4ckp_de-skew = <11>;
++	ddr3cke_ddr4a16_de-skew = <4>;
++	ddr3odt0_ddr4a14_de-skew = <4>;
++	ddr3cs0_ddr4act_de-skew = <4>;
++	ddr3reset_ddr4reset_de-skew = <4>;
++	cs0_dm0_rx_de-skew = <8>;
++	cs0_dm0_tx_de-skew = <9>;
++	cs0_dq0_rx_de-skew = <8>;
++	cs0_dq0_tx_de-skew = <9>;
++	cs0_dq1_rx_de-skew = <8>;
++	cs0_dq1_tx_de-skew = <9>;
++	cs0_dq2_rx_de-skew = <8>;
++	cs0_dq2_tx_de-skew = <9>;
++	cs0_dq3_rx_de-skew = <8>;
++	cs0_dq3_tx_de-skew = <9>;
++	cs0_dq4_rx_de-skew = <8>;
++	cs0_dq4_tx_de-skew = <9>;
++	cs0_dq5_rx_de-skew = <8>;
++	cs0_dq5_tx_de-skew = <9>;
++	cs0_dq6_rx_de-skew = <8>;
++	cs0_dq6_tx_de-skew = <9>;
++	cs0_dq7_rx_de-skew = <8>;
++	cs0_dq7_tx_de-skew = <9>;
++	cs0_dqs0_rx_de-skew = <8>;
++	cs0_dm1_rx_de-skew = <9>;
++	cs0_dm1_tx_de-skew = <8>;
++	cs0_dq8_rx_de-skew = <9>;
++	cs0_dq9_rx_de-skew = <9>;
++	cs0_dq9_tx_de-skew = <8>;
++	cs0_dq10_rx_de-skew = <9>;
++	cs0_dq11_rx_de-skew = <9>;
++	cs0_dq11_tx_de-skew = <8>;
++	cs0_dq12_rx_de-skew = <9>;
++	cs0_dq13_rx_de-skew = <9>;
++	cs0_dq13_tx_de-skew = <8>;
++	cs0_dq14_rx_de-skew = <9>;
++	cs0_dq15_rx_de-skew = <9>;
++	cs0_dq15_tx_de-skew = <8>;
++	cs0_dqs1_rx_de-skew = <9>;
++	cs0_dqs1p_tx_de-skew = <8>;
++	cs0_dqs1n_tx_de-skew = <8>;
++	cs0_dm2_rx_de-skew = <8>;
++	cs0_dm2_tx_de-skew = <9>;
++	cs0_dq16_rx_de-skew = <8>;
++	cs0_dq16_tx_de-skew = <9>;
++	cs0_dq17_rx_de-skew = <8>;
++	cs0_dq17_tx_de-skew = <9>;
++	cs0_dq18_rx_de-skew = <8>;
++	cs0_dq18_tx_de-skew = <9>;
++	cs0_dq19_rx_de-skew = <8>;
++	cs0_dq19_tx_de-skew = <9>;
++	cs0_dq20_rx_de-skew = <8>;
++	cs0_dq20_tx_de-skew = <9>;
++	cs0_dq21_rx_de-skew = <8>;
++	cs0_dq21_tx_de-skew = <9>;
++	cs0_dq22_rx_de-skew = <8>;
++	cs0_dq22_tx_de-skew = <9>;
++	cs0_dq23_rx_de-skew = <8>;
++	cs0_dq23_tx_de-skew = <9>;
++	cs0_dqs2_rx_de-skew = <8>;
++	cs0_dm3_tx_de-skew = <8>;
++	cs0_dq25_tx_de-skew = <8>;
++	cs0_dq26_tx_de-skew = <8>;
++	cs0_dq27_tx_de-skew = <8>;
++	cs0_dq28_tx_de-skew = <8>;
++	cs0_dq29_tx_de-skew = <8>;
++	cs0_dq30_tx_de-skew = <8>;
++	cs0_dq31_tx_de-skew = <8>;
++	cs0_dqs3p_tx_de-skew = <8>;
++	cs0_dqs3n_tx_de-skew = <8>;
++};
++
++&sdio {
++	status = "okay";
++};
