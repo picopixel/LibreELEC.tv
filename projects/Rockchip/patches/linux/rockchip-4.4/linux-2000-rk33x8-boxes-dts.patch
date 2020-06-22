@@ -1,9 +1,9 @@
 diff --git a/arch/arm64/boot/dts/rockchip/rk3328-box.dtsi b/arch/arm64/boot/dts/rockchip/rk3328-box.dtsi
 new file mode 100644
-index 0000000000..39e4853081
+index 0000000000..573e545fb4
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-box.dtsi
-@@ -0,0 +1,1333 @@
+@@ -0,0 +1,1256 @@
 +/*
 + * Copyright (c) 2017 Fuzhou Rockchip Electronics Co., Ltd
 + *
@@ -732,34 +732,6 @@ index 0000000000..39e4853081
 +	};
 +
 +	ir_key11 {
-+		rockchip,usercode = <0x0>;
-+		rockchip,key_table =
-+			<0xf2 KEY_ENTER>,
-+			<0xba KEY_BACK>,
-+			<0xf4 KEY_UP>,
-+			<0xf1 KEY_DOWN>,
-+			<0xef KEY_LEFT>,
-+			<0xee KEY_RIGHT>,
-+			<0xbd KEY_HOME>,
-+			<0xea KEY_VOLUMEUP>,
-+			<0xe3 KEY_VOLUMEDOWN>,
-+			<0xe2 KEY_SEARCH>,
-+			<0xb2 KEY_POWER>,
-+			<0xbc KEY_MUTE>,
-+			<0xec KEY_MENU>,
-+			<0xbf KEY_YELLOW>,
-+			<0xe0 KEY_BLUE>,
-+			<0xe1 KEY_CHANNELUP>,
-+			<0xe9 KEY_F13>,
-+			<0xe6 KEY_MICMUTE>,
-+			<0xe8 KEY_F15>,
-+			<0xe7 KEY_F16>,
-+			<0xf0 KEY_TEXT>,
-+			<0xbe KEY_MODE>;
-+
-+	};
-+
-+	ir_key12 {
 +		rockchip,usercode = <0xff10>;
 +		rockchip,key_table =
 +			<0xf6 KEY_1>,
@@ -793,7 +765,7 @@ index 0000000000..39e4853081
 +
 +	};
 +
-+	ir_key13 {
++	ir_key12 {
 +		rockchip,usercode = <0x1980>;
 +		rockchip,key_table =
 +			<0xab KEY_1>,
@@ -828,7 +800,7 @@ index 0000000000..39e4853081
 +
 +	};
 +
-+	ir_key14 {
++	ir_key13 {
 +		rockchip,usercode = <0xdf00>;
 +		rockchip,key_table =
 +			<0xab KEY_1>,
@@ -866,7 +838,7 @@ index 0000000000..39e4853081
 +
 +	};
 +
-+	ir_key15 {
++	ir_key14 {
 +		rockchip,usercode = <0xc43b>;
 +		rockchip,key_table =
 +			<0x7e KEY_ENTER>,
@@ -912,7 +884,7 @@ index 0000000000..39e4853081
 +
 +	};
 +
-+	ir_key16 {
++	ir_key15 {
 +		rockchip,usercode = <0xee11>;
 +		rockchip,key_table =
 +			<0xea KEY_ENTER>,
@@ -955,7 +927,7 @@ index 0000000000..39e4853081
 +
 +	};
 +
-+	ir_key17 {
++	ir_key16 {
 +		rockchip,usercode = <0x3bc4>;
 +		rockchip,key_table =
 +			<0x81 KEY_ENTER>,
@@ -1015,7 +987,7 @@ index 0000000000..39e4853081
 +
 +	};
 +
-+	ir_key18 {
++	ir_key17 {
 +		rockchip,usercode = <0xdd22>;
 +		rockchip,key_table =
 +			<0x31 KEY_ENTER>,
@@ -1062,7 +1034,7 @@ index 0000000000..39e4853081
 +
 +	};
 +
-+	ir_key19 {
++	ir_key18 {
 +		rockchip,usercode = <0x4cb3>;
 +		rockchip,key_table =
 +			<0x31 KEY_ENTER>,
@@ -1105,7 +1077,7 @@ index 0000000000..39e4853081
 +
 +	};
 +
-+	ir_key20 {
++	ir_key19 {
 +		rockchip,usercode = <0x1608>;
 +		rockchip,key_table =
 +			<0x4c KEY_ENTER>,
@@ -1139,55 +1111,6 @@ index 0000000000..39e4853081
 +
 +	};
 +
-+	ir_key21 {
-+		rockchip,usercode = <0x4db2>;
-+		rockchip,key_table =
-+			<0x31 KEY_ENTER>,
-+			<0x3a KEY_BACK>,
-+			<0x35 KEY_UP>,
-+			<0x2d KEY_DOWN>,
-+			<0x66 KEY_LEFT>,
-+			<0x3e KEY_RIGHT>,
-+			<0x7f KEY_VOLUMEUP>,
-+			<0xfe KEY_VOLUMEDOWN>,
-+			<0x23 KEY_POWER>,
-+			<0x63 KEY_MUTE>,
-+			<0x6d KEY_1>,
-+			<0x6c KEY_2>,
-+			<0x33 KEY_3>,
-+			<0x71 KEY_4>,
-+			<0x70 KEY_5>,
-+			<0x37 KEY_6>,
-+			<0x75 KEY_7>,
-+			<0x74 KEY_8>,
-+			<0x3b KEY_9>,
-+			<0x78 KEY_0>,
-+			<0x73 KEY_PAGEDOWN>,
-+			<0x22 KEY_PAGEUP>,
-+			<0x72 KEY_SETUP>,
-+			<0x7a 0xf9>,
-+			<0x79 0xfa>,
-+			<0x77 0xfb>,
-+			<0x29 0xfc>,
-+			<0x32 0xfd>,
-+			<0x6e 0xfe>,
-+			<0x7c 0xff>,
-+			<0x3c 0x100>,
-+			<0x67 0x101>,
-+			<0x25 0x102>,
-+			<0x2f 0x103>,
-+			<0x7d 0x104>,
-+			<0x6a KEY_PLAYPAUSE>,
-+			<0xb KEY_EQUAL>;
-+
-+	};
-+
-+	ir_key22 {
-+		rockchip,usercode = <0x807f>;
-+		rockchip,key_table =
-+			<0x7e KEY_POWER>;
-+
-+	};
 +};
 +
 +&rkvdec {
@@ -1677,10 +1600,10 @@ index 0000000000..f68c03a16a
 +};
 diff --git a/arch/arm64/boot/dts/rockchip/rk3318-box.dtsi b/arch/arm64/boot/dts/rockchip/rk3318-box.dtsi
 new file mode 100644
-index 0000000000..44f8e15748
+index 0000000000..30dd660299
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3318-box.dtsi
-@@ -0,0 +1,1312 @@
+@@ -0,0 +1,1235 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2017 Fuzhou Rockchip Electronics Co., Ltd
@@ -2376,34 +2299,6 @@ index 0000000000..44f8e15748
 +	};
 +
 +	ir_key11 {
-+		rockchip,usercode = <0x0>;
-+		rockchip,key_table =
-+			<0xf2 KEY_ENTER>,
-+			<0xba KEY_BACK>,
-+			<0xf4 KEY_UP>,
-+			<0xf1 KEY_DOWN>,
-+			<0xef KEY_LEFT>,
-+			<0xee KEY_RIGHT>,
-+			<0xbd KEY_HOME>,
-+			<0xea KEY_VOLUMEUP>,
-+			<0xe3 KEY_VOLUMEDOWN>,
-+			<0xe2 KEY_SEARCH>,
-+			<0xb2 KEY_POWER>,
-+			<0xbc KEY_MUTE>,
-+			<0xec KEY_MENU>,
-+			<0xbf KEY_YELLOW>,
-+			<0xe0 KEY_BLUE>,
-+			<0xe1 KEY_CHANNELUP>,
-+			<0xe9 KEY_F13>,
-+			<0xe6 KEY_MICMUTE>,
-+			<0xe8 KEY_F15>,
-+			<0xe7 KEY_F16>,
-+			<0xf0 KEY_TEXT>,
-+			<0xbe KEY_MODE>;
-+
-+	};
-+
-+	ir_key12 {
 +		rockchip,usercode = <0xff10>;
 +		rockchip,key_table =
 +			<0xf6 KEY_1>,
@@ -2437,7 +2332,7 @@ index 0000000000..44f8e15748
 +
 +	};
 +
-+	ir_key13 {
++	ir_key12 {
 +		rockchip,usercode = <0x1980>;
 +		rockchip,key_table =
 +			<0xab KEY_1>,
@@ -2472,7 +2367,7 @@ index 0000000000..44f8e15748
 +
 +	};
 +
-+	ir_key14 {
++	ir_key13 {
 +		rockchip,usercode = <0xdf00>;
 +		rockchip,key_table =
 +			<0xab KEY_1>,
@@ -2510,7 +2405,7 @@ index 0000000000..44f8e15748
 +
 +	};
 +
-+	ir_key15 {
++	ir_key14 {
 +		rockchip,usercode = <0xc43b>;
 +		rockchip,key_table =
 +			<0x7e KEY_ENTER>,
@@ -2556,7 +2451,7 @@ index 0000000000..44f8e15748
 +
 +	};
 +
-+	ir_key16 {
++	ir_key15 {
 +		rockchip,usercode = <0xee11>;
 +		rockchip,key_table =
 +			<0xea KEY_ENTER>,
@@ -2599,7 +2494,7 @@ index 0000000000..44f8e15748
 +
 +	};
 +
-+	ir_key17 {
++	ir_key16 {
 +		rockchip,usercode = <0x3bc4>;
 +		rockchip,key_table =
 +			<0x81 KEY_ENTER>,
@@ -2659,7 +2554,7 @@ index 0000000000..44f8e15748
 +
 +	};
 +
-+	ir_key18 {
++	ir_key17 {
 +		rockchip,usercode = <0xdd22>;
 +		rockchip,key_table =
 +			<0x31 KEY_ENTER>,
@@ -2706,7 +2601,7 @@ index 0000000000..44f8e15748
 +
 +	};
 +
-+	ir_key19 {
++	ir_key18 {
 +		rockchip,usercode = <0x4cb3>;
 +		rockchip,key_table =
 +			<0x31 KEY_ENTER>,
@@ -2749,7 +2644,7 @@ index 0000000000..44f8e15748
 +
 +	};
 +
-+	ir_key20 {
++	ir_key19 {
 +		rockchip,usercode = <0x1608>;
 +		rockchip,key_table =
 +			<0x4c KEY_ENTER>,
@@ -2783,55 +2678,6 @@ index 0000000000..44f8e15748
 +
 +	};
 +
-+	ir_key21 {
-+		rockchip,usercode = <0x4db2>;
-+		rockchip,key_table =
-+			<0x31 KEY_ENTER>,
-+			<0x3a KEY_BACK>,
-+			<0x35 KEY_UP>,
-+			<0x2d KEY_DOWN>,
-+			<0x66 KEY_LEFT>,
-+			<0x3e KEY_RIGHT>,
-+			<0x7f KEY_VOLUMEUP>,
-+			<0xfe KEY_VOLUMEDOWN>,
-+			<0x23 KEY_POWER>,
-+			<0x63 KEY_MUTE>,
-+			<0x6d KEY_1>,
-+			<0x6c KEY_2>,
-+			<0x33 KEY_3>,
-+			<0x71 KEY_4>,
-+			<0x70 KEY_5>,
-+			<0x37 KEY_6>,
-+			<0x75 KEY_7>,
-+			<0x74 KEY_8>,
-+			<0x3b KEY_9>,
-+			<0x78 KEY_0>,
-+			<0x73 KEY_PAGEDOWN>,
-+			<0x22 KEY_PAGEUP>,
-+			<0x72 KEY_SETUP>,
-+			<0x7a 0xf9>,
-+			<0x79 0xfa>,
-+			<0x77 0xfb>,
-+			<0x29 0xfc>,
-+			<0x32 0xfd>,
-+			<0x6e 0xfe>,
-+			<0x7c 0xff>,
-+			<0x3c 0x100>,
-+			<0x67 0x101>,
-+			<0x25 0x102>,
-+			<0x2f 0x103>,
-+			<0x7d 0x104>,
-+			<0x6a KEY_PLAYPAUSE>,
-+			<0xb KEY_EQUAL>;
-+
-+	};
-+
-+	ir_key22 {
-+		rockchip,usercode = <0x807f>;
-+		rockchip,key_table =
-+			<0x7e KEY_POWER>;
-+
-+	};
 +};
 +
 +&rga {
