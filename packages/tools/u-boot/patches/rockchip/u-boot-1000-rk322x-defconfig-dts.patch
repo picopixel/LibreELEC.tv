@@ -1,9 +1,76 @@
+diff --git a/arch/arm/dts/rk322x-box-emmc.dts b/arch/arm/dts/rk322x-box-emmc.dts
+new file mode 100644
+index 0000000000..451df3e5c3
+--- /dev/null
++++ b/arch/arm/dts/rk322x-box-emmc.dts
+@@ -0,0 +1,28 @@
++/*
++ * (C) Copyright 2017 Rockchip Electronics Co., Ltd.
++ *
++ * SPDX-License-Identifier:     GPL-2.0+ X11
++ */
++
++/dts-v1/;
++
++#include "rk322x-box.dtsi"
++#include "rk322x-u-boot.dtsi"
++#include <dt-bindings/input/input.h>
++
++/ {
++	model = "Rockchip RK322x SoC (eMMC)";
++
++	aliases {
++		mmc1 = &emmc;
++	};
++
++	chosen {
++		u-boot,spl-boot-order = &sdmmc, &emmc;
++	};
++
++};
++
++&emmc {
++	status = "okay";
++};
+diff --git a/arch/arm/dts/rk322x-box-nand.dts b/arch/arm/dts/rk322x-box-nand.dts
+new file mode 100644
+index 0000000000..3400713538
+--- /dev/null
++++ b/arch/arm/dts/rk322x-box-nand.dts
+@@ -0,0 +1,27 @@
++/*
++ * (C) Copyright 2017 Rockchip Electronics Co., Ltd.
++ *
++ * SPDX-License-Identifier:     GPL-2.0+ X11
++ */
++
++/dts-v1/;
++
++#include "rk322x-box.dtsi"
++#include "rk322x-u-boot.dtsi"
++#include <dt-bindings/input/input.h>
++
++/ {
++	model = "Rockchip RK322x SoC (NAND)";
++
++	aliases {
++		mmc1 = &nandc;
++	};
++
++	chosen {
++		u-boot,spl-boot-order = &sdmmc, &nandc;
++	};
++};
++
++&nandc {
++	status = "okay";
++};
 diff --git a/arch/arm/dts/rk322x-box.dtsi b/arch/arm/dts/rk322x-box.dtsi
 new file mode 100644
-index 0000000000..b7f4662f2a
+index 0000000000..08d17c78e0
 --- /dev/null
 +++ b/arch/arm/dts/rk322x-box.dtsi
-@@ -0,0 +1,134 @@
+@@ -0,0 +1,177 @@
 +/*
 + * (C) Copyright 2017 Rockchip Electronics Co., Ltd.
 + *
@@ -34,6 +101,17 @@ index 0000000000..b7f4662f2a
 +		#clock-cells = <0>;
 +	};
 +
++	gpio-leds {
++                compatible = "gpio-leds";
++
++		 red {
++                        label = "rk322xbox:red:power";
++                        gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_HIGH>;
++                        default-state = "on";
++                };
++
++        };
++
 +	vcc_phy: vcc-phy-regulator {
 +		compatible = "regulator-fixed";
 +		enable-active-high;
@@ -53,6 +131,19 @@ index 0000000000..b7f4662f2a
 +		regulator-min-microvolt = <5000000>;
 +		regulator-max-microvolt = <5000000>;
 +		enable-active-high;
++		regulator-always-on;
++		regulator-boot-on;
++	};
++
++	vcc_host: vcc-host-regulator {
++		compatible = "regulator-fixed";
++		gpio = <&gpio3 RK_PC4 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&host_vbus_drv>;
++		regulator-name = "vcc_host";
++		enable-active-high;
++		regulator-always-on;
++		regulator-boot-on;
 +	};
 +
 +	gpio-keys {
@@ -124,10 +215,25 @@ index 0000000000..b7f4662f2a
 +	};
 +};
 +
-+&usb20_otg {
-+       status = "okay";
++&u2phy1 {
++	status = "okay";
++
++	u2phy1_otg: otg-port {
++		status = "okay";
++	};
++
++	u2phy1_host: host-port {
++		status = "okay";
++	};
 +};
 +
++&usb_host0_ehci {
++	status = "okay";
++};
++
++&usb20_otg {
++	status = "okay";
++};
 +
 +&pinctrl {
 +
@@ -135,82 +241,57 @@ index 0000000000..b7f4662f2a
 +		otg_vbus_drv: otg-vbus-drv {
 +			rockchip,pins = <3 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
++
++		host_vbus_drv: host-vbus-drv {
++			rockchip,pins = <3 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
 +	};
 +
 +};
-diff --git a/arch/arm/dts/rk322x-box-emmc.dts b/arch/arm/dts/rk322x-box-emmc.dts
-new file mode 100644
-index 0000000000..451df3e5c3
---- /dev/null
-+++ b/arch/arm/dts/rk322x-box-emmc.dts
-@@ -0,0 +1,28 @@
-+/*
-+ * (C) Copyright 2017 Rockchip Electronics Co., Ltd.
-+ *
-+ * SPDX-License-Identifier:     GPL-2.0+ X11
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk322x-box.dtsi"
-+#include "rk322x-u-boot.dtsi"
-+#include <dt-bindings/input/input.h>
-+
-+/ {
-+	model = "Rockchip RK322x SoC (eMMC)";
-+
-+	aliases {
-+		mmc1 = &emmc;
+diff --git a/arch/arm/dts/rk322x.dtsi b/arch/arm/dts/rk322x.dtsi
+index f3cb5ad07f..6714644b8e 100644
+--- a/arch/arm/dts/rk322x.dtsi
++++ b/arch/arm/dts/rk322x.dtsi
+@@ -517,6 +517,33 @@
+ 		status = "disabled";
+ 	};
+ 
++	usb_host0_ehci: usb@30080000 {
++		compatible = "generic-ehci";
++		reg = <0x30080000 0x20000>;
++		interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>;
++		phys = <&u2phy0_host>;
++		phy-names = "usb";
++		status = "disabled";
 +	};
 +
-+	chosen {
-+		u-boot,spl-boot-order = &sdmmc, &emmc;
++	usb_host1_ehci: usb@300c0000 {
++		compatible = "generic-ehci";
++		reg = <0x300c0000 0x20000>;
++		interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
++		phys = <&u2phy1_host>;
++		phy-names = "usb";
++		status = "disabled";
 +	};
 +
-+};
-+
-+&emmc {
-+	status = "okay";
-+};
-diff --git a/arch/arm/dts/rk322x-box-nand.dts b/arch/arm/dts/rk322x-box-nand.dts
-new file mode 100644
-index 0000000000..3400713538
---- /dev/null
-+++ b/arch/arm/dts/rk322x-box-nand.dts
-@@ -0,0 +1,27 @@
-+/*
-+ * (C) Copyright 2017 Rockchip Electronics Co., Ltd.
-+ *
-+ * SPDX-License-Identifier:     GPL-2.0+ X11
-+ */
-+
-+/dts-v1/;
-+
-+#include "rk322x-box.dtsi"
-+#include "rk322x-u-boot.dtsi"
-+#include <dt-bindings/input/input.h>
-+
-+/ {
-+	model = "Rockchip RK322x SoC (NAND)";
-+
-+	aliases {
-+		mmc1 = &nandc;
++	usb_host2_ehci: usb@30100000 {
++		compatible = "generic-ehci";
++		reg = <0x30100000 0x20000>;
++		interrupts = <GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>;
++		phys = <&u2phy1_otg>;
++		phy-names = "usb";
++		status = "disabled";
 +	};
 +
-+	chosen {
-+		u-boot,spl-boot-order = &sdmmc, &nandc;
-+	};
-+};
-+
-+&nandc {
-+	status = "okay";
-+};
+ 	gmac: ethernet@30200000 {
+ 		compatible = "rockchip,rk3228-gmac";
+ 		reg = <0x30200000 0x10000>;
 diff --git a/configs/rk322x-linux-miniloader-emmc_defconfig b/configs/rk322x-linux-miniloader-emmc_defconfig
 new file mode 100644
-index 0000000000..ab0e9c11fc
+index 0000000000..59ddd34c67
 --- /dev/null
 +++ b/configs/rk322x-linux-miniloader-emmc_defconfig
-@@ -0,0 +1,103 @@
+@@ -0,0 +1,116 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_ROCKCHIP=y
 +CONFIG_SPL_LIBCOMMON_SUPPORT=y
@@ -314,12 +395,25 @@ index 0000000000..ab0e9c11fc
 +CONFIG_GPIO_KEY=y
 +CONFIG_RK_KEY=y
 +CONFIG_PWRKEY_DNL_TRIGGER_NUM=0
++CONFIG_BOOTDELAY=1
++CONFIG_REGULATOR_PWM=y
++CONFIG_DM_REGULATOR_FIXED=y
++CONFIG_PWM_ROCKCHIP=y
++CONFIG_USB_OHCI_HCD=y
++CONFIG_USB_EHCI_HCD=y
++CONFIG_USB_OHCI_GENERIC=y
++CONFIG_USB_EHCI_GENERIC=y
++CONFIG_USB_OHCI_NEW=y
++CONFIG_LED=y
++CONFIG_LED_BLINK=y
++CONFIG_LED_GPIO=y
++CONFIG_CMD_LED=y
 diff --git a/configs/rk322x-linux-miniloader-nand_defconfig b/configs/rk322x-linux-miniloader-nand_defconfig
 new file mode 100644
-index 0000000000..1f9ad0aa0b
+index 0000000000..b95e96a2e1
 --- /dev/null
 +++ b/configs/rk322x-linux-miniloader-nand_defconfig
-@@ -0,0 +1,104 @@
+@@ -0,0 +1,114 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_ROCKCHIP=y
 +CONFIG_SPL_LIBCOMMON_SUPPORT=y
@@ -424,3 +518,53 @@ index 0000000000..1f9ad0aa0b
 +CONFIG_GPIO_KEY=y
 +CONFIG_RK_KEY=y
 +CONFIG_PWRKEY_DNL_TRIGGER_NUM=0
++CONFIG_BOOTDELAY=1
++CONFIG_REGULATOR_PWM=y
++CONFIG_DM_REGULATOR_FIXED=y
++CONFIG_PWM_ROCKCHIP=y
++CONFIG_USB_OHCI_GENERIC=y
++CONFIG_USB_EHCI_GENERIC=y
++CONFIG_USB_OHCI_NEW=y
++CONFIG_LED=y
++CONFIG_LED_BLINK=y
++CONFIG_LED_GPIO=y
+diff --git a/include/common.h b/include/common.h
+index b6b8c374fe..77159d1c8c 100644
+--- a/include/common.h
++++ b/include/common.h
+@@ -7,7 +7,6 @@
+ 
+ #ifndef __COMMON_H_
+ #define __COMMON_H_	1
+-
+ #ifndef __ASSEMBLY__		/* put C only stuff in this section */
+ 
+ typedef unsigned char		uchar;
+diff --git a/include/configs/rk322x_common.h b/include/configs/rk322x_common.h
+index da4eac28a0..3f3205cb03 100644
+--- a/include/configs/rk322x_common.h
++++ b/include/configs/rk322x_common.h
+@@ -60,4 +60,8 @@
+ 
+ #define CONFIG_PREBOOT
+ 
++/* rockchip ohci host driver */
++#define CONFIG_USB_OHCI_NEW
++#define CONFIG_SYS_USB_OHCI_MAX_ROOT_PORTS      1
++
+ #endif
+diff --git a/include/configs/rockchip-common.h b/include/configs/rockchip-common.h
+index 5d6e35f91f..edff0f82b0 100644
+--- a/include/configs/rockchip-common.h
++++ b/include/configs/rockchip-common.h
+@@ -75,9 +75,9 @@
+ #endif
+ 
+ #define BOOT_TARGET_DEVICES(func) \
++	BOOT_TARGET_USB(func) \
+ 	BOOT_TARGET_MMC(func) \
+ 	BOOT_TARGET_RKNAND(func) \
+-	BOOT_TARGET_USB(func) \
+ 	BOOT_TARGET_PXE(func) \
+ 	BOOT_TARGET_DHCP(func)
+ 
