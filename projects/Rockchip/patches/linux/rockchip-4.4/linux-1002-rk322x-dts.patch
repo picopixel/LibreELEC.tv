@@ -1,9 +1,9 @@
 diff --git a/arch/arm/boot/dts/rk3228a-box-h96mini.dts b/arch/arm/boot/dts/rk3228a-box-h96mini.dts
 new file mode 100644
-index 000000000000..59e7a48e8a7e
+index 000000000000..8301c556efb4
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3228a-box-h96mini.dts
-@@ -0,0 +1,94 @@
+@@ -0,0 +1,75 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -20,26 +20,19 @@ index 000000000000..59e7a48e8a7e
 +/ {
 +	model = "RK3228a H96 mini";
 +
-+	leds {
-+		compatible = "gpio-leds";
-+
-+		led_green {
-+			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-+			default-state = "on";
-+		};
-+
-+		led_red {
-+			gpios = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+			linux,default-trigger = "rc-feedback";
-+		};
++	openvfd {
++		compatible = "open,vfd";
++		dev_name = "openvfd";
++		openvfd_gpio_clk = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
++		openvfd_gpio_dat = <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>;
++		openvfd_display_type = <0x06000100>;
 +	};
 +
 +};
 +
 +&dram_timing {
-+                sr_idle = <0x18>;
-+                pd_idle = <0x20>;
++                sr_idle = <24>;
++                pd_idle = <32>;
 +                ddr3_drv = <DDR3_DS_40ohm>;
 +                ddr3_odt = <DDR3_ODT_120ohm>;
 +                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
@@ -53,12 +46,6 @@ index 000000000000..59e7a48e8a7e
 +};
 +
 +&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL       600000
-+		SYS_STATUS_VIDEO_4K	700000
-+		SYS_STATUS_VIDEO_4K_10B 800000
-+	>;
 +	status = "okay";
 +};
 +
@@ -83,27 +70,21 @@ index 000000000000..59e7a48e8a7e
 +	status = "okay";
 +};
 +
-+&gmac {
-+	tx_delay = <0x26>;
-+	rx_delay = <0x11>;
-+};
-+
-+
-+
 +&uart1 {
 +	status = "okay";
 +};
 +
 +&wifi {
 +	wifi_chip_type = "ap6330";
++	WIFI,reset_gpio = <&gpio0 RK_PA2 GPIO_ACTIVE_LOW>;
 +	status = "okay";
 +};
 diff --git a/arch/arm/boot/dts/rk3228a-box-mxq4kpro.dts b/arch/arm/boot/dts/rk3228a-box-mxq4kpro.dts
 new file mode 100644
-index 000000000000..1d9b33426b32
+index 000000000000..4d143cfd5752
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3228a-box-mxq4kpro.dts
-@@ -0,0 +1,84 @@
+@@ -0,0 +1,75 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -123,14 +104,13 @@ index 000000000000..1d9b33426b32
 +                compatible = "gpio-leds";
 +
 +                led_blue {
-+			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
++			gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
 +                        default-state = "on";
 +                };
 +
 +                led_red {
-+			gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
++			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
 +                        default-state = "off";
-+                        linux,default-trigger = "rc-feedback";
 +                };
 +        };
 +
@@ -144,13 +124,6 @@ index 000000000000..1d9b33426b32
 +};
 +
 +&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL       600000
-+		SYS_STATUS_VIDEO_4K	700000
-+		SYS_STATUS_VIDEO_4K_10B 700000
-+	>;
-+
 +	status = "okay";
 +};
 +
@@ -179,7 +152,6 @@ index 000000000000..1d9b33426b32
 +	};
 +
 +};
-+
 +
 +&nandc {
 +	status = "okay";
@@ -383,10 +355,10 @@ index 000000000000..886abc889464
 +};
 diff --git a/arch/arm/boot/dts/rk3228b-box-mkv809vii.dts b/arch/arm/boot/dts/rk3228b-box-mkv809vii.dts
 new file mode 100644
-index 000000000000..550b7c567046
+index 000000000000..ad45da14d0f4
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3228b-box-mkv809vii.dts
-@@ -0,0 +1,189 @@
+@@ -0,0 +1,188 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -526,8 +498,8 @@ index 000000000000..550b7c567046
 +};
 +
 +&dram_timing {
-+                sr_idle = <0xc>;
-+                pd_idle = <0x20>;
++                sr_idle = <12>;
++                pd_idle = <32>;
 +                ddr3_drv = <DDR3_DS_40ohm>;
 +                ddr3_odt = <DDR3_ODT_120ohm>;
 +                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_45ohm>;
@@ -539,14 +511,13 @@ index 000000000000..550b7c567046
 +&dmc {
 +	system-status-freq = <
 +		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL	456000
-+		SYS_STATUS_VIDEO_4K	456000
++		SYS_STATUS_NORMAL		456000
++		SYS_STATUS_VIDEO_4K		456000
 +		SYS_STATUS_VIDEO_4K_10B	456000
 +	>;
 +
 +	status = "okay";
 +};
-+
 +
 +&emmc {
 +	status = "okay";
@@ -578,10 +549,10 @@ index 000000000000..550b7c567046
 +};
 diff --git a/arch/arm/boot/dts/rk3228b-box-v88mars-II.dts b/arch/arm/boot/dts/rk3228b-box-v88mars-II.dts
 new file mode 100644
-index 000000000000..96f3536073b9
+index 000000000000..b185c67cc4d2
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3228b-box-v88mars-II.dts
-@@ -0,0 +1,69 @@
+@@ -0,0 +1,63 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -619,12 +590,6 @@ index 000000000000..96f3536073b9
 +};
 +
 +&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL       600000
-+		SYS_STATUS_VIDEO_4K	700000
-+		SYS_STATUS_VIDEO_4K_10B 800000
-+	>;
 +
 +	status = "okay";
 +};
@@ -675,10 +640,10 @@ index 000000000000..1aa448e37ab7
 +};
 diff --git a/arch/arm/boot/dts/rk3229-box-a95xr1.dts b/arch/arm/boot/dts/rk3229-box-a95xr1.dts
 new file mode 100644
-index 000000000000..fe31b0934f64
+index 000000000000..eb51aa65e4b5
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box-a95xr1.dts
-@@ -0,0 +1,68 @@
+@@ -0,0 +1,56 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -705,7 +670,6 @@ index 000000000000..fe31b0934f64
 +		led_red {
 +			gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_HIGH>;
 +			default-state = "off";
-+			linux,default-trigger = "rc-feedback";
 +		};
 +	};
 +
@@ -715,7 +679,7 @@ index 000000000000..fe31b0934f64
 +                sr_idle = <0>;
 +                pd_idle = <0>;
 +                ddr3_drv = <DDR3_DS_34ohm>;
-+                ddr3_odt = <DDR3_ODT_40ohm>;
++                ddr3_odt = <DDR3_ODT_120ohm>;
 +                phy_ddr3_clk_drv = <PHY_DDR3_RON_RTT_34ohm>;
 +                phy_ddr3_cmd_drv = <PHY_DDR3_RON_RTT_34ohm>;
 +                phy_ddr3_dqs_drv = <PHY_DDR3_RON_RTT_34ohm>;
@@ -723,12 +687,6 @@ index 000000000000..fe31b0934f64
 +};
 +
 +&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL       786000
-+		SYS_STATUS_VIDEO_4K	786000
-+		SYS_STATUS_VIDEO_4K_10B 800000
-+	>;
 +
 +	status = "okay";
 +};
@@ -738,21 +696,16 @@ index 000000000000..fe31b0934f64
 +	status = "okay";
 +};
 +
-+&gmac {
-+	tx_delay = <0x26>;
-+	rx_delay = <0x11>;
-+};
-+
 +&wifi {
 +	wifi_chip_type = "ssv6051";
 +	status = "okay";
 +};
 diff --git a/arch/arm/boot/dts/rk3229-box-d88.dts b/arch/arm/boot/dts/rk3229-box-d88.dts
 new file mode 100644
-index 000000000000..20ae33d1fa8b
+index 000000000000..25ebe975df07
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box-d88.dts
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,65 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -796,13 +749,6 @@ index 000000000000..20ae33d1fa8b
 +};
 +
 +&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL	600000
-+		SYS_STATUS_VIDEO_4K	786000
-+		SYS_STATUS_VIDEO_4K_10B	800000
-+	>;
-+
 +	status = "okay";
 +};
 +
@@ -827,10 +773,10 @@ index 000000000000..20ae33d1fa8b
 +};
 diff --git a/arch/arm/boot/dts/rk3229-box-hk1mini.dts b/arch/arm/boot/dts/rk3229-box-hk1mini.dts
 new file mode 100644
-index 000000000000..c685ef637e05
+index 000000000000..305cdf096735
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box-hk1mini.dts
-@@ -0,0 +1,192 @@
+@@ -0,0 +1,184 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -852,7 +798,6 @@ index 000000000000..c685ef637e05
 +                led_red {
 +                        gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
 +                        default-state = "off";
-+			linux,default-trigger = "rc-feedback";
 +                };
 +
 +                led_blue {
@@ -877,13 +822,6 @@ index 000000000000..c685ef637e05
 +};
 +
 +&dmc {
-+
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL       800000
-+		SYS_STATUS_VIDEO_4K	800000
-+		SYS_STATUS_VIDEO_4K_10B 800000
-+	>;
 +	status = "okay";
 +};
 +
@@ -1025,10 +963,10 @@ index 000000000000..c685ef637e05
 +};
 diff --git a/arch/arm/boot/dts/rk3229-box-ntn8.dts b/arch/arm/boot/dts/rk3229-box-ntn8.dts
 new file mode 100644
-index 000000000000..c35972e486b2
+index 000000000000..8330e9e90ebf
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box-ntn8.dts
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,59 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -1055,7 +993,6 @@ index 000000000000..c35972e486b2
 +		led_red {
 +			gpios = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;
 +			default-state = "off";
-+			linux,default-trigger = "rc-feedback";
 +		};
 +	};
 +};
@@ -1072,24 +1009,12 @@ index 000000000000..c35972e486b2
 +};
 +
 +&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL       786000
-+		SYS_STATUS_VIDEO_4K	786000
-+		SYS_STATUS_VIDEO_4K_10B 800000
-+	>;
-+
 +	status = "okay";
 +};
 +
 +&emmc {
 +	mmc-hs200-1_8v;
 +	status = "okay";
-+};
-+
-+&gmac {
-+	tx_delay = <0x26>;
-+	rx_delay = <0x11>;
 +};
 +
 +&uart1 {
@@ -1103,10 +1028,10 @@ index 000000000000..c35972e486b2
 +};
 diff --git a/arch/arm/boot/dts/rk3229-box-tx2.dts b/arch/arm/boot/dts/rk3229-box-tx2.dts
 new file mode 100644
-index 000000000000..26da4aa561d0
+index 000000000000..7fa513b04d23
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box-tx2.dts
-@@ -0,0 +1,58 @@
+@@ -0,0 +1,47 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -1138,12 +1063,6 @@ index 000000000000..26da4aa561d0
 +};
 +
 +&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL       786000
-+		SYS_STATUS_VIDEO_4K	786000
-+		SYS_STATUS_VIDEO_4K_10B 800000
-+	>;
 +
 +	status = "okay";
 +};
@@ -1151,11 +1070,6 @@ index 000000000000..26da4aa561d0
 +&emmc {
 +	mmc-hs200-1_8v;
 +	status = "okay";
-+};
-+
-+&gmac {
-+	tx_delay = <0x26>;
-+	rx_delay = <0x11>;
 +};
 +
 +&uart1 {
@@ -1167,10 +1081,10 @@ index 000000000000..26da4aa561d0
 +};
 diff --git a/arch/arm/boot/dts/rk3229-box-v884k.dts b/arch/arm/boot/dts/rk3229-box-v884k.dts
 new file mode 100644
-index 000000000000..e9cadf4c7c86
+index 000000000000..ca1237e22cb9
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box-v884k.dts
-@@ -0,0 +1,57 @@
+@@ -0,0 +1,49 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -1198,7 +1112,6 @@ index 000000000000..e9cadf4c7c86
 +};
 +
 +&dram_timing {
-+                dram_spd_bin = <21>;
 +		sr_idle = <12>;
 +                pd_idle = <32>;
 +                ddr3_drv = <DDR3_DS_40ohm>;
@@ -1210,13 +1123,6 @@ index 000000000000..e9cadf4c7c86
 +};
 +
 +&dmc {
-+	system-status-freq = <
-+		/*system status         freq(KHz)*/
-+		SYS_STATUS_NORMAL	786000
-+		SYS_STATUS_VIDEO_4K	786000
-+		SYS_STATUS_VIDEO_4K_10B	800000
-+	>;
-+
 +	status = "okay";
 +};
 +
@@ -1230,10 +1136,10 @@ index 000000000000..e9cadf4c7c86
 +};
 diff --git a/arch/arm/boot/dts/rk3229-box-v88mars.dts b/arch/arm/boot/dts/rk3229-box-v88mars.dts
 new file mode 100644
-index 000000000000..a44ba9efd07d
+index 000000000000..af1db331c6cb
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk3229-box-v88mars.dts
-@@ -0,0 +1,40 @@
+@@ -0,0 +1,39 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -1260,7 +1166,6 @@ index 000000000000..a44ba9efd07d
 +                led_red {
 +                        gpios = <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>;
 +                        default-state = "off";
-+                        linux,default-trigger = "rc-feedback";
 +                };
 +        };
 +};
@@ -1298,10 +1203,10 @@ index 000000000000..8a4b25eeaed4
 +};
 diff --git a/arch/arm/boot/dts/rk322x-box.dtsi b/arch/arm/boot/dts/rk322x-box.dtsi
 new file mode 100644
-index 000000000000..d3a1619b62ba
+index 000000000000..b3bf27d62f3a
 --- /dev/null
 +++ b/arch/arm/boot/dts/rk322x-box.dtsi
-@@ -0,0 +1,1338 @@
+@@ -0,0 +1,1269 @@
 +/*
 + * Copyright (C) 2020 knaerzche <knaerzche@gmail.com>
 + *
@@ -1317,7 +1222,7 @@ index 000000000000..d3a1619b62ba
 +/ {
 +
 +	compatible = "rockchip,rk3229";
-+	model = "Rockchip RK3229 SoC";
++	model = "Rockchip RK322x SoC";
 +
 +	memory@60000000 {
 +		device_type = "memory";
@@ -1329,7 +1234,6 @@ index 000000000000..d3a1619b62ba
 +		serial1 = &uart0;
 +		ethernet0 = &gmac;
 +	};
-+
 +
 +	chosen {
 +		bootargs = "earlycon=uart8250,mmio32,0x11030000";
@@ -1439,15 +1343,13 @@ index 000000000000..d3a1619b62ba
 +		};
 +	};
 +
-+	vcc_host: vcc-host-regulator {
++	vcc_host_vbus: vcc-host-regulator {
 +		compatible = "regulator-fixed";
 +		enable-active-high;
-+		gpio = <&gpio3 20 GPIO_ACTIVE_HIGH>;
++		gpio = <&gpio3 RK_PC4 GPIO_ACTIVE_HIGH>;
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&host_vbus_drv>;
 +		regulator-name = "vcc_host";
-+		regulator-always-on;
-+		regulator-boot-on;
 +	};
 +
 +	vcc_otg_vbus: otg-vbus-regulator {
@@ -1579,6 +1481,15 @@ index 000000000000..d3a1619b62ba
 +
 +
 +&dmc {
++	system-status-freq = <
++		/*system status         freq(KHz)*/
++		SYS_STATUS_NORMAL       786000
++		SYS_STATUS_VIDEO_4K     786000
++		SYS_STATUS_VIDEO_4K_10B 800000
++		SYS_STATUS_PERFORMANCE  800000
++		SYS_STATUS_SUSPEND      300000
++		SYS_STATUS_LOW_POWER    300000
++	>;
 +	center-supply = <&vdd_log>;
 +};
 +
@@ -1588,6 +1499,8 @@ index 000000000000..d3a1619b62ba
 +	clock_in_out = "output";
 +	phy-supply = <&vcc_phy>;
 +	phy-mode = "rmii";
++	tx_delay = <38>;
++	rx_delay = <17>;
 +	phy-is-integrated;
 +	status = "okay";
 +};
@@ -1731,7 +1644,7 @@ index 000000000000..d3a1619b62ba
 +	handle_cpu_id = <1>;
 +	remote_support_psci = <1>;
 +
-+		ir_key1 {
++	ir_key1 {
 +		rockchip,usercode = <0xef10>;
 +		rockchip,key_table =
 +			<0xa2 KEY_POWER>,
@@ -2043,34 +1956,6 @@ index 000000000000..d3a1619b62ba
 +	};
 +
 +	ir_key11 {
-+		rockchip,usercode = <0x0>;
-+		rockchip,key_table =
-+			<0xf2 KEY_ENTER>,
-+			<0xba KEY_BACK>,
-+			<0xf4 KEY_UP>,
-+			<0xf1 KEY_DOWN>,
-+			<0xef KEY_LEFT>,
-+			<0xee KEY_RIGHT>,
-+			<0xbd KEY_HOME>,
-+			<0xea KEY_VOLUMEUP>,
-+			<0xe3 KEY_VOLUMEDOWN>,
-+			<0xe2 KEY_SEARCH>,
-+			<0xb2 KEY_POWER>,
-+			<0xbc KEY_MUTE>,
-+			<0xec KEY_MENU>,
-+			<0xbf KEY_YELLOW>,
-+			<0xe0 KEY_BLUE>,
-+			<0xe1 KEY_CHANNELUP>,
-+			<0xe9 KEY_F13>,
-+			<0xe6 KEY_MICMUTE>,
-+			<0xe8 KEY_F15>,
-+			<0xe7 KEY_F16>,
-+			<0xf0 KEY_TEXT>,
-+			<0xbe KEY_MODE>;
-+
-+	};
-+
-+	ir_key12 {
 +		rockchip,usercode = <0xff10>;
 +		rockchip,key_table =
 +			<0xf6 KEY_1>,
@@ -2104,7 +1989,7 @@ index 000000000000..d3a1619b62ba
 +
 +	};
 +
-+	ir_key13 {
++	ir_key12 {
 +		rockchip,usercode = <0x1980>;
 +		rockchip,key_table =
 +			<0xab KEY_1>,
@@ -2139,7 +2024,7 @@ index 000000000000..d3a1619b62ba
 +
 +	};
 +
-+	ir_key14 {
++	ir_key13 {
 +		rockchip,usercode = <0xdf00>;
 +		rockchip,key_table =
 +			<0xab KEY_1>,
@@ -2177,7 +2062,7 @@ index 000000000000..d3a1619b62ba
 +
 +	};
 +
-+	ir_key15 {
++	ir_key14 {
 +		rockchip,usercode = <0xc43b>;
 +		rockchip,key_table =
 +			<0x7e KEY_ENTER>,
@@ -2223,7 +2108,7 @@ index 000000000000..d3a1619b62ba
 +
 +	};
 +
-+	ir_key16 {
++	ir_key15 {
 +		rockchip,usercode = <0xee11>;
 +		rockchip,key_table =
 +			<0xea KEY_ENTER>,
@@ -2266,7 +2151,7 @@ index 000000000000..d3a1619b62ba
 +
 +	};
 +
-+	ir_key17 {
++	ir_key16 {
 +		rockchip,usercode = <0x3bc4>;
 +		rockchip,key_table =
 +			<0x81 KEY_ENTER>,
@@ -2326,7 +2211,7 @@ index 000000000000..d3a1619b62ba
 +
 +	};
 +
-+	ir_key18 {
++	ir_key17 {
 +		rockchip,usercode = <0xdd22>;
 +		rockchip,key_table =
 +			<0x31 KEY_ENTER>,
@@ -2373,7 +2258,7 @@ index 000000000000..d3a1619b62ba
 +
 +	};
 +
-+	ir_key19 {
++	ir_key18 {
 +		rockchip,usercode = <0x4cb3>;
 +		rockchip,key_table =
 +			<0x31 KEY_ENTER>,
@@ -2416,7 +2301,7 @@ index 000000000000..d3a1619b62ba
 +
 +	};
 +
-+	ir_key20 {
++	ir_key19 {
 +		rockchip,usercode = <0x1608>;
 +		rockchip,key_table =
 +			<0x4c KEY_ENTER>,
@@ -2450,55 +2335,6 @@ index 000000000000..d3a1619b62ba
 +
 +	};
 +
-+	ir_key21 {
-+		rockchip,usercode = <0x4db2>;
-+		rockchip,key_table =
-+			<0x31 KEY_ENTER>,
-+			<0x3a KEY_BACK>,
-+			<0x35 KEY_UP>,
-+			<0x2d KEY_DOWN>,
-+			<0x66 KEY_LEFT>,
-+			<0x3e KEY_RIGHT>,
-+			<0x7f KEY_VOLUMEUP>,
-+			<0xfe KEY_VOLUMEDOWN>,
-+			<0x23 KEY_POWER>,
-+			<0x63 KEY_MUTE>,
-+			<0x6d KEY_1>,
-+			<0x6c KEY_2>,
-+			<0x33 KEY_3>,
-+			<0x71 KEY_4>,
-+			<0x70 KEY_5>,
-+			<0x37 KEY_6>,
-+			<0x75 KEY_7>,
-+			<0x74 KEY_8>,
-+			<0x3b KEY_9>,
-+			<0x78 KEY_0>,
-+			<0x73 KEY_PAGEDOWN>,
-+			<0x22 KEY_PAGEUP>,
-+			<0x72 KEY_SETUP>,
-+			<0x7a 0xf9>,
-+			<0x79 0xfa>,
-+			<0x77 0xfb>,
-+			<0x29 0xfc>,
-+			<0x32 0xfd>,
-+			<0x6e 0xfe>,
-+			<0x7c 0xff>,
-+			<0x3c 0x100>,
-+			<0x67 0x101>,
-+			<0x25 0x102>,
-+			<0x2f 0x103>,
-+			<0x7d 0x104>,
-+			<0x6a KEY_PLAYPAUSE>,
-+			<0xb KEY_EQUAL>;
-+
-+	};
-+
-+	ir_key22 {
-+		rockchip,usercode = <0x807f>;
-+		rockchip,key_table =
-+			<0x7e KEY_POWER>;
-+
-+	};
 +};
 +
 +&rockchip_suspend {
@@ -2508,7 +2344,6 @@ index 000000000000..d3a1619b62ba
 +		(0
 +		|RKPM_CTR_GTCLKS
 +		|RKPM_CTR_IDLESRAM_MD
-+		|RKPM_CTR_PMIC
 +		)
 +	>;
 +};
@@ -2545,12 +2380,10 @@ index 000000000000..d3a1619b62ba
 +	status = "okay";
 +
 +	u2phy0_otg: otg-port {
-+		vbus-supply = <&vcc_otg_vbus>;
 +		status = "okay";
 +	};
 +
 +	u2phy0_host: host-port {
-+		phy-supply = <&vcc_host>;
 +		status = "okay";
 +	};
 +};
@@ -2563,13 +2396,8 @@ index 000000000000..d3a1619b62ba
 +	};
 +
 +	u2phy1_host: host-port {
-+		phy-supply = <&vcc_host>;
 +		status = "okay";
 +	};
-+};
-+
-+&usb_otg {
-+	status = "okay";
 +};
 +
 +&rkvdec {
@@ -2591,31 +2419,39 @@ index 000000000000..d3a1619b62ba
 +};
 +
 +&usb_host0_ehci {
++	vbus-supply = <&vcc_host_vbus>;
 +	status = "okay";
 +};
 +
 +&usb_host0_ohci {
++	vbus-supply = <&vcc_host_vbus>;
 +	status = "okay";
 +};
 +
 +&usb_host1_ehci {
++	vbus-supply = <&vcc_host_vbus>;
 +	status = "okay";
 +};
 +
 +&usb_host1_ohci {
++	vbus-supply = <&vcc_host_vbus>;
 +	status = "okay";
 +};
 +
 +&usb_host2_ehci {
++	vbus-supply = <&vcc_host_vbus>;
 +	status = "okay";
 +};
 +
 +&usb_host2_ohci {
++	vbus-supply = <&vcc_host_vbus>;
 +	status = "okay";
 +};
 +
 +&usb_otg {
-+        dr_mode = "host";
++	vbus-supply = <&vcc_otg_vbus>;
++	dr_mode = "host";
++	status = "okay";
 +};
 +
 +&vop {
