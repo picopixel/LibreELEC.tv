@@ -36,7 +36,7 @@
     MALI_FAMILY="400"
 
   # kernel serial console
-    EXTRA_CMDLINE="console=uart8250,mmio32,0x11030000 console=tty0 video=HDMI-A-1:1920x1080"
+    EXTRA_CMDLINE="console=uart8250,mmio32,0x11030000 console=tty0 video=TV-1:d"
  
 
   # driver addons to install:
