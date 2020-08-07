@@ -2,8 +2,8 @@
 # Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libmali"
-PKG_VERSION="e9cd74e9754c4e298311273da9e9e741d9edc6d2"
-PKG_SHA256="59516442202caed63d5368be604c8ffbede4846fdf5495ff66c96a9c474e9dc3"
+PKG_VERSION="a996cf3dfd989c95fc5752126fa12fe4c485e004"
+PKG_SHA256="c001698da4b59bc38499f2a9655fc6bbc6db0c42072d99f169b53fcd4cdf6cf6"
 PKG_ARCH="arm aarch64"
 PKG_LICENSE="nonfree"
 PKG_SITE="https://github.com/LibreELEC/libmali"
