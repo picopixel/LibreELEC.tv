@@ -1,0 +1,150 @@
+From cd5fdf04305a8a63e93b33ad9982b30021457bae Mon Sep 17 00:00:00 2001
+From: Jeffy Chen <jeffy.chen@rock-chips.com>
+Date: Fri, 6 Sep 2019 12:49:23 +0800
+Subject: [PATCH] avcodec/rkmppdec: Always fetch frames in receive_frame()
+
+Not all users would feed new packets ASAP when got -EAGAIN, especially
+for the avcodec_decode_video2() users.
+
+So if there are frames ready, waiting for new packets instead of
+returning them might cause unnecessary delay.
+
+Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
+---
+ libavcodec/rkmppdec.c | 90 ++++++++++++++++++++++---------------------
+ 1 file changed, 47 insertions(+), 43 deletions(-)
+
+diff --git a/libavcodec/rkmppdec.c b/libavcodec/rkmppdec.c
+index 143d05bd51..6d913568d3 100644
+--- a/libavcodec/rkmppdec.c
++++ b/libavcodec/rkmppdec.c
+@@ -86,6 +86,24 @@ static uint32_t rkmpp_get_frameformat(MppFrameFormat mppformat)
+     }
+ }
+ 
++static int rkmpp_accept_packet(AVCodecContext *avctx)
++{
++    RKMPPDecodeContext *rk_context = avctx->priv_data;
++    RKMPPDecoder *decoder = (RKMPPDecoder *)rk_context->decoder_ref->data;
++    int ret = MPP_NOK;
++    RK_S32 usedslots;
++
++    ret = decoder->mpi->control(decoder->ctx,
++                                MPP_DEC_GET_STREAM_COUNT, &usedslots);
++    if (ret != MPP_OK) {
++            av_log(avctx, AV_LOG_ERROR,
++                   "Failed to get decoder used slots (code = %d).\n", ret);
++            return 1;
++    }
++
++    return INPUT_MAX_PACKETS > usedslots;
++}
++
+ static int rkmpp_write_data(AVCodecContext *avctx, uint8_t *buffer, int size, int64_t pts)
+ {
+     RKMPPDecodeContext *rk_context = avctx->priv_data;
+@@ -155,8 +173,6 @@ static int rkmpp_init_decoder(AVCodecContext *avctx)
+     RKMPPDecoder *decoder = NULL;
+     MppCodingType codectype = MPP_VIDEO_CodingUnused;
+     int ret;
+-    RK_S64 paramS64;
+-    RK_S32 paramS32;
+ 
+     avctx->pix_fmt = AV_PIX_FMT_DRM_PRIME;
+ 
+@@ -207,23 +223,6 @@ static int rkmpp_init_decoder(AVCodecContext *avctx)
+         goto fail;
+     }
+ 
+-    // make decode calls blocking with a timeout
+-    paramS32 = MPP_POLL_BLOCK;
+-    ret = decoder->mpi->control(decoder->ctx, MPP_SET_OUTPUT_BLOCK, &paramS32);
+-    if (ret != MPP_OK) {
+-        av_log(avctx, AV_LOG_ERROR, "Failed to set blocking mode on MPI (code = %d).\n", ret);
+-        ret = AVERROR_UNKNOWN;
+-        goto fail;
+-    }
+-
+-    paramS64 = RECEIVE_FRAME_TIMEOUT;
+-    ret = decoder->mpi->control(decoder->ctx, MPP_SET_OUTPUT_BLOCK_TIMEOUT, &paramS64);
+-    if (ret != MPP_OK) {
+-        av_log(avctx, AV_LOG_ERROR, "Failed to set block timeout on MPI (code = %d).\n", ret);
+-        ret = AVERROR_UNKNOWN;
+-        goto fail;
+-    }
+-
+     ret = mpp_buffer_group_get_internal(&decoder->frame_group, MPP_BUFFER_TYPE_ION);
+     if (ret) {
+        av_log(avctx, AV_LOG_ERROR, "Failed to retrieve buffer group (code = %d)\n", ret);
+@@ -497,39 +496,44 @@ static int rkmpp_receive_frame(AVCodecContext *avctx, AVFrame *frame)
+ {
+     RKMPPDecodeContext *rk_context = avctx->priv_data;
+     RKMPPDecoder *decoder = (RKMPPDecoder *)rk_context->decoder_ref->data;
++    RK_S64 timeout = RECEIVE_FRAME_TIMEOUT;
+     int ret = MPP_NOK;
+     AVPacket pkt = {0};
+-    RK_S32 usedslots, freeslots;
+-
+-    if (!decoder->eos_reached) {
+-        // we get the available slots in decoder
+-        ret = decoder->mpi->control(decoder->ctx, MPP_DEC_GET_STREAM_COUNT, &usedslots);
+-        if (ret != MPP_OK) {
+-            av_log(avctx, AV_LOG_ERROR, "Failed to get decoder used slots (code = %d).\n", ret);
+-            return ret;
+-        }
+ 
+-        freeslots = INPUT_MAX_PACKETS - usedslots;
+-        if (freeslots > 0) {
+-            ret = ff_decode_get_packet(avctx, &pkt);
+-            if (ret < 0 && ret != AVERROR_EOF) {
++    if (rkmpp_accept_packet(avctx)) {
++        if (decoder->eos_reached) {
++            ret = rkmpp_write_data(avctx, NULL, 0, 0);
++            if (ret) {
++                av_log(avctx, AV_LOG_ERROR,
++                       "Failed to send EOS to decoder (code = %d)\n", ret);
+                 return ret;
+             }
+-
+-            ret = rkmpp_send_packet(avctx, &pkt);
+-            av_packet_unref(&pkt);
+-
+-            if (ret < 0) {
+-                av_log(avctx, AV_LOG_ERROR, "Failed to send packet to decoder (code = %d)\n", ret);
+-                return ret;
++        } else {
++            ret = ff_decode_get_packet(avctx, &pkt);
++            if (ret >= 0 || ret == AVERROR_EOF) {
++                ret = rkmpp_send_packet(avctx, &pkt);
++                av_packet_unref(&pkt);
++
++                if (ret < 0) {
++                    av_log(avctx, AV_LOG_ERROR,
++                           "Failed to send packet to decoder (code = %d)\n",
++                           ret);
++                    return ret;
++                }
+             }
+         }
+-
+-        // make sure we keep decoder full
+-        if (freeslots > 1)
+-            return AVERROR(EAGAIN);
+     }
+ 
++    // use a non-blocking timeout when needing new packets
++    if (!decoder->eos_reached && rkmpp_accept_packet(avctx))
++        timeout = 1;
++
++    ret = decoder->mpi->control(decoder->ctx, MPP_SET_OUTPUT_TIMEOUT,
++                                &timeout);
++    if (ret != MPP_OK)
++        av_log(avctx, AV_LOG_ERROR,
++               "Failed to set timeout on MPI (code = %d).\n", ret);
++
+     return rkmpp_retrieve_frame(avctx, frame);
+ }
+ 
+-- 
+2.17.1
+
