@@ -1252,19 +1252,6 @@ index a779826d30f4..c86ac833a9db 100644
  	.fb_pan_display	= drm_fb_helper_pan_display,
  	.fb_read	= drm_fb_helper_sys_read,
  	.fb_write	= drm_fb_helper_sys_write,
-diff --git a/drivers/gpu/drm/rockchip/rockchip_vop_reg.c b/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
-index eb844387b95a..e39c457c709f 100644
---- a/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
-+++ b/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
-@@ -657,7 +657,7 @@ static const struct vop_win_data rk322x_vop_win_data[] = {
- 	{ .base = 0x00, .phy = &rk3288_win01_data,
- 	  .type = DRM_PLANE_TYPE_PRIMARY },
- 	{ .base = 0x40, .phy = &rk3288_win01_data,
--	  .type = DRM_PLANE_TYPE_CURSOR },
-+	  .type = DRM_PLANE_TYPE_OVERLAY },
- };
- 
- static const struct vop_data rk322x_vop = {
 diff --git a/drivers/mfd/fusb302.c b/drivers/mfd/fusb302.c
 index 2c6b9c64e71d..8452e90bb90e 100644
 --- a/drivers/mfd/fusb302.c
