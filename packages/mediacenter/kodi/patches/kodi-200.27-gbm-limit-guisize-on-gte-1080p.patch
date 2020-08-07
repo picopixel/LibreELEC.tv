@@ -1,0 +1,19 @@
+commit 4e97879e568d7fb05fb15b63c5e5ca1e49f7d977
+Author: Alex Bee <knaerzche@gmail.com>
+Date:   Wed Jul 1 14:20:03 2020 +0200
+
+    gbm: limit guisize on >= 1080p
+
+diff --git a/xbmc/windowing/gbm/DRMUtils.cpp b/xbmc/windowing/gbm/DRMUtils.cpp
+index 9446d67bc3..b0b085d2df 100644
+--- a/xbmc/windowing/gbm/DRMUtils.cpp
++++ b/xbmc/windowing/gbm/DRMUtils.cpp
+@@ -773,7 +773,7 @@ RESOLUTION_INFO CDRMUtils::GetResolutionInfo(drmModeModeInfoPtr mode)
+   res.iHeight = res.iScreenHeight;
+ 
+   int limit = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(SETTING_VIDEOSCREEN_LIMITGUISIZE);
+-  if (limit > 0 && res.iScreenWidth > 1920 && res.iScreenHeight > 1080)
++  if (limit > 0 && res.iScreenWidth >= 1920 && res.iScreenHeight >= 1080)
+   {
+     switch (limit)
+     {
