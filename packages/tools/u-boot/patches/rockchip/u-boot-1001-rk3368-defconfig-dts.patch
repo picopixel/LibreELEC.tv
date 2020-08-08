@@ -1,0 +1,150 @@
+diff --git a/arch/arm/dts/rk3368.dtsi b/arch/arm/dts/rk3368.dtsi
+index de9434151d..8af3357048 100644
+--- a/arch/arm/dts/rk3368.dtsi
++++ b/arch/arm/dts/rk3368.dtsi
+@@ -772,6 +772,22 @@
+ 		      (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_HIGH)>;
+ 	};
+ 
++	efuse: efuse@ffb00000 {
++		compatible = "rockchip,rockchip-efuse";
++		reg = <0x0 0xffb00000 0x0 0x20>;
++		#address-cells = <1>;
++		#size-cells = <1>;
++		clocks = <&cru PCLK_EFUSE256>;
++		clock-names = "pclk_efuse";
++
++		efuse_id: id@7 {
++			reg = <0x7 0x10>;
++		};
++		cpu_leakage: cpu_leakage@17 {
++			reg = <0x17 0x1>;
++		};
++	};
++
+ 	pinctrl: pinctrl {
+ 		compatible = "rockchip,rk3368-pinctrl";
+ 		rockchip,grf = <&grf>;
+diff --git a/arch/arm/dts/rk3368-evb.dts b/arch/arm/dts/rk3368-evb.dts
+index bf6aff2278..795f53ab6f 100644
+--- a/arch/arm/dts/rk3368-evb.dts
++++ b/arch/arm/dts/rk3368-evb.dts
+@@ -32,7 +32,7 @@
+ };
+ 
+ &uart2 {
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &u2phy {
+@@ -58,3 +58,15 @@
+ &usb_otg {
+ 	status = "okay";
+ };
++
++&sdmmc {
++	status = "okay";
++	supports-sd;
++	bus-width = <4>;
++	cap-sd-highspeed;
++	card-detect-delay = <200>;
++	disable-wp;
++	num-slots = <1>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdmmc_clk &sdmmc_cmd &sdmmc_cd &sdmmc_bus4>;
++};
+diff --git a/configs/rk3368_defconfig b/configs/rk3368_defconfig
+index 17c9bec3c8..42ba23887e 100644
+--- a/configs/rk3368_defconfig
++++ b/configs/rk3368_defconfig
+@@ -3,21 +3,16 @@ CONFIG_ARCH_ROCKCHIP=y
+ CONFIG_SYS_MALLOC_F_LEN=0x4000
+ CONFIG_ROCKCHIP_RK3368=y
+ CONFIG_RKIMG_BOOTLOADER=y
+-CONFIG_ROCKCHIP_VENDOR_PARTITION=y
++# CONFIG_ROCKCHIP_VENDOR_PARTITION is not set
+ CONFIG_TARGET_EVB_RK3368=y
+ CONFIG_DEFAULT_DEVICE_TREE="rk3368-evb"
+ CONFIG_DEBUG_UART=y
+-CONFIG_BOOTDELAY=0
++CONFIG_BOOTDELAY=1
+ CONFIG_SYS_CONSOLE_INFO_QUIET=y
+ # CONFIG_DISPLAY_CPUINFO is not set
+ CONFIG_ARCH_EARLY_INIT_R=y
+-CONFIG_ANDROID_BOOTLOADER=y
+-CONFIG_ANDROID_AVB=y
+-CONFIG_FASTBOOT_BUF_ADDR=0x800800
+-CONFIG_FASTBOOT_BUF_SIZE=0x04000000
+-CONFIG_FASTBOOT_FLASH=y
+-CONFIG_FASTBOOT_FLASH_MMC_DEV=0
+-CONFIG_CMD_DTIMG=y
++# CONFIG_ANDROID_BOOTLOADER is not set
++# CONFIG_ANDROID_AVB is not set
+ # CONFIG_CMD_ELF is not set
+ # CONFIG_CMD_IMI is not set
+ # CONFIG_CMD_IMLS is not set
+@@ -26,11 +21,11 @@ CONFIG_CMD_DTIMG=y
+ # CONFIG_CMD_UNZIP is not set
+ # CONFIG_CMD_FLASH is not set
+ # CONFIG_CMD_FPGA is not set
+-CONFIG_CMD_GPT=y
++# CONFIG_CMD_GPT is not set
+ # CONFIG_CMD_LOADB is not set
+ # CONFIG_CMD_LOADS is not set
+-CONFIG_CMD_BOOT_ANDROID=y
+-CONFIG_CMD_BOOT_ROCKCHIP=y
++# CONFIG_CMD_BOOT_ANDROID is not set
++# CONFIG_CMD_BOOT_ROCKCHIP is not set
+ CONFIG_CMD_MMC=y
+ CONFIG_CMD_USB=y
+ CONFIG_CMD_USB_MASS_STORAGE=y
+@@ -38,7 +33,7 @@ CONFIG_CMD_USB_MASS_STORAGE=y
+ # CONFIG_CMD_SETEXPR is not set
+ # CONFIG_CMD_MISC is not set
+ # CONFIG_ISO_PARTITION is not set
+-CONFIG_RKPARM_PARTITION=y
++# CONFIG_RKPARM_PARTITION is not set
+ CONFIG_OF_LIVE=y
+ CONFIG_OF_SPL_REMOVE_PROPS="pinctrl-0 pinctrl-names interrupt-parent assigned-clocks assigned-clock-rates assigned-clock-parents"
+ CONFIG_REGMAP=y
+@@ -92,25 +87,20 @@ CONFIG_USB_GADGET_DOWNLOAD=y
+ CONFIG_USB_GADGET_MANUFACTURER="Rockchip"
+ CONFIG_USB_GADGET_VENDOR_NUM=0x2207
+ CONFIG_USB_GADGET_PRODUCT_NUM=0x330a
+-CONFIG_DM_VIDEO=y
+-CONFIG_DISPLAY=y
+-CONFIG_DRM_ROCKCHIP=y
+-CONFIG_DRM_ROCKCHIP_DW_HDMI=y
+-CONFIG_DRM_ROCKCHIP_INNO_VIDEO_COMBO_PHY=y
+-CONFIG_DRM_ROCKCHIP_DW_MIPI_DSI=y
+-CONFIG_DRM_ROCKCHIP_ANALOGIX_DP=y
+-CONFIG_DRM_ROCKCHIP_LVDS=y
+-CONFIG_DRM_ROCKCHIP_RGB=y
+-CONFIG_DRM_ROCKCHIP_RK1000=y
+-CONFIG_LCD=y
++# CONFIG_DM_VIDEO is not set
++# CONFIG_DISPLAY is not set
+ CONFIG_USE_TINY_PRINTF=y
+ CONFIG_ERRNO_STR=y
+ # CONFIG_EFI_LOADER is not set
+-CONFIG_AVB_LIBAVB=y
+-CONFIG_AVB_LIBAVB_AB=y
+-CONFIG_AVB_LIBAVB_ATX=y
+-CONFIG_AVB_LIBAVB_USER=y
+-CONFIG_RK_AVB_LIBAVB_USER=y
+-CONFIG_OPTEE_CLIENT=y
+-CONFIG_OPTEE_V1=y
+-CONFIG_TEST_ROCKCHIP=y
++# CONFIG_AVB_LIBAVB is not set
++# CONFIG_RK_AVB_LIBAVB_USER is not set
++# CONFIG_OPTEE_CLIENT is nt set
++# CONFIG_OPTEE_V1 is not set
++# CONFIG_TEST_ROCKCHIP is not set
++# CONFIG_ANDROID_BOOT_IMAGE is not set
++# CONFIG_USING_KERNEL_DTB is not set
++CONFIG_DM_KEY=y
++CONFIG_ROCKCHIP_EFUSE=y
++CONFIG_MISC=y
++# CONFIG_EFI_PARTITION is not set
++

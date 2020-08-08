@@ -1,0 +1,9 @@
+#!/bin/sh
+case "$1" in
+   pre)
+     /usr/sbin/rfkill block all
+     ;;
+   post)
+     /usr/sbin/rfkill unblock all
+     ;;
+esac

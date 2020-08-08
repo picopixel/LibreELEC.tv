@@ -1,0 +1,40 @@
+################################################################################
+# setup device defaults
+################################################################################
+
+  # The TARGET_CPU variable controls which processor should be targeted for
+  # generated code.
+    case $TARGET_ARCH in
+      aarch64)
+        TARGET_CPU="cortex-a53"
+        TARGET_CPU_FLAGS="+crc+crypto"
+        TARGET_FEATURES="64bit"
+        ;;
+      arm)
+        TARGET_KERNEL_ARCH="arm64"
+        TARGET_PATCH_ARCH="aarch64"
+        TARGET_FLOAT="hard"
+        TARGET_CPU="cortex-a53"
+        TARGET_CPU_FLAGS="+crc"
+        TARGET_FPU="crypto-neon-fp-armv8"
+        TARGET_FEATURES="32bit"
+        ;;
+    esac
+
+  KERNEL_TARGET="Image"
+
+  # Additional kernel make parameters (for example to specify the u-boot loadaddress)
+    KERNEL_MAKE_EXTRACMD=""
+    KERNEL_MAKE_EXTRACMD+=" rockchip/rk3368-box-m8rpro.dtb"
+    KERNEL_MAKE_EXTRACMD+=" rockchip/rk3368-box-victsing.dtb"
+    KERNEL_MAKE_EXTRACMD+=" rockchip/rk3368-box-hk1maxplus.dtb"
+
+  GRAPHIC_DRIVERS="swrast"
+  OPENGLES="mesa"
+  KODIPLAYER_DRIVER="mesa"
+
+  DRIVER_ADDONS=""
+  EXTRA_CMDLINE="console=uart8250,mmio32,0xff690000 console=tty0"
+
+
+

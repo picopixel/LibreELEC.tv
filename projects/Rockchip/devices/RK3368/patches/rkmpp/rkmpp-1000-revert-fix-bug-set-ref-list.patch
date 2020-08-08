@@ -1,0 +1,291 @@
+commit 670d4db469e2827898ec487b562a4f0ea32e7dde
+Author: Alex Bee <knaerzche@gmail.com>
+Date:   Mon Jun 29 23:46:50 2020 +0200
+
+    Revert "[vdpu2]: fix bug: set ref list"
+    
+    This reverts commit a57fd68cccfffedbed4219f1dc07e9817c09b2ce.
+
+diff --git a/mpp/hal/rkdec/h264d/hal_h264d_common.c b/mpp/hal/rkdec/h264d/hal_h264d_common.c
+index b67cabbb..f7e6fdb0 100644
+--- a/mpp/hal/rkdec/h264d/hal_h264d_common.c
++++ b/mpp/hal/rkdec/h264d/hal_h264d_common.c
+@@ -259,72 +259,3 @@ MPP_RET adjust_input(H264dVdpuPriv_t *priv,
+ 
+     return ret = MPP_OK;
+ }
+-
+-RK_S32 compare_p(const void *a, const void *b)
+-{
+-    RK_S32 val = 0;
+-    H264dRefsList_t *p0 = (H264dRefsList_t *)a;
+-    H264dRefsList_t *p1 = (H264dRefsList_t *)b;
+-
+-    if (p0->lt_flag && p1->lt_flag) { // inc
+-        val = (p0->ref_picnum > p1->ref_picnum) ? 1 : -1;
+-    } else if (!p0->lt_flag && p1->lt_flag) { // dec
+-        val = 1;
+-    } else if (p0->lt_flag && !p1->lt_flag) { // inc
+-        val = -1;
+-    } else if (!p0->lt_flag && !p1->lt_flag) { // dec
+-        val = (p0->ref_picnum < p1->ref_picnum) ? 1 : -1;
+-    }
+-
+-    return val;
+-}
+-
+-RK_S32 compare_b0(const void *a, const void *b)
+-{
+-    RK_S32 val = 0;
+-    H264dRefsList_t *p0 = (H264dRefsList_t *)a;
+-    H264dRefsList_t *p1 = (H264dRefsList_t *)b;
+-
+-    if (p0->lt_flag && p1->lt_flag) { // inc
+-        val = (p0->ref_picnum > p1->ref_picnum) ? 1 : -1;
+-    } else if (!p0->lt_flag && p1->lt_flag) { // dec
+-        val = 1;
+-    } else if (p0->lt_flag && !p1->lt_flag) { // inc
+-        val = -1;
+-    } else if (!p0->lt_flag && !p1->lt_flag) {
+-        if (MPP_MAX(p0->ref_poc, p1->ref_poc) < p0->cur_poc) { // dec
+-            val = (p0->ref_poc < p1->ref_poc) ? 1 : -1;
+-        } else if (MPP_MIN(p0->ref_poc, p1->ref_poc) > p0->cur_poc) { // inc
+-            val = (p0->ref_poc > p1->ref_poc) ? 1 : -1;
+-        } else {
+-            val = (p0->ref_poc > p1->ref_poc) ? 1 : -1; // inc
+-        }
+-    }
+-
+-    return val;
+-}
+-
+-RK_S32 compare_b1(const void *a, const void *b)
+-{
+-    RK_S32 val = 0;
+-    H264dRefsList_t *p0 = (H264dRefsList_t *)a;
+-    H264dRefsList_t *p1 = (H264dRefsList_t *)b;
+-
+-    if (p0->lt_flag && p1->lt_flag) { // inc
+-        val = (p0->ref_picnum > p1->ref_picnum) ? 1 : -1;
+-    } else if (!p0->lt_flag && p1->lt_flag) {
+-        val = 1;
+-    } else if (p0->lt_flag && !p1->lt_flag) {
+-        val = -1;
+-    } else if (!p0->lt_flag && !p1->lt_flag) {
+-        if (MPP_MIN(p0->ref_poc, p1->ref_poc) > p0->cur_poc) { // inc
+-            val = (p0->ref_poc > p1->ref_poc) ? 1 : -1;
+-        } else if (MPP_MAX(p0->ref_poc, p1->ref_poc) < p0->cur_poc) { // dec
+-            val = (p0->ref_poc < p1->ref_poc) ? 1 : -1;
+-        } else {
+-            val = (p0->ref_poc < p1->ref_poc) ? 1 : -1; // dec
+-        }
+-    }
+-
+-    return val;
+-}
+diff --git a/mpp/hal/rkdec/h264d/hal_h264d_common.h b/mpp/hal/rkdec/h264d/hal_h264d_common.h
+index ca11a30e..9562dc50 100644
+--- a/mpp/hal/rkdec/h264d/hal_h264d_common.h
++++ b/mpp/hal/rkdec/h264d/hal_h264d_common.h
+@@ -236,15 +236,6 @@ typedef struct h264d_vdpu_buf_t {
+     void *regs;
+ } H264dVdpuBuf_t;
+ 
+-typedef struct h264d_refs_list_t {
+-    RK_S32 idx;
+-    RK_S32 cur_poc;
+-
+-    RK_S32 lt_flag;
+-    RK_S32 ref_poc;
+-    RK_S32 ref_picnum;
+-} H264dRefsList_t;
+-
+ typedef struct h264d_vdpu_reg_ctx_t {
+     H264dVdpuBuf_t reg_buf[3];
+ 
+@@ -263,10 +254,4 @@ MPP_RET adjust_input(H264dVdpuPriv_t *priv,
+                      DXVA_Slice_H264_Long *p_long,
+                      DXVA_PicParams_H264_MVC  *pp);
+ 
+-RK_S32 compare_p(const void *a, const void *b);
+-
+-RK_S32 compare_b0(const void *a, const void *b);
+-
+-RK_S32 compare_b1(const void *a, const void *b);
+-
+ #endif
+diff --git a/mpp/hal/rkdec/h264d/hal_h264d_vdpu1.c b/mpp/hal/rkdec/h264d/hal_h264d_vdpu1.c
+index 651f66f3..abee14a6 100644
+--- a/mpp/hal/rkdec/h264d/hal_h264d_vdpu1.c
++++ b/mpp/hal/rkdec/h264d/hal_h264d_vdpu1.c
+@@ -459,49 +459,47 @@ static MPP_RET vdpu1_set_vlc_regs(H264dHalCtx_t *p_hal,
+ static MPP_RET vdpu1_set_ref_regs(H264dHalCtx_t *p_hal,
+                                   H264dVdpu1Regs_t *p_regs)
+ {
++    RK_U32 i = 0, j = 0;
+     MPP_RET ret = MPP_ERR_UNKNOW;
+-    RK_U32 i = 0;
+-    RK_U32 num_refs = 0;
+-    H264dRefsList_t m_lists[3][16];
+-    DXVA_PicParams_H264_MVC  *pp = p_hal->pp;
++    DXVA_Slice_H264_Long *p_long = &p_hal->slice_long[0];
+ 
+-    // init list
+-    memset(m_lists, 0, sizeof(m_lists));
+-    for (i = 0; i < 16; i++) {
+-        m_lists[0][i].idx = i;
+-        m_lists[0][i].cur_poc = pp->CurrPic.AssociatedFlag
+-                                ? pp->CurrFieldOrderCnt[1] : pp->CurrFieldOrderCnt[0];
+-        RK_U32 ref_flag = pp->UsedForReferenceFlags >> (2 * i) & 0x3;
+-        if (ref_flag) {
+-            num_refs++;
+-            m_lists[0][i].lt_flag = pp->RefFrameList[i].AssociatedFlag;
+-            if (m_lists[0][i].lt_flag) {
+-                m_lists[0][i].ref_picnum = pp->LongTermPicNumList[i];
+-            } else {
+-                m_lists[0][i].ref_picnum = pp->FrameNumList[i];
++    //!< list0 list1 listP
++    for (j = 0; j < 3; j++) {
++        for (i = 0; i < 16; i++) {
++            RK_U16 val = 0;
++            if (p_hal->pp->field_pic_flag) { //!< field
++                RK_U32 nn = 0;
++                nn = p_hal->pp->CurrPic.AssociatedFlag ? (2 * i + 1) : (2 * i);
++                if (p_long->RefPicList[j][nn].bPicEntry == 0xff) {
++                    val = vdpu_value_list[i];
++                } else {
++                    val = p_long->RefPicList[j][nn].Index7Bits;
++                }
++            } else { //!< frame
++                if (p_long->RefPicList[j][i].bPicEntry == 0xff) {
++                    val = vdpu_value_list[i];
++                } else {
++                    val = p_long->RefPicList[j][i].Index7Bits;
++                }
+             }
+ 
+-            if (ref_flag == 3) {
+-                m_lists[0][i].ref_poc = MPP_MIN(pp->FieldOrderCntList[i][0], pp->FieldOrderCntList[i][1]);
+-            } else if (ref_flag & 0x1) {
+-                m_lists[0][i].ref_poc = pp->FieldOrderCntList[i][0];
+-            } else if (ref_flag & 0x2) {
+-                m_lists[0][i].ref_poc = pp->FieldOrderCntList[i][1];
++            switch (j) {
++            case 0:
++                vdpu1_set_refer_pic_list_p(p_regs, i, val);
++                break;
++            case 1:
++                vdpu1_set_refer_pic_list_b0(p_regs, i, val);
++
++                break;
++            case 2:
++                vdpu1_set_refer_pic_list_b1(p_regs, i, val);
++
++                break;
++            default:
++                break;
+             }
+         }
+     }
+-    memcpy(m_lists[1], m_lists[0], sizeof(m_lists[0]));
+-    memcpy(m_lists[2], m_lists[0], sizeof(m_lists[0]));
+-    qsort(m_lists[0], num_refs, sizeof(m_lists[0][0]), compare_p);
+-    qsort(m_lists[1], num_refs, sizeof(m_lists[1][0]), compare_b0);
+-    qsort(m_lists[2], num_refs, sizeof(m_lists[2][0]), compare_b1);
+-
+-    //!< list0 list1 listP
+-    for (i = 0; i < 16; i++) {
+-        vdpu1_set_refer_pic_list_p(p_regs, i, m_lists[0][i].idx);
+-        vdpu1_set_refer_pic_list_b0(p_regs, i, m_lists[1][i].idx);
+-        vdpu1_set_refer_pic_list_b1(p_regs, i, m_lists[2][i].idx);
+-    }
+ 
+     return ret = MPP_OK;
+ }
+diff --git a/mpp/hal/rkdec/h264d/hal_h264d_vdpu2.c b/mpp/hal/rkdec/h264d/hal_h264d_vdpu2.c
+index 22dc5481..a217b926 100644
+--- a/mpp/hal/rkdec/h264d/hal_h264d_vdpu2.c
++++ b/mpp/hal/rkdec/h264d/hal_h264d_vdpu2.c
+@@ -487,49 +487,46 @@ static MPP_RET set_vlc_regs(H264dHalCtx_t *p_hal, H264dVdpuRegs_t *p_regs)
+ 
+ static MPP_RET set_ref_regs(H264dHalCtx_t *p_hal, H264dVdpuRegs_t *p_regs)
+ {
++    RK_U32 i = 0, j = 0;
+     MPP_RET ret = MPP_ERR_UNKNOW;
+-    RK_U32 i = 0;
+-    RK_U32 num_refs = 0;
+-    H264dRefsList_t m_lists[3][16];
+-    DXVA_PicParams_H264_MVC  *pp = p_hal->pp;
++    DXVA_Slice_H264_Long *p_long = &p_hal->slice_long[0];
+ 
+-    // init list
+-    memset(m_lists, 0, sizeof(m_lists));
+-    for (i = 0; i < 16; i++) {
+-        m_lists[0][i].idx = i;
+-        m_lists[0][i].cur_poc = pp->CurrPic.AssociatedFlag
+-                                ? pp->CurrFieldOrderCnt[1] : pp->CurrFieldOrderCnt[0];
+-        RK_U32 ref_flag = pp->UsedForReferenceFlags >> (2 * i) & 0x3;
+-        if (ref_flag) {
+-            num_refs++;
+-            m_lists[0][i].lt_flag = pp->RefFrameList[i].AssociatedFlag;
+-            if (m_lists[0][i].lt_flag) {
+-                m_lists[0][i].ref_picnum = pp->LongTermPicNumList[i];
+-            } else {
+-                m_lists[0][i].ref_picnum = pp->FrameNumList[i];
++    //!< list0 list1 listP
++    for (j = 0; j < 3; j++) {
++        for (i = 0; i < 16; i++) {
++            RK_U16 val = 0;
++            if (p_hal->pp->field_pic_flag) { //!< field
++                RK_U32 nn = 0;
++                nn = p_hal->pp->CurrPic.AssociatedFlag ? (2 * i + 1) : (2 * i);
++                if (p_long->RefPicList[j][nn].bPicEntry == 0xff) {
++                    val = vdpu_value_list[i];
++                } else {
++                    val = p_long->RefPicList[j][nn].Index7Bits;
++                }
++            } else { //!< frame
++                if (p_long->RefPicList[j][i].bPicEntry == 0xff) {
++                    val = vdpu_value_list[i];
++                } else {
++                    val = p_long->RefPicList[j][i].Index7Bits;
++                }
+             }
++            switch (j) {
++            case 0:
++                set_refer_pic_list_p(p_regs, i, val);
++                break;
++            case 1:
++                set_refer_pic_list_b0(p_regs, i, val);
++
++                break;
++            case 2:
++                set_refer_pic_list_b1(p_regs, i, val);
+ 
+-            if (ref_flag == 3) {
+-                m_lists[0][i].ref_poc = MPP_MIN(pp->FieldOrderCntList[i][0], pp->FieldOrderCntList[i][1]);
+-            } else if (ref_flag & 0x1) {
+-                m_lists[0][i].ref_poc = pp->FieldOrderCntList[i][0];
+-            } else if (ref_flag & 0x2) {
+-                m_lists[0][i].ref_poc = pp->FieldOrderCntList[i][1];
++                break;
++            default:
++                break;
+             }
+         }
+     }
+-    memcpy(m_lists[1], m_lists[0], sizeof(m_lists[0]));
+-    memcpy(m_lists[2], m_lists[0], sizeof(m_lists[0]));
+-    qsort(m_lists[0], num_refs, sizeof(m_lists[0][0]), compare_p);
+-    qsort(m_lists[1], num_refs, sizeof(m_lists[1][0]), compare_b0);
+-    qsort(m_lists[2], num_refs, sizeof(m_lists[2][0]), compare_b1);
+-
+-    //!< list0 list1 listP
+-    for (i = 0; i < 16; i++) {
+-        set_refer_pic_list_p(p_regs, i, m_lists[0][i].idx);
+-        set_refer_pic_list_b0(p_regs, i, m_lists[1][i].idx);
+-        set_refer_pic_list_b1(p_regs, i, m_lists[2][i].idx);
+-    }
+ 
+     return ret = MPP_OK;
+ }

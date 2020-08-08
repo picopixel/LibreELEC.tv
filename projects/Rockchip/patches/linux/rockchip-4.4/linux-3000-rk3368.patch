@@ -1,0 +1,103 @@
+diff --git a/./drivers/video/rockchip/vcodec/vcodec_service.c b/./drivers/video/rockchip/vcodec/vcodec_service.c
+index 20d85c0c67..178a5e54d7 100644
+--- a/./drivers/video/rockchip/vcodec/vcodec_service.c
++++ b/./drivers/video/rockchip/vcodec/vcodec_service_.c
+@@ -2536,7 +2536,7 @@ static void vcodec_get_reg_freq_rk3368(struct vpu_subdev_data *data,
+ 				 * raise frequency for resolution larger
+ 				 * than 1440p avc.
+ 				 */
+-				reg->freq = VPU_FREQ_400M;
++				reg->freq = VPU_FREQ_600M;
+ 			}
+ 		} else if (reg_check_interlace(reg)) {
+ 			reg->freq = VPU_FREQ_400M;
+--- b/drivers/clk/rockchip/clk-rk3368.c
++++ a/drivers/clk/rockchip/clk-rk3368.c
+@@ -23,7 +23,6 @@
+ #define RK3368_I2S_FRAC_MAX_PRATE       600000000
+ #define RK3368_UART_FRAC_MAX_PRATE	600000000
+ #define RK3368_SPDIF_FRAC_MAX_PRATE	600000000
+-#define RK3368_DCLK_PARENT_MAX_PRATE	600000000
+ 
+ enum rk3368_plls {
+ 	apllb, aplll, dpll, cpll, gpll, npll,
+@@ -486,9 +485,9 @@
+ 			RK3368_CLKSEL_CON(18), 6, 2, MFLAGS, 0, 5, DFLAGS,
+ 			RK3368_CLKGATE_CON(4), 4, GFLAGS),
+ 
++	COMPOSITE(DCLK_VOP, "dclk_vop", mux_pll_src_dmycpll_dmygpll_npll_p, CLK_SET_RATE_PARENT,
+-	COMPOSITE_DCLK(DCLK_VOP, "dclk_vop", mux_pll_src_dmycpll_dmygpll_npll_p, CLK_SET_RATE_PARENT,
+ 			RK3368_CLKSEL_CON(20), 8, 2, MFLAGS, 0, 8, DFLAGS,
++			RK3368_CLKGATE_CON(4), 1, GFLAGS),
+-			RK3368_CLKGATE_CON(4), 1, GFLAGS, RK3368_DCLK_PARENT_MAX_PRATE),
+ 
+ 	GATE(SCLK_VOP0_PWM, "sclk_vop0_pwm", "xin24m", 0,
+ 			RK3368_CLKGATE_CON(4), 2, GFLAGS),
+diff --git a/drivers/gpu/drm/rockchip/rockchip_vop_reg.c b/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
+index 44dd3b8bea..e8e033c802 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
++++ b/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
+@@ -58,6 +58,20 @@ static const uint32_t formats_win_full[] = {
+ 	DRM_FORMAT_NV24_10,
+ };
+ 
++static const uint32_t formats_win_full_8[] = {
++	DRM_FORMAT_XRGB8888,
++	DRM_FORMAT_ARGB8888,
++	DRM_FORMAT_XBGR8888,
++	DRM_FORMAT_ABGR8888,
++	DRM_FORMAT_RGB888,
++	DRM_FORMAT_BGR888,
++	DRM_FORMAT_RGB565,
++	DRM_FORMAT_BGR565,
++	DRM_FORMAT_NV12,
++	DRM_FORMAT_NV16,
++	DRM_FORMAT_NV24,
++};
++
+ static const uint32_t formats_win_lite[] = {
+ 	DRM_FORMAT_XRGB8888,
+ 	DRM_FORMAT_ARGB8888,
+@@ -392,6 +406,30 @@ static const struct vop_intr rk3368_vop_intr = {
+ 	.clear = VOP_REG_MASK(RK3368_INTR_CLEAR, 0x3fff, 0),
+ };
+ 
++static const struct vop_win_phy rk3368_win01_data = {
++	.scl = &rk3288_win_full_scl,
++	.data_formats = formats_win_full_8,
++	.nformats = ARRAY_SIZE(formats_win_full),
++	.enable = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 0),
++	.format = VOP_REG(RK3288_WIN0_CTRL0, 0x7, 1),
++	.csc_mode = VOP_REG_VER(RK3288_WIN0_CTRL0, 0x3, 10, 3, 2, -1),
++	.rb_swap = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 12),
++	.yuv_clip = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 20),
++	.xmirror = VOP_REG_VER(RK3368_WIN0_CTRL0, 0x1, 21, 3, 2, -1),
++	.ymirror = VOP_REG_VER(RK3368_WIN0_CTRL0, 0x1, 22, 3, 2, -1),
++	.act_info = VOP_REG(RK3288_WIN0_ACT_INFO, 0x1fff1fff, 0),
++	.dsp_info = VOP_REG(RK3288_WIN0_DSP_INFO, 0x0fff0fff, 0),
++	.dsp_st = VOP_REG(RK3288_WIN0_DSP_ST, 0x1fff1fff, 0),
++	.yrgb_mst = VOP_REG(RK3288_WIN0_YRGB_MST, 0xffffffff, 0),
++	.uv_mst = VOP_REG(RK3288_WIN0_CBR_MST, 0xffffffff, 0),
++	.yrgb_vir = VOP_REG(RK3288_WIN0_VIR, 0x3fff, 0),
++	.uv_vir = VOP_REG(RK3288_WIN0_VIR, 0x3fff, 16),
++	.src_alpha_ctl = VOP_REG(RK3288_WIN0_SRC_ALPHA_CTRL, 0xffff, 0),
++	.global_alpha_val = VOP_REG(RK3288_WIN0_SRC_ALPHA_CTRL, 0xff, 16),
++	.dst_alpha_ctl = VOP_REG(RK3288_WIN0_DST_ALPHA_CTRL, 0xffffffff, 0),
++	.channel = VOP_REG_VER(RK3288_WIN0_CTRL2, 0xff, 0, 3, 8, 8),
++};
++
+ static const struct vop_win_phy rk3368_win23_data = {
+ 	.data_formats = formats_win_lite,
+ 	.nformats = ARRAY_SIZE(formats_win_lite),
+@@ -446,9 +484,9 @@ static const struct vop_win_phy *rk3368_area_data[] = {
+ };
+ 
+ static const struct vop_win_data rk3368_vop_win_data[] = {
+-	{ .base = 0x00, .phy = &rk3288_win01_data,
++	{ .base = 0x00, .phy = &rk3368_win01_data,
+ 	  .type = DRM_PLANE_TYPE_PRIMARY },
+-	{ .base = 0x40, .phy = &rk3288_win01_data,
++	{ .base = 0x40, .phy = &rk3368_win01_data,
+ 	  .type = DRM_PLANE_TYPE_OVERLAY },
+ 	{ .base = 0x00, .phy = &rk3368_win23_data,
+ 	  .type = DRM_PLANE_TYPE_OVERLAY,

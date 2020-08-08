@@ -14,4 +14,11 @@ for script in $HOME/.config/sleep.d/*.power; do
   fi
 done
 
+for script in /usr/lib/systemd/sleep.d/*.power; do
+  if [ -f $script ]; then
+    progress "running systemd sleep script $script ($@)..."
+    sh $script $@
+  fi
+done
+
 exit 0
