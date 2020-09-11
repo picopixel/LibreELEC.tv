@@ -16,5 +16,5 @@ mkdir -p "$DSTDIR"
       cp -a "$SRCDIR/trust.img" "$DSTDIR"
     fi
   fi
-
-  cp -a "$SRCDIR"/${DEVICE,,}-*.dtb "$DSTDIR"
+  DTB_DEVICE=${DEVICE/x/*}
+  cp -a "$SRCDIR"/${DTB_DEVICE,,}-*.dtb "$DSTDIR"

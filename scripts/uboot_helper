@@ -234,6 +234,40 @@ devices = \
     },
   },
   'Rockchip': {
+  'RK322x' : {
+      'rk3229-ddr2-box': {
+        'dtb' : 'rk3229-box.dtb',
+        'config' : 'rk322x-linux-miniloader-emmc_defconfig'
+       },
+      'rk3229-ddr3-box': {
+        'dtb' : 'rk3229-box.dtb',
+        'config' : 'rk322x-linux-miniloader-emmc-dmc_defconfig'
+       },
+      'rk3229-a95xr1': {
+        'dtb' : 'rk3229-box-a95xr1.dtb',
+        'config' : 'rk322x-linux-miniloader-a95xr1_defconfig'
+       },
+       'rk3228a-ddr2-box': {
+        'dtb' : 'rk3228a-box.dtb',
+        'config' : 'rk322x-linux-miniloader-emmc_defconfig'
+       },
+	'rk3228a-ddr3-box': {
+        'dtb' : 'rk3228a-box.dtb',
+        'config' : 'rk322x-linux-miniloader-emmc-dmc_defconfig'
+       },
+       'rk3228a-h96mini': {
+         'dtb' : 'rk3228a-box-h96mini.dtb',
+         'config' : 'rk322x-linux-miniloader-emmc-dmc_defconfig',
+        },
+       'rk3228a-mxq4k': {
+         'dtb' : 'rk3228a-box.dtb',
+         'config' : 'rk322x-linux-miniloader-mxq4k_defconfig',
+        },
+       'rk3228-mkv809vii': {
+         'dtb' : 'rk3228a-box.dtb',
+         'config' : 'rk322x-linux-miniloader-mkv809vii_defconfig',
+        },
+    },
     'RK3288': {
       'miqi': {
         'dtb': 'rk3288-miqi.dtb',
