@@ -67,6 +67,9 @@
   # additional packages to install
     ADDITIONAL_PACKAGES="dtc"
 
+  # additional drivers to install
+    ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS openvfd-driver"
+
   # build and install CEC framework support (yes / no)
     CEC_FRAMEWORK_SUPPORT="yes"
 

@@ -1,0 +1,13 @@
+[Unit]
+Description=OpenVFD Service
+ConditionPathExists=/proc/device-tree/openvfd/
+After=kodi-autostart.service
+
+[Service]
+ExecStart=/bin/sh -c '[ `cat /proc/device-tree/openvfd/compatible` = "open,vfd" ] && /sbin/modprobe openvfd; /usr/sbin/OpenVFDService ${clock_12h_format:+-12h}'
+ExecStop=/bin/kill -TERM $MAINPID
+ExecStopPost=-/usr/sbin/rmmod openvfd
+RemainAfterExit=yes
+
+[Install]
+WantedBy=basic.target
