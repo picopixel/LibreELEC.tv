@@ -283,6 +283,10 @@ devices = \
         'dtb': 'rk3288-miqi.dtb',
         'config': 'miqi-rk3288_config'
       },
+      'mk902ii': {
+        'dtb': 'rk3288-mk902ii.dtb',
+        'config': 'miqi-rk3288_config'
+      },
       'tinker': {
         'dtb': 'rk3288-tinker-s.dtb',
         'config': 'tinker-rk3288_config'

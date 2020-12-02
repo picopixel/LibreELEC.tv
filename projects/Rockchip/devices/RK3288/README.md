@@ -6,3 +6,4 @@ This is a SoC device for RK3288
 
 * `PROJECT=Rockchip DEVICE=RK3288 ARCH=arm UBOOT_SYSTEM=miqi make image`
 * `PROJECT=Rockchip DEVICE=RK3288 ARCH=arm UBOOT_SYSTEM=tinker make image`
+* `PROJECT=Rockchip DEVICE=RK3288 ARCH=arm UBOOT_SYSTEM=mk902ii make image`

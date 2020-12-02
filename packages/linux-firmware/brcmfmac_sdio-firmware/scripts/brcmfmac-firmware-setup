@@ -16,3 +16,4 @@ fi
 
 # HACK: WetekPlay2 firmware works for this device too
 ln -sf /usr/lib/kernel-overlays/base/lib/firmware/brcm/brcmfmac4330-sdio.wetek,play2.txt /usr/lib/firmware/brcm/brcmfmac4330-sdio.eledvb,h96mini.txt
+ln -sf /usr/lib/kernel-overlays/base/lib/firmware/brcm/brcmfmac4330-sdio.wetek,play2.txt /usr/lib/firmware/brcm/brcmfmac4330-sdio.rikomagic,mk902ii.txt
