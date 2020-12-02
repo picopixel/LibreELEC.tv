@@ -309,6 +309,10 @@ devices = \
         'dtb': 'rk3328-box-z28.dtb',
         'config': 'evb-rk3328_defconfig'
       },
+      'box-mx10': {
+        'dtb': 'rk3328-box-mx10.dtb',
+        'config': 'evb-rk3328_defconfig'
+      },
       'roc-cc': {
         'dtb': 'rk3328-roc-cc.dtb',
         'config': 'evb-rk3328_defconfig'
@@ -320,6 +324,14 @@ devices = \
       'rockbox': {
         'dtb': 'rk3328-rockbox.dtb',
         'config': 'evb-rk3328_defconfig'
+      },
+      'box-v88miniII': {
+        'dtb': 'rk3328-box-mx10.dtb',
+        'config': 'rk3328-v88miniIII_defconfig'
+      },
+     'box-x88pro': {
+        'dtb': 'rk3328-rk3318-box-x88pro.dtb',
+        'config': 'rk3318-x88pro_defconfig'
       },
     },
     'RK3399': {
