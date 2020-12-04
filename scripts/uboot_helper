@@ -367,6 +367,10 @@ devices = \
         'dtb': 'rk3399-orangepi.dtb',
         'config': 'evb-rk3399_config'
       },
+      'rkm-mk39': {
+        'dtb': 'rk3399-rkm-mk39.dtb',
+        'config': 'evb-rk3399_config'
+      },
       'rock960': {
         'dtb': 'rk3399-rock960.dtb',
         'config': 'evb-rk3399_config'

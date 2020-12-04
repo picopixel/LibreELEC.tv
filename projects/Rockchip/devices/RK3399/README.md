@@ -5,6 +5,7 @@ This is a SoC device for RK3399
 **Build**
 
 * `PROJECT=Rockchip DEVICE=RK3399 ARCH=arm UBOOT_SYSTEM=khadas-edge make image`
+* `PROJECT=Rockchip DEVICE=RK3399 ARCH=arm UBOOT_SYSTEM=rkm-mk39 make image`
 * `PROJECT=Rockchip DEVICE=RK3399 ARCH=arm UBOOT_SYSTEM=rock960 make image`
 * `PROJECT=Rockchip DEVICE=RK3399 ARCH=arm UBOOT_SYSTEM=rock-pi-4a make image`
 * `PROJECT=Rockchip DEVICE=RK3399 ARCH=arm UBOOT_SYSTEM=rock-pi-4b make image`
