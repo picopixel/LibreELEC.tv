@@ -21,8 +21,8 @@ fi
 PKG_NEED_UNPACK="$PROJECT_DIR/$PROJECT/bootloader"
 [ -n "$DEVICE" ] && PKG_NEED_UNPACK+=" $PROJECT_DIR/$PROJECT/devices/$DEVICE/bootloader"
 
-case "$PROJECT" in
-  Rockchip)
+case "$UBOOT_PROJECT" in
+  rockchip)
     PKG_VERSION="505eebf24e153630f5a3e0ec232ffda67bf48e9e"
     PKG_SHA256="ba4e0c7e38b5af221b7d0ee185fe15ebd38b23f9b533bc2aeab68fbea49034d7"
     PKG_URL="https://github.com/rockchip-linux/u-boot/archive/$PKG_VERSION.tar.gz"
@@ -32,6 +32,7 @@ case "$PROJECT" in
     PKG_VERSION="v2021.01-rc4"
     PKG_SHA256="9e05a96f0cac4f8b6fdea5cdf10f0d814e6a0d7141243a6eb9862385c7ddeb14"
     PKG_URL="https://github.com/u-boot/u-boot/archive/$PKG_VERSION.tar.gz"
+    PKG_PATCH_DIRS="default"
     ;;
 esac
 

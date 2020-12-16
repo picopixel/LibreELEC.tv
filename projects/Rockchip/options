@@ -4,7 +4,8 @@
 
   # Bootloader to use (syslinux / u-boot / bcm2835-bootloader)
     BOOTLOADER="u-boot"
-
+  # U-Boot project
+    UBOOT_PROJECT="rockchip"
   # U-Boot make target
     UBOOT_TARGET="u-boot-dtb.bin"
 

@@ -1,0 +1,37 @@
+################################################################################
+# setup device defaults
+################################################################################
+
+  # The TARGET_CPU variable controls which processor should be targeted for
+  # generated code.
+    case $TARGET_ARCH in
+      arm)
+        TARGET_FLOAT="hard"
+        TARGET_CPU="cortex-a9"
+        TARGET_FPU="neon-vfpv3"
+        TARGET_FEATURES="32bit"
+        ;;
+    esac
+
+    #u-boot: mainline
+    UBOOT_TARGET=""
+    UBOOT_PROJECT=""
+
+  # Kernel target
+    KERNEL_TARGET="zImage"
+
+  # GPU family
+    GRAPHIC_DRIVERS="lima"
+ 
+    KERNEL_MAKE_EXTRACMD=""
+    KERNEL_MAKE_EXTRACMD+=" rk3188-rbox-cs918.dtb"
+    KERNEL_MAKE_EXTRACMD+=" rk3188-rbox-cs968.dtb"
+
+  # kernel serial console
+    EXTRA_CMDLINE="console=uart8250,mmio32,0x20064000 console=tty0"
+
+   # set the addon project
+     ADDON_PROJECT="ARMv7"
+
+   ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS RTL8723AU"
+

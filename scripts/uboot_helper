@@ -234,6 +234,16 @@ devices = \
     },
   },
   'Rockchip': {
+  'RK3188' : {
+      'rk3188-rbox-cs918': {
+        'dtb' : 'rk3188-rbox-cs918.dtb',
+        'config' : 'rbox-rk3188_defconfig'
+       },
+      'rk3188-rbox-cs968': {
+        'dtb' : 'rk3188-rbox-cs968.dtb',
+        'config' : 'rbox-rk3188_defconfig'
+       },
+   },
   'RK322x' : {
       'rk3229-ddr2-box': {
         'dtb' : 'rk3229-box.dtb',
