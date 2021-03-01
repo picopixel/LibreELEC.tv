@@ -249,6 +249,7 @@ devices = \
       },
       'tinker': {
         'dtb': 'rk3288-tinker-s.dtb',
+        'extra_dtbs': 'rk3288-tinker.dtb',
         'config': 'tinker-rk3288_defconfig'
       },
     },
@@ -273,6 +274,10 @@ devices = \
       },
       'khadas-edge': {
         'dtb': 'rk3399-khadas-edge.dtb',
+        'extra_dtbs': [
+                       'rk3399-khadas-edge-captain.dtb',
+                       'rk3399-khadas-edge-v.dtb'
+                      ],
         'config': 'evb-rk3399_defconfig'
       },
       'nanopc-t4': {
@@ -281,6 +286,7 @@ devices = \
       },
       'nanopi-m4': {
         'dtb': 'rk3399-nanopi-m4.dtb',
+        'extra_dtbs': 'rk3399-nanopi-neo4.dtb',
         'config': 'evb-rk3399_defconfig'
       },
       'orangepi': {
@@ -289,22 +295,30 @@ devices = \
       },
       'rock960': {
         'dtb': 'rk3399-rock960.dtb',
+        'extra_dtbs': 'rk3399-ficus.dtb',
         'config': 'evb-rk3399_defconfig'
       },
       'rock-pi-4': {
         'dtb': 'rk3399-rock-pi-4a.dtb',
+        'extra_dtbs': [
+                       'rk3399-rock-pi-4b.dtb',
+                       'rk3399-rock-pi-4c.dtb'
+                      ],
         'config': 'evb-rk3399_defconfig'
       },
       'rockpro64': {
         'dtb': 'rk3399-rockpro64.dtb',
+        'extra_dtbs': 'rk3399-rockpro64-v2.dtb',
         'config': 'evb-rk3399_defconfig'
       },
       'roc-pc': {
         'dtb': 'rk3399-roc-pc.dtb',
+        'extra_dtbs': 'rk3399-roc-pc-mezzanine.dtb',
         'config': 'evb-rk3399_defconfig'
       },
       'sapphire': {
         'dtb': 'rk3399-sapphire.dtb',
+        'extra_dtbs': 'rk3399-sapphire-excavator.dtb',
         'config': 'evb-rk3399_defconfig'
       },
     },
