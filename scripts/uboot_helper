@@ -13,6 +13,10 @@ import argparse
 #    'device' : {
 #      'board-name' : {
 #        'dtb' : 'board-name.dtb',
+#        'extra_dtbs' : [
+#                         'board-name-v2.dtb',
+#                         'board-name-v3.dtb',
+#                       ],
 #        'config' : 'board_name_defconfig'
 #      },
 #    },
@@ -378,6 +382,7 @@ parser.add_argument('value', nargs='?', action=OptionsAction)
 
 options = parser.parse_args()
 
-print(devices[options.project][options.soc][options.board][options.value])
+value = devices[options.project][options.soc][options.board][options.value]
+print (' '.join(sorted(set(value))) if isinstance(value, list) else value)
 
 parser.exit()

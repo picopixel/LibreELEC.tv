@@ -223,6 +223,15 @@ elif [ "${BOOTLOADER}" = "u-boot" -a -n "${UBOOT_SYSTEM}" ]; then
       mcopy -s "${RELEASE_DIR}/3rdparty/bootloader/overlays" ::
     fi
 
+    EXTRA_DTBS="$(${SCRIPTS}/uboot_helper ${PROJECT} ${DEVICE} ${UBOOT_SYSTEM} extra_dtbs)"
+    if [ -n "${EXTRA_DTBS}" ]; then
+      for extra_dtb in ${EXTRA_DTBS}; do
+         if [ "${extra_dtb}" != "${DTB}" -a -f "${RELEASE_DIR}/3rdparty/bootloader/${extra_dtb}" ]; then
+           mcopy "${RELEASE_DIR}/3rdparty/bootloader/${extra_dtb}" ::
+         fi
+      done
+    fi
+
     mkdir -p "${LE_TMP}/extlinux"
 
     cat << EOF > "${LE_TMP}/extlinux/extlinux.conf"
